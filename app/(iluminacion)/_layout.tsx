@@ -8,8 +8,8 @@ import { Pressable, Text } from 'react-native';
 import LogoImage from '../../assets/images/logo2.png';
 
 export default function TabLayout() {
-  const router = useRouter();
-  
+	const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
@@ -40,32 +40,33 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="iluminacion"
         options={{
-          title: 'Inicio',
+          title: 'Iluminacion',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+            <Ionicons name={focused ? 'bulb-sharp' : 'bulb-outline'} color={color} size={24} />
           ),
         }}
       />
-      <Tabs.Screen
-        name="perfil"
+        <Tabs.Screen
+          name="nuevo"
+          options={{
+            title: 'Nuevo',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? 'add-sharp' : 'add-outline'} color={color} size={24}/>
+            ),
+          }}
+          />
+	<Tabs.Screen
+        name="informes"
         options={{
-          title: 'Perfil',
+          title: 'Informes',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} color={color} size={24}/>
+            <Ionicons name={focused ? 'document-sharp' : 'document-outline'} color={color} size={24}/>
           ),
         }}
       />
-    <Tabs.Screen
-        name="suscripcion"
-        options={{
-          title: 'Suscripción',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'shield' : 'shield-outline'} color={color} size={24}/>
-          ),
-        }}
-      />
+      
     </Tabs>
   );
 }

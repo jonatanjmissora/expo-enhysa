@@ -7,7 +7,7 @@ export default function Suscripcion() {
 	  flex: 1,
 	  justifyContent: "center",
 	  alignItems: "center",
-	  backgroundColor: "#192b41ff"
+	  backgroundColor: "#152436ff"
 	}}
     >
 	<Text style={{ color: "white" }}>SUSCRIPCION.</Text>
