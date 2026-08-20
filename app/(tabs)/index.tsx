@@ -18,7 +18,17 @@ export default function Index() {
         backgroundColor: "#152436ff",
       }}
     >
-      <View >
+      <Hero width={width} height={height}/>
+
+      <Intro />
+      
+    </ScrollView>
+  );
+}
+
+function Hero({width, height}: {width: number, height: number}) {
+  return (
+<View >
         <Text style={{ color: "#ddd", fontSize: 32, textAlign: 'center', fontFamily: 'system-ui', letterSpacing: 1.5 }}>Selecciona tu nuevo informe.</Text>
         <ImageViewer 
           imgSource={HeroImage} 
@@ -32,9 +42,11 @@ export default function Index() {
             <HeroIcons />
         </View>
       </View>
-
-      <Text style={{ paddingInline: 12, marginBlock: 60, color: "#ddd", fontSize: 14, textAlign: 'center', fontFamily: 'system-ui', letterSpacing: 1.5 }}>lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</Text>
-    </ScrollView>
-  );
+  )
 }
 
+function Intro() {
+  return (
+<Text style={{ paddingInline: 12, marginBlock: 60, color: "#ddd", fontSize: 14, textAlign: 'center', fontFamily: 'system-ui', letterSpacing: 1.5 }}>lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</Text>
+  )
+}
