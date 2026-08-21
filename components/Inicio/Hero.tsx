@@ -1,32 +1,34 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
-import type { Href } from "expo-router/build/typed-routes/types";
-import { Pressable, Text, View } from "react-native";
-import HeroImage from "../../assets/images/hero.webp";
-import ImageViewer from "../ImageViewer";
+import Ionicons from "@expo/vector-icons/Ionicons"
+import { useRouter } from "expo-router"
+import type { Href } from "expo-router/build/typed-routes/types"
+import { Pressable, Text, View } from "react-native"
+import HeroImage from "../../assets/images/hero.webp"
+import ImageViewer from "../ImageViewer"
 
 type ItemProps = {
-	id: string;
-	title: string;
-	icon: keyof typeof Ionicons.glyphMap;
-	link: Href;
-};
+	id: string
+	title: string
+	icon: keyof typeof Ionicons.glyphMap
+	link: Href
+}
 
 const items: ItemProps[] = [
 	{ id: "1", title: "Iluminación", icon: "bulb-outline", link: "/iluminacion" },
 	{ id: "2", title: "Sonido", icon: "musical-notes-outline", link: "/sonido" },
 	{ id: "3", title: "Teoria", icon: "book-outline", link: "/teoria" },
-];
+]
 
 export default function Hero({
 	width,
 	height,
+	setScrollPosition,
 }: {
-	width: number;
-	height: number;
+	width: number
+	height: number
+	setScrollPosition: (scrollPosition: number) => void
 }) {
 	return (
-		<View>
+		<View id="hero" onLayout={(e) => { console.log("#hero -> onLayout y:", e.nativeEvent.layout.y); setScrollPosition(e.nativeEvent.layout.y) }}>
 			<Text
 				style={{
 					color: "#ddd",
@@ -57,11 +59,11 @@ export default function Hero({
 				<HeroIcons />
 			</View>
 		</View>
-	);
+	)
 }
 
 function HeroIcons() {
-	const router = useRouter();
+	const router = useRouter()
 
 	return (
 		<View
@@ -72,7 +74,7 @@ function HeroIcons() {
 				gap: 10,
 			}}
 		>
-			{items.map((item) => (
+			{items.map(item => (
 				<Pressable key={item.id} onPress={() => router.push(item.link)}>
 					<View
 						style={{
@@ -94,5 +96,5 @@ function HeroIcons() {
 				</Pressable>
 			))}
 		</View>
-	);
+	)
 }

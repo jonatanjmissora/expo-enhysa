@@ -99,3 +99,29 @@ import { Animated, View, Image } from "react-native";
 import { useRef } from "react";
 import { useFocusEffect } from "expo-router";
 ```
+
+# Scroll-to-Section Pattern (hash-style anchors in React Native)
+
+React Native does not support CSS anchor hashes (`#hero`). To link to a section on the same screen, use two `useRef` objects:
+
+```tsx
+import { useRef } from "react"
+import { ScrollView, Pressable, Text } from "react-native"
+
+const scrollViewRef = useRef<ScrollView>(null)
+const sectionPositionRef = useRef<number>(0)
+
+// Pass section position from child:
+<Hero setScrollPosition={(pos) => { sectionPositionRef.current = pos }} />
+
+// Trigger scroll:
+<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: sectionPositionRef.current, animated: true })}>
+  <Text>Volver Arriba</Text>
+</Pressable>
+```
+
+**Rules:**
+- Use `useRef<ScrollView>(null)` for the ScrollView ref (only it has `.scrollTo()`).
+- Use `useRef<number>(0)` for storing the section Y position.
+- Never call `.scrollTo()` on a numeric ref — that causes `Property 'scrollTo' does not exist on type 'number'`.
+- No routing params (`useLocalSearchParams` / `router.push`) needed; `useRef` keeps the value live across renders.

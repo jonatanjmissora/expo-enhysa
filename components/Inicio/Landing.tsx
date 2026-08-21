@@ -1,21 +1,24 @@
-import { Image } from "expo-image";
-import { useFocusEffect, useRouter, usePathname } from "expo-router";
-import { useState } from "react";
-import { Pressable, Text, useWindowDimensions, View } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { Image } from "expo-image"
+import { Link, router, useFocusEffect, usePathname, useRouter } from "expo-router"
+import { useState } from "react"
+import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native"
 
-import Animation1 from "../../assets/images/animation1.webp";
-import Animation2 from "../../assets/images/animation2.webp";
-import Animation3 from "../../assets/images/animation3.webp";
-import Animation4 from "../../assets/images/animation4.webp";
+import Ionicons from "@expo/vector-icons/Ionicons"
+import Animation1 from "../../assets/images/animation1.webp"
+import Animation2 from "../../assets/images/animation2.webp"
+import Animation3 from "../../assets/images/animation3.webp"
+import Animation4 from "../../assets/images/animation4.webp"
+import ImageViewer from "../ImageViewer"
+import CotizacionImage from "../../assets/images/cotizacion.webp"
+import EquiposImage from "../../assets/images/equipos.webp"
 
-export default function Landing() {
-	const router = useRouter();
-	const { width } = useWindowDimensions();
-	const isNarrow = width < 600;
+export default function Landing({setScrollPosition, scrollViewRef, modulesPositionRef}: {setScrollPosition: (scrollPosition: number) => void, scrollViewRef: React.RefObject<ScrollView | null>, modulesPositionRef: React.RefObject<number>}) {
+	const router = useRouter()
+	const { width } = useWindowDimensions()
+	const isNarrow = width < 600
 
 	return (
-		<View style={{ paddingVertical: 180, paddingHorizontal: 0 }}>
+		<View style={{ paddingTop: 180, paddingHorizontal: 0 }}>
 			<View
 				style={{
 					width: "100%",
@@ -26,6 +29,7 @@ export default function Landing() {
 					alignItems: "center",
 					justifyContent: "center",
 					paddingHorizontal: isNarrow ? 0 : 16,
+					paddingBottom: 200,
 				}}
 			>
 				<View
@@ -137,7 +141,10 @@ export default function Landing() {
 							</Text>
 						</Pressable>
 						<Pressable
-							onPress={() => {}}
+							onPress={() => {
+  const y = (console.log("#modules -> modulesPositionRef.current:", modulesPositionRef.current), modulesPositionRef.current > 0 ? modulesPositionRef.current - 100 : 0)
+  scrollViewRef.current?.scrollTo({ y, animated: true })
+}}
 							style={({ pressed }) => ({
 								backgroundColor: pressed ? "#222" : "#1a1a1a",
 								borderRadius: 6,
@@ -163,25 +170,27 @@ export default function Landing() {
 				<PhoneMockup />
 			</View>
 
+			<ToolsAndServices />
+
 			<Features />
 
-			<Modules />
+			<Modules setScrollPosition={setScrollPosition} />
 
 			<Plan />
 		</View>
-	);
+	)
 }
 
 function PhoneMockup() {
-	const images = [Animation1, Animation2, Animation3, Animation4];
-	const [current, setCurrent] = useState(0);
+	const images = [Animation1, Animation2, Animation3, Animation4]
+	const [current, setCurrent] = useState(0)
 
 	useFocusEffect(() => {
 		const timer = setInterval(() => {
-			setCurrent((prev) => (prev + 1) % images.length);
-		}, 3000);
-		return () => clearInterval(timer);
-	});
+			setCurrent(prev => (prev + 1) % images.length)
+		}, 3000)
+		return () => clearInterval(timer)
+	})
 
 	return (
 		<View
@@ -198,12 +207,153 @@ function PhoneMockup() {
 				contentFit="contain"
 			/>
 		</View>
-	);
+	)
+}
+
+function ToolsAndServices() {
+	const { width } = useWindowDimensions()
+	const isNarrow = width < 600
+	return (
+		<View style={{
+				paddingBottom: 200,
+				paddingHorizontal: 16,
+				alignItems: "center",
+				gap: 140,
+			}}>
+
+				<View style={{
+					marginLeft: "auto",
+					alignItems: "center",
+					justifyContent: "center",
+					width: "100%",
+				}}>
+					<ImageViewer  imgSource={CotizacionImage}
+								style={{ position: "absolute", top: "-15%", transform: "rotate(7deg)", right: 5, width: 170, height: 250 }} />
+					<Text style={{
+						color: "#e2711d",
+								fontSize: isNarrow ? 28 : 32,
+								width: "100%",
+								textAlign: "left",
+								fontWeight: "700",
+								letterSpacing: 1.5,
+								paddingTop: 20,
+					}}>
+						Cotizador 
+					</Text>
+
+						<Text  style={{
+						color: "#e2711d",
+								fontSize: isNarrow ? 28 : 32,
+								width: "100%",
+								textAlign: "left",
+								fontWeight: "700",
+								letterSpacing: 1.5,
+								paddingBottom: 20,
+								
+							}}>
+							Profesional
+						</Text>
+						<Pressable
+							onPress={() => router.push("/suscripcion")}
+							style={({ pressed }) => ({
+								backgroundColor: pressed ? "#4ca84c" : "#5cb85c",
+								borderRadius: 6,
+								paddingHorizontal: 28,
+								paddingVertical: 10,
+								shadowColor: pressed ? "rgba(92,184,92,0.3)" : "transparent",
+								shadowOffset: { width: 0, height: 4 },
+								shadowOpacity: 1,
+								shadowRadius: 12,
+								elevation: pressed ? 4 : 0,
+								margin: 20,
+								marginRight: "auto",
+								marginBottom: 40,
+							})}
+						>
+							<Text
+								style={{
+									color: "#fff",
+									fontSize: 16,
+									fontWeight: "600",
+									textAlign: "center",
+								}}
+							>
+								Generar
+							</Text>
+						</Pressable>
+					<Text style={{
+						fontSize: 16,
+						color: "#aaa",
+						fontStyle: "italic",
+						textAlign: "center",
+					}}>
+						Te permite generar cotizaciones en tiempo real y sin salir de la aplicacion. Genera, descarga y envia pdfs con las distintas cotizaciones segun tu trabajo. Precios personalizados. Lista de precios. 
+					</Text>
+				</View>
+			
+			<View style={{
+					marginLeft: "auto",
+					alignItems: "center",
+					justifyContent: "center",
+				}}>
+					<Text style={{
+						color: "#e2711d",
+								fontSize: isNarrow ? 28 : 32,
+								width: "100%",
+								textAlign: "center",
+								fontWeight: "700",
+								letterSpacing: 1.5,
+								paddingTop: 20,
+					}}>
+						Alquiler Equipos
+					</Text>
+
+						<ImageViewer  imgSource={EquiposImage}
+									style={{ width: 300, height: 200, marginTop:20 }} />
+						<Pressable
+							onPress={() => router.push("/suscripcion")}
+							style={({ pressed }) => ({
+								backgroundColor: pressed ? "#4ca84c" : "#5cb85c",
+								borderRadius: 6,
+								paddingHorizontal: 28,
+								paddingVertical: 10,
+								shadowColor: pressed ? "rgba(92,184,92,0.3)" : "transparent",
+								shadowOffset: { width: 0, height: 4 },
+								shadowOpacity: 1,
+								shadowRadius: 12,
+								elevation: pressed ? 4 : 0,
+								marginHorizontal: "auto",
+								marginVertical: 12,
+							})}
+						>
+							<Text
+								style={{
+									color: "#fff",
+									fontSize: 16,
+									fontWeight: "600",
+									textAlign: "center",
+								}}
+							>
+								Consultar
+							</Text>
+						</Pressable>
+					<Text style={{
+						fontSize: 16,
+						color: "#aaa",
+						fontStyle: "italic",
+						textAlign: "center",
+					}}>
+						Cubrimos una amplia gama de equipos y herramientas para la elaboracion de tus informes. Consulta nuestra lista de precios. 
+					</Text>
+				</View>
+
+		</View>
+	)
 }
 
 function Features() {
-	const { width } = useWindowDimensions();
-	const isNarrow = width < 600;
+	const { width } = useWindowDimensions()
+	const isNarrow = width < 600
 
 	const cards = [
 		{
@@ -224,12 +374,12 @@ function Features() {
 			title: "Uso Off-line en Planta",
 			desc: "Registrá mediciones en sótanos, naves industriales o zonas rurales sin señal. La aplicación sincroniza los datos al recuperar la conexión.",
 		},
-	];
+	]
 
 	return (
 		<View
 			style={{
-				paddingVertical: 180,
+				paddingBottom: 200,
 				paddingHorizontal: 16,
 				alignItems: "center",
 			}}
@@ -332,13 +482,13 @@ function Features() {
 				</View>
 			</View>
 		</View>
-	);
+	)
 }
 
-function Modules() {
-	const { width } = useWindowDimensions();
-	const isNarrow = width < 600;
-	const router = useRouter();
+function Modules({setScrollPosition}: {setScrollPosition: (scrollPosition: number) => void}) {
+	const { width } = useWindowDimensions()
+	const isNarrow = width < 600
+	const router = useRouter()
 
 	const items = [
 		{
@@ -395,12 +545,12 @@ function Modules() {
 			desc: "Checklists operativos para autoelevadores, maquinaria vial y vehículos (Res. 960/15).",
 			t: "vehiculos",
 		},
-	];
+	]
 
 	return (
 		<View
-			style={{
-				paddingVertical: 80,
+					style={{
+				paddingBottom: 200,
 				paddingHorizontal: 16,
 				alignItems: "center",
 			}}
@@ -427,18 +577,19 @@ function Modules() {
 							letterSpacing: 1.5,
 						}}
 					>
-						Teoría
+						Apuntes y tablas
 					</Text>
 				</View>
 
 				<View
+				id="modules" onLayout={(e) => { console.log("#modules -> onLayout y:", e.nativeEvent.layout.y); setScrollPosition(e.nativeEvent.layout.y) }}
 					style={{
 						flexDirection: "row",
 						flexWrap: "wrap",
 						gap: 16,
 					}}
 				>
-					{items.map((item) => (
+					{items.map(item => (
 						<Pressable
 							key={item.title}
 							onPress={() =>
@@ -488,75 +639,124 @@ function Modules() {
 				</View>
 			</View>
 		</View>
-	);
+	)
 }
 
 function Plan() {
-	const router = useRouter();
-	const pathname = usePathname();
+	const router = useRouter()
+	const pathname = usePathname()
+	const { width } = useWindowDimensions()
+	const isNarrow = width < 600
+
+	const suscriptionInfo = [
+		"navegacion por los dashboards.",
+		"acceso a legislacion y protocolos.",
+		"informes personalizados.",
+		"descuento a profesionales.",
+		"asesoria técnica.",
+	]
 
 	return (
 		<View
 			style={{
+				paddingBottom: 200,
 				paddingHorizontal: 16,
-				paddingVertical: 48,
-				marginBottom: 160,
-				backgroundColor: "#1a1a1a",
-				flexDirection: "column",
-				gap: 24,
-				width: "92%",
-				alignSelf: "center",
-				borderRadius: 8,
+				alignItems: "center",
 			}}
 		>
-			<View style={{ gap: 8 }}>
-				<Text style={{ fontSize: 24, color: "#fff" }}>Tu Suscripción</Text>
-				<Text style={{ fontSize: 16, color: "#ddd" }}>Plan Profesional</Text>
-				<Text style={{ fontSize: 14, color: "#f59e0b", letterSpacing: 1 }}>
-					Expira en 245 días
-				</Text>
-			</View>
+			<View style={{ width: "100%", maxWidth: 1280, gap: 32 }}>
+				<View style={{ marginTop: 40, flexDirection: "column", gap: 10 }}>
+					<Text
+						style={{
+							fontSize: isNarrow ? 30 : 34,
+							lineHeight: isNarrow ? 35 : 39,
 
-			<View style={{ paddingLeft: 8, gap: 12 }}>
-				{[
-					"Informes ilimitados",
-					"Croquis dinamico avanzado",
-					"Analisis con IA",
-					"Soporte prioritario",
-				].map((benefit) => (
-					<View key={benefit} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-						<Ionicons name="checkmark-circle" size={18} color="#16a34a" />
-						<Text style={{ fontSize: 14, color: "#aaa" }}>{benefit}</Text>
+							fontWeight: "700",
+							textAlign: isNarrow ? "center" : "left",
+							color: "#fff",
+						}}
+					>
+						Suscripciones
+					</Text>
+				</View>
+
+				<Text
+					style={{
+						color: "#aaa",
+						fontSize: 16,
+						marginBottom: 40,
+						paddingHorizontal: isNarrow ? 16 : 0,
+						maxWidth: 750,
+						textAlign: isNarrow ? "center" : "left",
+						lineHeight: isNarrow ? 24 : 32,
+						letterSpacing: 0.5,
+						fontWeight: "400",
+						fontStyle: "italic",
+					}}
+				>
+					Elige un plan acorde a tus necesidades. Paga sólo lo que consumes y
+					aprovecha los descuentos y promociones vigentes.
+				</Text>
+				<View
+					style={{
+						width: isNarrow ? "100%" : "48%",
+						borderRadius: 8,
+						paddingBlock: 80,
+						paddingInline: 40,
+						borderWidth: 1,
+						borderColor: "#0f642fff",
+						backgroundColor: "#1a1a1a",
+						flexDirection: "column",
+						alignItems: "flex-start",
+						gap: 32,
+					}}
+				>
+					<View style={{ paddingLeft: 8, gap: 12 }}>
+						{suscriptionInfo.map(benefit => (
+							<View
+								key={benefit}
+								style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+							>
+								<Ionicons name="checkmark" size={18} color="#16a34a" />
+								<Text style={{ fontSize: 14, color: "#aaa" }}>{benefit}</Text>
+							</View>
+						))}
 					</View>
-				))}
+
+					<Pressable
+						onPress={() =>
+							router.push({
+								pathname: "/suscripcion",
+								params: { from: pathname.split("/")[1] },
+							})
+						}
+						style={({ pressed }) => ({
+							width: "100%",
+							backgroundColor: pressed ? "#4ca84c" : "#5cb85c",
+							paddingVertical: 16,
+							borderRadius: 6,
+							alignItems: "center",
+						})}
+					>
+						<Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
+							Gestionar
+						</Text>
+					</Pressable>
+
+					<Ionicons
+						name="shield-checkmark-outline"
+						size={124}
+						color="#f59e0b"
+						style={{
+							position: "absolute",
+							top: -10,
+							right: -10,
+							opacity: 0.25,
+							transform: [{ rotate: "-20deg" }],
+						}}
+					/>
+				</View>
 			</View>
-
-			<Pressable
-				onPress={() =>
-					router.push({
-						pathname: "/suscripcion",
-						params: { from: pathname.split("/")[1] },
-					})
-				}
-				style={({ pressed }) => ({
-					width: "100%",
-					backgroundColor: pressed ? "#4ca84c" : "#5cb85c",
-					paddingVertical: 16,
-					borderRadius: 6,
-					alignItems: "center",
-				})}
-			>
-				<Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
-					Gestionar Plan
-				</Text>
-			</Pressable>
-
-			<Ionicons
-				name="shield"
-				size={64}
-				color="#f59e0b"
-				style={{ position: "absolute", top: -10, right: 10, opacity: 0.5, transform: [{ rotate: "-20deg" }] }}
-			/>
 		</View>
-	);
+	)
 }

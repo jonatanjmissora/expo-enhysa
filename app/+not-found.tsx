@@ -1,31 +1,31 @@
-import { usePathname, useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
+import { usePathname, useRouter } from "expo-router"
+import { useEffect, useRef } from "react"
 import {
 	Animated,
 	Pressable,
 	Text,
 	useWindowDimensions,
 	View,
-} from "react-native";
+} from "react-native"
 
-export { ErrorBoundary } from "expo-router";
+export { ErrorBoundary } from "expo-router"
 
 export default function NotFound() {
-	const router = useRouter();
-	const pathname = usePathname();
-	const fadeAnim = useRef(new Animated.Value(0)).current;
+	const router = useRouter()
+	const pathname = usePathname()
+	const fadeAnim = useRef(new Animated.Value(0)).current
 
 	useEffect(() => {
 		Animated.timing(fadeAnim, {
 			toValue: 1,
 			duration: 600,
 			useNativeDriver: true,
-		}).start();
-	}, [fadeAnim]);
+		}).start()
+	}, [fadeAnim])
 
-	const { width } = useWindowDimensions();
+	const { width } = useWindowDimensions()
 
-	const isNarrow = width < 400;
+	const isNarrow = width < 400
 
 	return (
 		<View
@@ -166,5 +166,5 @@ export default function NotFound() {
 				</Pressable>
 			</Animated.View>
 		</View>
-	);
+	)
 }

@@ -1,0 +1,241 @@
+import { useCallback, useState } from "react"
+import {
+	Image,
+	Linking,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	useWindowDimensions,
+	View,
+} from "react-native"
+import { useRouter } from "expo-router"
+import Ionicons from "@expo/vector-icons/Ionicons"
+import ImageViewer from "./ImageViewer"
+import LogoImage from "../assets/images/logo2.png"
+
+const NAV_ITEMS = [
+	{ label: "¿Qué es EnHySa App?", to: "/landing" },
+	{ label: "Inicio", to: "/" },
+	{ label: "Mi Perfil", to: "/perfil/tecnicos" },
+	{ label: "Suscripción", to: "/suscripcion" },
+]
+
+const CONTACTOS = [
+	{
+		label: "soporte",
+		icon: "mail-outline",
+		href: "mailto:jonatanjmissora@gmail.com",
+		color: "#16a34a",
+	},
+	{
+		label: "técnico",
+		icon: "mail-outline",
+		href: "mailto:mandrake@gmail.com",
+		color: "#16a34a",
+	},
+	{
+		label: "soporte",
+		icon: "logo-whatsapp",
+		href: "https://wa.me/+5492914319025",
+		color: "#16a34a",
+	},
+	{
+		label: "técnico",
+		icon: "logo-whatsapp",
+		href: "https://wa.me/+5492916426547",
+		color: "#16a34a",
+	},
+]
+
+const DESKTOP_CONTACTOS = [
+	{
+		label: "soporte",
+		icon: "mail-outline",
+		href: "https://mail.google.com/mail/u/0/?fs=1&to=jonatanjmissora@gmail.com&su=&body=&bcc=&tf=cm",
+		color: "#16a34a",
+	},
+	{
+		label: "técnico",
+		icon: "mail-outline",
+		href: "https://mail.google.com/mail/u/0/?fs=1&to=enhysa.consultora@gmail.com&su=&body=&bcc=&tf=cm",
+		color: "#16a34a",
+	},
+	{
+		label: "soporte",
+		icon: "logo-whatsapp",
+		href: "https://wa.me/+5492914319025",
+		color: "#16a34a",
+	},
+	{
+		label: "técnico",
+		icon: "logo-whatsapp",
+		href: "https://wa.me/+5492914319025",
+		color: "#16a34a",
+	},
+]
+
+export default function Footer() {
+	const [soporte, setSoporte] = useState(false)
+	const { width } = useWindowDimensions()
+	const router = useRouter()
+	const isNarrow = width < 600
+
+	const actualYear = new Date().getFullYear()
+
+	return (
+		<View style={styles.footer}>
+			<View style={styles.logoContainer}>
+				<Text style={styles.title}>Mapa del sitio</Text>
+			</View>
+
+			<ScrollView contentContainerStyle={styles.navContainer}>
+				{NAV_ITEMS.map(item => (
+					<Pressable
+						key={item.to}
+						onPress={() => router.push(item.to)}
+						style={styles.navItem}
+					>
+						<Text style={styles.navText}>{item.label}</Text>
+					</Pressable>
+				))}
+				<Pressable onPress={() => setSoporte(s => !s)} style={styles.navItem}>
+					<Text style={styles.navText}>Soporte técnico</Text>
+				</Pressable>
+				{soporte && (
+					<View style={styles.contactosContainer}>
+						{isNarrow ? (
+							<View
+								style={{
+									gap: 12,
+									flexDirection: "row",
+									flexWrap: "wrap",
+									justifyContent: "space-evenly",
+								}}
+							>
+								{CONTACTOS.map((item, index) => (
+									<ContactoItem key={index} item={item} />
+								))}
+							</View>
+						) : (
+							<View
+								style={{
+									gap: 12,
+									flexDirection: "row",
+									flexWrap: "wrap",
+									justifyContent: "space-evenly",
+								}}
+							>
+								{DESKTOP_CONTACTOS.map((item, index) => (
+									<ContactoItem key={index} item={item} />
+								))}
+							</View>
+						)}
+					</View>
+				)}
+			</ScrollView>
+
+			<Text style={styles.copy}>
+				© {actualYear} Enhysa. Todos los derechos reservados.
+			</Text>
+
+			<ImageViewer
+				imgSource={LogoImage}
+				style={{
+					position: "absolute",
+					bottom: -30,
+					right: -30,
+					width: 200,
+					height: 200,
+					opacity: 0.2,
+					transform: [{ rotate: "20deg" }],
+					zIndex: -1
+				}}
+			/>
+		</View>
+	)
+}
+
+function ContactoItem({
+	item,
+}: {
+	item: { label: string; icon: string; href: string; color: string }
+}) {
+	const handlePress = useCallback(() => {
+		Linking.openURL(item.href)
+	}, [item.href])
+
+	return (
+		<Pressable onPress={handlePress} style={styles.contactoItem}>
+			<Ionicons
+				name={item.icon as keyof typeof Ionicons.glyphMap}
+				size={18}
+				color={item.color}
+			/>
+			<Text style={styles.contactoText}>{item.label}</Text>
+		</Pressable>
+	)
+}
+
+const styles = StyleSheet.create({
+	footer: {
+		paddingVertical: 32,
+		paddingHorizontal: 16,
+		marginBottom: 100,
+		backgroundColor: "#0e1824ff",
+		gap: 16,
+		overflow: "hidden",
+	},
+	logoContainer: {
+		alignItems: "center",
+	},
+	title: {
+		color: "#e2e8f0",
+		fontSize: 18,
+		fontWeight: "600",
+		borderBottomWidth: 1,
+		borderBottomColor: "rgba(226, 232, 240, 0.2)",
+		paddingVertical: 8,
+		alignSelf: "stretch",
+	},
+	navContainer: {
+		paddingVertical: 8,
+		gap: 12,
+	},
+	navItem: {
+		paddingVertical: 4,
+	},
+	navText: {
+		color: "#e2e8f0",
+		fontSize: 16,
+	},
+	contactosContainer: {
+		marginTop: 8,
+		gap: 12,
+	},
+	contactosColumn: {
+		gap: 12,
+	},
+	contactosRow: {
+		flexDirection: "row",
+		justifyContent: "center",
+		gap: 32,
+	},
+	contactoItem: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: 8,
+		width: "45%",
+	},
+	contactoText: {
+		color: "#eee",
+		fontSize: 14,
+	},
+	copy: {
+		color: "#94a3b8",
+		fontSize: 12,
+		textAlign: "center",
+		marginTop: 16,
+	},
+})
