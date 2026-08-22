@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { usePathname, useRouter } from "expo-router"
 import { Pressable, Text, useWindowDimensions, View } from "react-native"
+import Button from "../Button"
 
 export default function Plan() {
 	const router = useRouter()
@@ -83,25 +84,13 @@ export default function Plan() {
 						))}
 					</View>
 
-					<Pressable
-						onPress={() =>
+					<Button text={"Gestionar"} onPress={() =>
 							router.push({
 								pathname: "/suscripcion",
 								params: { from: pathname.split("/")[1] },
-							})
-						}
-						style={({ pressed }) => ({
-							width: "100%",
-							backgroundColor: pressed ? "#4ca84c" : "#5cb85c",
-							paddingVertical: 16,
-							borderRadius: 6,
-							alignItems: "center",
-						})}
-					>
-						<Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
-							Gestionar
-						</Text>
-					</Pressable>
+							})} 
+							style={{width: "100%"}}
+							/>
 
 					<Ionicons
 						name="shield-checkmark-outline"

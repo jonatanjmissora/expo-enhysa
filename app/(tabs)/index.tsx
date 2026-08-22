@@ -29,7 +29,7 @@ export default function Index() {
 			ref={scrollViewRef}
 			contentContainerStyle={{
 				minHeight: height * 1.5,
-				marginTop: 100,
+				marginTop: 150,
 			}}
 			style={{
 				backgroundColor: "#152436ff",
@@ -47,8 +47,8 @@ export default function Index() {
 			<Modules positionsY={positionsY} />
 
 			<Plan />
-			
-			<Button variant="secondary" size="xsmall" text="Volver Arriba" onPress={() => scrollTo("hero")} style={{marginHorizontal: "auto", marginVertical: 12,}} />
+
+			<Button variant="secondary" size="xsmall" text="Volver Arriba" onPress={() => scrollTo("hero")} style={{marginHorizontal: "auto", marginVertical: 12, minWidth: 150}} />
 
 			<Footer scrollTo={scrollTo}/>
 		</ScrollView>

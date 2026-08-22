@@ -17,7 +17,7 @@ import LogoImage from "../assets/images/logo2.png"
 const NAV_ITEMS = [
 	{ label: "¿Qué es EnHySa App?", to: "landing" },
 	{ label: "Inicio", to: "hero" },
-	{ label: "Mi Perfil", to: "/perfil/tecnicos" },
+	{ label: "Mi Perfil", to: "/perfil" },
 	{ label: "Suscripción", to: "/suscripcion" },
 ]
 
@@ -97,7 +97,7 @@ export default function Footer({
 				{NAV_ITEMS.map(item => (
 					<Pressable
 						key={item.to}
-						onPress={() => scrollTo(item.to)}
+						onPress={() => item.to.includes("/") ? router.push(item.to) : scrollTo(item.to)}
 						style={styles.navItem}
 					>
 						<Text style={styles.navText}>{item.label}</Text>

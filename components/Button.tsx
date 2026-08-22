@@ -15,7 +15,7 @@ export default function Button({
 	text: string
 	style?: ViewStyle
 	onPress: () => void
-	variant?: "primary" | "secondary" | "danger"
+	variant?: "primary" | "secondary" | "ghost" | "danger"
 	size?: "xsmall" | "small" | "medium" | "large"
 }) {
 	
@@ -25,6 +25,7 @@ export default function Button({
 		return {
 			primary: { backgroundColor: pressed ? "#4ca84c" : "#5cb85c", },
 			secondary: { backgroundColor: pressed ? "#333" : "#444", },
+			ghost: { backgroundColor: "transparent" },
 			danger: { backgroundColor: pressed ? "#dc2626" : "#e63946", },
 		}
 	}
@@ -37,12 +38,10 @@ export default function Button({
 	}
 
 	return (
-		<View>
 			<Pressable onPress={onPress} style={({pressed}) => ({...variantStyle({pressed})[variant], ...sizeStyle[size], borderRadius: 6, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 2, ...style})}>
 				{iconLeft && <Ionicons name={iconLeft} size={24} color="white" />}
 				<Text style={{color: "#fff", fontSize, textAlign: "center", fontWeight: "600", letterSpacing: 0.75}}>{text}</Text>
 				{iconRight && <Ionicons name={iconRight} size={24} color="white" />}
 			</Pressable>
-		</View>
 	)
 }

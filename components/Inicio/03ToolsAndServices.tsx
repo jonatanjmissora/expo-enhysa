@@ -55,7 +55,7 @@ export default function ToolsAndServices({
 							Profesional
 						</Text>
 					<View style={{marginRight: "auto", marginLeft: 20, marginVertical: 30,}}>
-						<Button variant="primary" size={"small"} text="Generar" onPress={() => scrollTo("hero")} />
+						<Button variant="primary" size={"small"} text="Generar" onPress={() => scrollTo("hero")} style={{minWidth: 150}}/>
 					</View>
 					<Text style={{
 						fontSize: 16,
@@ -86,34 +86,8 @@ export default function ToolsAndServices({
 
 						<ImageViewer  imgSource={EquiposImage}
 									style={{ width: 300, height: 200, marginTop:20 }} />
-						{/* <Pressable
-							onPress={() => router.push("/suscripcion")}
-							style={({ pressed }) => ({
-								backgroundColor: pressed ? "#4ca84c" : "#5cb85c",
-								borderRadius: 6,
-								paddingHorizontal: 28,
-								paddingVertical: 10,
-								shadowColor: pressed ? "rgba(92,184,92,0.3)" : "transparent",
-								shadowOffset: { width: 0, height: 4 },
-								shadowOpacity: 1,
-								shadowRadius: 12,
-								elevation: pressed ? 4 : 0,
-								marginHorizontal: "auto",
-								marginVertical: 12,
-							})}
-						>
-							<Text
-								style={{
-									color: "#fff",
-									fontSize: 16,
-									fontWeight: "600",
-									textAlign: "center",
-								}}
-							>
-								Consultar
-							</Text>
-						</Pressable> */}
-					<Button variant="primary" size={"small"} text="Consultar" onPress={() => scrollTo("hero")} style={{marginBottom: 30}} />
+					
+					<Button variant="primary" size={"small"} text="Consultar" onPress={() => scrollTo("hero")} style={{marginBottom: 30, minWidth: 150}} />
 					<Text style={{
 						fontSize: 16,
 						color: "#aaa",
