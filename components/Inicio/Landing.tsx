@@ -1,4 +1,5 @@
 import { Image } from "expo-image"
+import { useRef, forwardRef } from "react"
 import { Link, router, useFocusEffect, usePathname, useRouter } from "expo-router"
 import { useState } from "react"
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native"
@@ -12,9 +13,9 @@ import ImageViewer from "../ImageViewer"
 import CotizacionImage from "../../assets/images/cotizacion.webp"
 import EquiposImage from "../../assets/images/equipos.webp"
 
-export default function Landing({setScrollPosition, scrollViewRef, modulesPositionRef}: {setScrollPosition: (scrollPosition: number) => void, scrollViewRef: React.RefObject<ScrollView | null>, modulesPositionRef: React.RefObject<number>}) {
+export default function Landing({setScrollPosition, scrollViewRef, modulesViewRef}: {setScrollPosition: (scrollPosition: number) => void, scrollViewRef: React.RefObject<ScrollView | null>, modulesViewRef: React.RefObject<any>}) {
 	const router = useRouter()
-	const { width } = useWindowDimensions()
+	const { width, height } = useWindowDimensions()
 	const isNarrow = width < 600
 
 	return (
@@ -142,9 +143,11 @@ export default function Landing({setScrollPosition, scrollViewRef, modulesPositi
 						</Pressable>
 						<Pressable
 							onPress={() => {
-  const y = (console.log("#modules -> modulesPositionRef.current:", modulesPositionRef.current), modulesPositionRef.current > 0 ? modulesPositionRef.current - 100 : 0)
-  scrollViewRef.current?.scrollTo({ y, animated: true })
-}}
+								modulesViewRef.current?.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
+									const targetY = pageY + height/2
+									scrollViewRef.current?.scrollTo({ y: targetY, animated: true })
+								})
+							}}
 							style={({ pressed }) => ({
 								backgroundColor: pressed ? "#222" : "#1a1a1a",
 								borderRadius: 6,
@@ -174,7 +177,7 @@ export default function Landing({setScrollPosition, scrollViewRef, modulesPositi
 
 			<Features />
 
-			<Modules setScrollPosition={setScrollPosition} />
+			<Modules setScrollPosition={setScrollPosition} modulesViewRef={modulesViewRef} ref={modulesViewRef} />
 
 			<Plan />
 		</View>
@@ -485,7 +488,7 @@ function Features() {
 	)
 }
 
-function Modules({setScrollPosition}: {setScrollPosition: (scrollPosition: number) => void}) {
+const Modules = forwardRef(({setScrollPosition, modulesViewRef}: {setScrollPosition: (scrollPosition: number) => void, modulesViewRef: React.RefObject<any>}, ref: React.Ref<View>) => {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 	const router = useRouter()
@@ -581,14 +584,15 @@ function Modules({setScrollPosition}: {setScrollPosition: (scrollPosition: numbe
 					</Text>
 				</View>
 
-				<View
-				id="modules" onLayout={(e) => { console.log("#modules -> onLayout y:", e.nativeEvent.layout.y); setScrollPosition(e.nativeEvent.layout.y) }}
-					style={{
-						flexDirection: "row",
-						flexWrap: "wrap",
-						gap: 16,
-					}}
-				>
+			<View
+				ref={ref}
+				id="modules"
+				style={{
+					flexDirection: "row",
+					flexWrap: "wrap",
+					gap: 16,
+				}}
+			>
 					{items.map(item => (
 						<Pressable
 							key={item.title}
@@ -640,7 +644,7 @@ function Modules({setScrollPosition}: {setScrollPosition: (scrollPosition: numbe
 			</View>
 		</View>
 	)
-}
+})
 
 function Plan() {
 	const router = useRouter()

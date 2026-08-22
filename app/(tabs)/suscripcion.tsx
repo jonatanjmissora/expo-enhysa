@@ -1,3 +1,4 @@
+import SuscriptionPlans from "@/components/Suscription"
 import { Text, View } from "react-native"
 
 export default function Suscripcion() {
@@ -10,7 +11,7 @@ export default function Suscripcion() {
 				backgroundColor: "#152436ff",
 			}}
 		>
-			<Text style={{ color: "white" }}>SUSCRIPCION.</Text>
+			<SuscriptionPlans />
 		</View>
 	)
 }

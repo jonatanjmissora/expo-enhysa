@@ -28,7 +28,7 @@ export default function Hero({
 	setScrollPosition: (scrollPosition: number) => void
 }) {
 	return (
-		<View id="hero" onLayout={(e) => { console.log("#hero -> onLayout y:", e.nativeEvent.layout.y); setScrollPosition(e.nativeEvent.layout.y) }}>
+		<View id="hero" onLayout={(e) => { setScrollPosition(e.nativeEvent.layout.y) }}>
 			<Text
 				style={{
 					color: "#ddd",
