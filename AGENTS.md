@@ -105,48 +105,36 @@ import { useFocusEffect } from "expo-router";
 Use `onLayout` + `useState` in the parent to store each section's `layout.y`, then call `scrollTo({ y })` with those values. This is the most reliable pattern in React Native because `layout.y` is already relative to the `ScrollView` content, which is exactly what `scrollTo` expects.
 
 ## Component Location
-`app/(tabs)/perfil.tsx` - `Perfil()` function
+`app/(tabs)/suscripcion.tsx` - `Suscripcion()` function
 
-## Implementation Details
-
-### State for section positions
+### Refs for positions and scroll (no stale state)
 ```tsx
-const [arribaY, setArribaY] = useState(0)
-const [medioY, setMedioY] = useState(0)
-const [abajoY, setAbajoY] = useState(0)
+const scrollViewRef = useRef<ScrollView>(null)
+const positions = useRef<Record<string, number>>({})
+
+const scrollTo = (section: string) => {
+  const y = positions.current[section]
+  if (y !== undefined) {
+    scrollViewRef.current?.scrollTo({ y, animated: true })
+  }
+}
 ```
 
 ### Section View with `onLayout`
 ```tsx
-<View id="arriba" onLayout={(e) => setArribaY(e.nativeEvent.layout.y)}>
-  <Arriba height={height}/>
+<View
+  onLayout={(event) => { positions.current["medio"] = event.nativeEvent.layout.y }}
+  style={{ ... }}
+>
+  <Medio height={height} />
 </View>
 ```
 
 ### Button that scrolls to a section
 ```tsx
-<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: medioY - 130, animated: true })}>
+<Pressable onPress={() => scrollTo("medio")}>
   <Text>Ir a Medio</Text>
 </Pressable>
 ```
 
-**Header offset:** subtract the header height from `y` if needed, e.g. `medioY - 130`, so the section appears below the header instead of underneath it.
-
-## Why this pattern
-
-- `onLayout` gives `layout.y` relative to the **ScrollView content container**, so it matches `scrollTo({ y })` coordinates directly.
-- No `measure`, no `pageY`, no coordinate system conversion needed.
-- No `forwardRef` needed unless you must expose the ref to a child component.
-- Works reliably across screen sizes and after scroll position changes.
-
-## Alternative patterns (legacy)
-
-If you need to scroll from a child component that cannot use `onLayout` directly, pass the `scrollViewRef` down and call `measure` at press time. However, `measure` returns absolute screen coordinates (`pageY`), which can desync from the ScrollView's internal coordinate system after scrolling. Prefer the `onLayout` + state pattern above when possible.
-
-```tsx
-// Legacy: less reliable after scrolling
-modulesViewRef.current?.measure((x, y, width, height, pageX, pageY) => {
-  const targetY = pageY - 100
-  scrollViewRef.current?.scrollTo({ y: targetY, animated: true })
-})
-```
+**Why refs over state:** `positions.current` always holds the latest value across renders without triggering re-renders. `useState` causes stale closures where the same `y` is captured across multiple clicks.

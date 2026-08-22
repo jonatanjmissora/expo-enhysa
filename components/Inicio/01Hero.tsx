@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { useRouter } from "expo-router"
 import type { Href } from "expo-router/build/typed-routes/types"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, Text, useWindowDimensions, View } from "react-native"
 import HeroImage from "../../assets/images/hero.webp"
 import ImageViewer from "../ImageViewer"
 
@@ -19,16 +19,17 @@ const items: ItemProps[] = [
 ]
 
 export default function Hero({
-	width,
-	height,
-	setScrollPosition,
+	positionsY,
+	scrollTo,
 }: {
-	width: number
-	height: number
-	setScrollPosition: (scrollPosition: number) => void
+	positionsY: React.RefObject<Record<string, number>>
+	scrollTo: (section: string) => void
 }) {
+
+	const { width, height } = useWindowDimensions()
+	
 	return (
-		<View id="hero" onLayout={(e) => { setScrollPosition(e.nativeEvent.layout.y) }}>
+		<View onLayout={(e) => { positionsY.current["hero"] = e.nativeEvent.layout.y }}>
 			<Text
 				style={{
 					color: "#ddd",

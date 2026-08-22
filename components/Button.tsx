@@ -1,0 +1,48 @@
+import Ionicons from "@expo/vector-icons/Ionicons"
+import { Pressable, Text, View, ViewStyle } from "react-native"
+
+export default function Button({
+	iconLeft,
+	text,
+	iconRight,
+	style,
+	onPress,
+	variant = "primary",
+	size = "medium"
+}: {
+	iconLeft?: string
+	iconRight?: string
+	text: string
+	style?: ViewStyle
+	onPress: () => void
+	variant?: "primary" | "secondary" | "danger"
+	size?: "xsmall" | "small" | "medium" | "large"
+}) {
+	
+	const fontSize = size === "xsmall" ? 12 : size === "small" ? 14 : size === "medium" ? 16 : 20
+
+	const variantStyle = ({pressed}: {pressed: boolean}) => {
+		return {
+			primary: { backgroundColor: pressed ? "#4ca84c" : "#5cb85c", },
+			secondary: { backgroundColor: pressed ? "#333" : "#444", },
+			danger: { backgroundColor: pressed ? "#dc2626" : "#e63946", },
+		}
+	}
+	
+	const sizeStyle = {
+		xsmall: { padding: 8 },
+		small: { padding: 12 },
+		medium: { padding: 18 },
+		large: { padding: 24 },
+	}
+
+	return (
+		<View>
+			<Pressable onPress={onPress} style={({pressed}) => ({...variantStyle({pressed})[variant], ...sizeStyle[size], borderRadius: 6, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 2, ...style})}>
+				{iconLeft && <Ionicons name={iconLeft} size={24} color="white" />}
+				<Text style={{color: "#fff", fontSize, textAlign: "center", fontWeight: "600", letterSpacing: 0.75}}>{text}</Text>
+				{iconRight && <Ionicons name={iconRight} size={24} color="white" />}
+			</Pressable>
+		</View>
+	)
+}

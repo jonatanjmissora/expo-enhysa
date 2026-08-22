@@ -10,28 +10,19 @@ export { ErrorBoundary } from "expo-router"
 export default function SuscriptionPlans({ from }: { from?: string }) {
     const { width, height } = useWindowDimensions()
 	const router = useRouter()
-	const [actualPlan, setActualPlan] = useState<0 | 1 | 2>(1)
 	const [anual, setAnual] = useState(false)
 
 	const DISPLAY_PLANS = [PLANS[0], PLANS[1]]
 	const combinedPlan = anual ? PLANS[3] : PLANS[2]
 
 	return (
-		<ScrollView contentContainerStyle={{
-				minHeight: height * 2.5,
-				marginBlock: 150,
-			}}
-			style={{
-				backgroundColor: "#152436ff",
-			}}>
+		<>
 			<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 24, justifyContent: "center" }}>
 				{DISPLAY_PLANS.map((plan, index) => (
 					<Plan
 						key={plan.title}
 						{...plan}
 						index={index as 0 | 1}
-						actualPlan={actualPlan}
-						setActualPlan={setActualPlan}
 						from={from}
 					/>
 				))}
@@ -39,13 +30,11 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 					plan={combinedPlan}
 					anual={anual}
 					setAnual={setAnual}
-					isActive={actualPlan === 2}
-					onSelect={() => setActualPlan(2)}
 					from={from}
 				/>
 			</View>
 
-			<View style={{ gap: 24, alignItems: "center" }}>
+			<View style={{ gap: 24, alignItems: "center", marginTop: 80 }}>
 				<Pressable
 					onPress={() => router.push("/")}
 					style={{
@@ -92,7 +81,7 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 					</Text>
 				</View>
 			</View>
-		</ScrollView>
+		</>
 	)
 }
 
@@ -102,8 +91,6 @@ interface PlanProps {
 	subtitle: string
 	benefits: string[]
 	index: 0 | 1
-	actualPlan: 0 | 1 | 2
-	setActualPlan: (plan: 0 | 1 | 2) => void
 	from?: string
 }
 
@@ -113,38 +100,26 @@ function Plan({
 	subtitle,
 	benefits,
 	index,
-	actualPlan,
-	setActualPlan,
 	from,
 }: PlanProps) {
 	const router = useRouter()
-	const isSelected = actualPlan === index
 
 	return (
-		<Pressable
-			onPress={() => setActualPlan(index as 0 | 1 | 2)}
-			style={({ pressed }) => ({
+		<View
+			style={{ 
 				width: "100%",
 				maxWidth: 320,
 				borderRadius: 8,
 				padding: 32,
 				borderWidth: 1,
-				borderColor: isSelected ? "#5cb85c" : "#333",
-				backgroundColor: isSelected ? "#8dac8d" : pressed ? "#222" : "#1a1a1a",
+				borderColor: "#137c3950",
+				backgroundColor: "#1a1a1a",
 				alignItems: "flex-start",
 				gap: 20,
 				position: "relative",
 				overflow: "hidden",
-			})}
+			}}
 		>
-			{isSelected && (
-				<Ionicons
-					name="menu" // fallback if not available, use a generic shield
-					size={120}
-					color="#5cb85c"
-					style={{ position: "absolute", top: -20, right: -20, opacity: 0.15, transform: [{ rotate: "-15deg" }] }}
-				/>
-			)}
 
 			<View style={{ gap: 8 }}>
 				<Text style={{ fontSize: 20, fontWeight: "600", color: "#fff", letterSpacing: 1.5 }}>
@@ -202,7 +177,7 @@ function Plan({
 					</Text>
 				</Pressable>
 			)}
-		</Pressable>
+		</View>
 	)
 }
 
@@ -210,39 +185,27 @@ interface CombinedPlanProps {
 	plan: typeof PLANS[2] | typeof PLANS[3]
 	anual: boolean
 	setAnual: (v: boolean) => void
-	isActive: boolean
-	onSelect: () => void
 	from?: string
 }
 
-function CombinedPlan({ plan, anual, setAnual, isActive, onSelect, from }: CombinedPlanProps) {
+function CombinedPlan({ plan, anual, setAnual, from }: CombinedPlanProps) {
 	const router = useRouter()
 
 	return (
-		<Pressable
-			onPress={onSelect}
-			style={({ pressed }) => ({
+		<View
+			style={{
 				width: "100%",
 				maxWidth: 320,
 				borderRadius: 8,
 				padding: 32,
 				borderWidth: 1,
-				borderColor: isActive ? "#5cb85c" : "#333",
-				backgroundColor: isActive ? "#8dac8d" : pressed ? "#222" : "#1a1a1a",
+				backgroundColor: "#1a1a1a",
 				alignItems: "flex-start",
 				gap: 20,
 				position: "relative",
 				overflow: "hidden",
-			})}
+			}}
 		>
-			{isActive && (
-				<Ionicons
-					name="menu"
-					size={120}
-					color="#5cb85c"
-					style={{ position: "absolute", top: -20, right: -20, opacity: 0.15, transform: [{ rotate: "-15deg" }] }}
-				/>
-			)}
 
 			<View style={{ gap: 8 }}>
 				<Text style={{ fontSize: 20, fontWeight: "600", color: "#fff", letterSpacing: 1.5 }}>
@@ -307,7 +270,7 @@ function CombinedPlan({ plan, anual, setAnual, isActive, onSelect, from }: Combi
 					Adquirir Créditos
 				</Text>
 			</Pressable>
-		</Pressable>
+		</View>
 	)
 }
 

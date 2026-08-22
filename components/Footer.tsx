@@ -15,8 +15,8 @@ import ImageViewer from "./ImageViewer"
 import LogoImage from "../assets/images/logo2.png"
 
 const NAV_ITEMS = [
-	{ label: "¿Qué es EnHySa App?", to: "/landing" },
-	{ label: "Inicio", to: "/" },
+	{ label: "¿Qué es EnHySa App?", to: "landing" },
+	{ label: "Inicio", to: "hero" },
 	{ label: "Mi Perfil", to: "/perfil/tecnicos" },
 	{ label: "Suscripción", to: "/suscripcion" },
 ]
@@ -75,7 +75,11 @@ const DESKTOP_CONTACTOS = [
 	},
 ]
 
-export default function Footer() {
+export default function Footer({
+	scrollTo,
+}: {
+	scrollTo: (section: string) => void
+}) {
 	const [soporte, setSoporte] = useState(false)
 	const { width } = useWindowDimensions()
 	const router = useRouter()
@@ -93,7 +97,7 @@ export default function Footer() {
 				{NAV_ITEMS.map(item => (
 					<Pressable
 						key={item.to}
-						onPress={() => router.push(item.to)}
+						onPress={() => scrollTo(item.to)}
 						style={styles.navItem}
 					>
 						<Text style={styles.navText}>{item.label}</Text>

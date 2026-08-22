@@ -2,7 +2,7 @@ import { useRef, useState } from "react"
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native"
 
 export default function Perfil() {
-	const { width, height } = useWindowDimensions()
+	const { height } = useWindowDimensions()
 		const scrollViewRef = useRef<ScrollView>(null)
 		const [arribaY, setArribaY] = useState(0)
 		const [medioY, setMedioY] = useState(0)
@@ -26,35 +26,21 @@ export default function Perfil() {
 					abajoY={abajoY}
 				/>
 			
-			<View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "20%", marginVertical: 10 }}>
-				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: arribaY - 34, animated: true })}>
-					<Text style={{ color: "white" }}>ARRIBA2</Text>
-				</Pressable>
-
-				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: abajoY - 34, animated: true })}>
-					<Text style={{ color: "white" }}>ABAJO2</Text>
-				</Pressable>
-			</View>
-
-
-			<View id="medio" onLayout={(e) => setMedioY(e.nativeEvent.layout.y)} >
-				<Medio height={height}/>
-			</View>
+				<Medio 
+					height={height}
+					setMedioY={setMedioY}
+					scrollViewRef={scrollViewRef}
+					arribaY={arribaY}
+					abajoY={abajoY}
+				/>
 			
-
-			<View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "20%", marginVertical: 10 }}>
-				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: arribaY - 34, animated: true })}>
-					<Text style={{ color: "white" }}>ARRIBA3</Text>
-				</Pressable>
-
-				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: medioY - 34, animated: true })}>
-					<Text style={{ color: "white" }}>MEDIO3</Text>
-				</Pressable>
-			</View>
-			<View id="abajo" onLayout={(e) => setAbajoY(e.nativeEvent.layout.y)} >
-				<Abajo height={height}/>
-			</View>
-
+				<Abajo 
+					height={height}
+					setAbajoY={setAbajoY}
+					scrollViewRef={scrollViewRef}
+					arribaY={arribaY}
+					medioY={medioY}		
+				/>
 			
 		</ScrollView>
 	)
@@ -101,30 +87,71 @@ function Arriba({
 
 function Medio({
 	height,
+	setMedioY,
+	scrollViewRef,
+	arribaY,
+	abajoY,
 }: {
 	height: number
+	setMedioY: (pos: number) => void
+	scrollViewRef: React.RefObject<ScrollView | null>
+	arribaY: number
+	abajoY: number
 }) {
 	return (
-		<View
-			style={{
-				flex: 1,
-				minHeight: height*1.9,
-				alignItems: "center",
-				backgroundColor: "#c48a35ff",
-			}}
-		>
-			<Text style={{ color: "white" }}>MEDIO</Text>
-		</View>
+		<>
+			<View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "20%", marginVertical: 10 }}>
+					<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: arribaY - 34, animated: true })}>
+						<Text style={{ color: "white" }}>ARRIBA2</Text>
+					</Pressable>
+
+					<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: abajoY - 34, animated: true })}>
+						<Text style={{ color: "white" }}>ABAJO2</Text>
+					</Pressable>
+				</View>
+			
+			<View
+			onLayout={(e) => setMedioY(e.nativeEvent.layout.y)}
+				style={{
+					flex: 1,
+					minHeight: height*1.9,
+					alignItems: "center",
+					backgroundColor: "#c48a35ff",
+				}}
+			>
+				<Text style={{ color: "white" }}>MEDIO</Text>
+			</View>
+		</>
 	)
 }
 
 function Abajo({
 	height,
+	setAbajoY,
+	scrollViewRef,
+	arribaY,
+	medioY,
 }: {
 	height: number
+	setAbajoY: (pos: number) => void
+	scrollViewRef: React.RefObject<ScrollView | null>
+	arribaY: number
+	medioY: number
 }) {
 	return (
+		<>
+		<View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "20%", marginVertical: 10 }}>
+				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: arribaY - 34, animated: true })}>
+					<Text style={{ color: "white" }}>ARRIBA3</Text>
+				</Pressable>
+
+				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: medioY - 34, animated: true })}>
+					<Text style={{ color: "white" }}>MEDIO3</Text>
+				</Pressable>
+			</View>
+		
 		<View
+		onLayout={(e) => setAbajoY(e.nativeEvent.layout.y)} 
 			style={{
 				flex: 1,
 				minHeight: height*1.3,
@@ -135,5 +162,6 @@ function Abajo({
 		>
 			<Text style={{ color: "white" }}>ABAJO</Text>
 		</View>
+		</>
 	)
 }

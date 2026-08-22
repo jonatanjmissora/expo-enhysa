@@ -1,14 +1,29 @@
 import Footer from "@/components/Footer"
-import Hero from "@/components/Inicio/Hero"
-import Landing from "@/components/Inicio/Landing"
+import Features from "@/components/Inicio/04Features"
+import Hero from "@/components/Inicio/01Hero"
+import Landing from "@/components/Inicio/02Landing"
+import Plan from "@/components/Inicio/06Plan"
+import ToolsAndServices from "@/components/Inicio/03ToolsAndServices"
 import { useRef, useState } from "react"
 import { ScrollView, useWindowDimensions, Text, Pressable, View } from "react-native"
+import Modules from "@/components/Inicio/05Modules"
+import Button from "@/components/Button"
 
 export default function Index() {
 	const { width, height } = useWindowDimensions()
 	const scrollViewRef = useRef<ScrollView>(null)
-	const heroPositionRef = useRef<number>(0)
-	const modulesViewRef = useRef<any>(null)
+	const positionsY = useRef<Record<string, number>>({});
+
+	const scrollTo = (section: string) => {
+	const y = positionsY.current[section];
+	if (y !== undefined) {
+			scrollViewRef.current?.scrollTo({
+				y,
+				animated: true,
+			});
+		}
+	};
+
 	return (
 		<ScrollView
 			ref={scrollViewRef}
@@ -21,15 +36,21 @@ export default function Index() {
 			}}
 		>
 
-			<Hero width={width} height={height} setScrollPosition={(pos) => { heroPositionRef.current = pos }} />
+			<Hero positionsY={positionsY} scrollTo={scrollTo} />
 
-			<Landing scrollViewRef={scrollViewRef} modulesViewRef={modulesViewRef} setScrollPosition={(pos) => { heroPositionRef.current = pos }} />
+			<Landing positionsY={positionsY} scrollTo={scrollTo} />
 
-			<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: heroPositionRef.current, animated: true })} style={{ marginHorizontal: "auto", marginVertical: 32, paddingVertical: 2 }}>
-				<Text style={{ color: "#aaa", borderColor: "#aaa", borderBottomWidth: 1 }}>Volver Arriba</Text>
-			</Pressable>
+			<ToolsAndServices scrollTo={scrollTo} />
 
-			<Footer />
+			<Features />
+
+			<Modules positionsY={positionsY} />
+
+			<Plan />
+			
+			<Button variant="secondary" size="xsmall" text="Volver Arriba" onPress={() => scrollTo("hero")} style={{marginHorizontal: "auto", marginVertical: 12,}} />
+
+			<Footer scrollTo={scrollTo}/>
 		</ScrollView>
 	)
 }
