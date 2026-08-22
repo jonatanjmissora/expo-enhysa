@@ -18,19 +18,13 @@ export default function Perfil() {
 				backgroundColor: "#152436ff",
 			}}
 		>
-			<View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "20%", marginVertical: 10 }}>
-				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: medioY - 34, animated: true })}>
-					<Text style={{ color: "white" }}>MEDIO1</Text>
-				</Pressable>
-
-				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: abajoY - 34, animated: true })}>
-					<Text style={{ color: "white" }}>ABAJO1</Text>
-				</Pressable>
-			</View>
-
-			<View id="arriba" onLayout={(e) => setArribaY(e.nativeEvent.layout.y)} >
-				<Arriba height={height}/>
-			</View>
+				<Arriba 
+					height={height}
+					setArribaY={setArribaY}	
+					scrollViewRef={scrollViewRef}
+					medioY={medioY}
+					abajoY={abajoY}
+				/>
 			
 			<View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "20%", marginVertical: 10 }}>
 				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: arribaY - 34, animated: true })}>
@@ -68,20 +62,40 @@ export default function Perfil() {
 
 function Arriba({
 	height,
+	setArribaY,
+	scrollViewRef,
+	medioY,
+	abajoY,
 }: {
 	height: number
+	setArribaY: (pos: number) => void
+	scrollViewRef: React.RefObject<ScrollView | null>
+	medioY: number
+	abajoY: number
 }) {
 	return (
-<View
-			style={{
-				flex: 1,
-				minHeight: height*1.5,
-				alignItems: "center",
-				backgroundColor: "#a13377ff",
-			}}
-		>
-			<Text style={{ color: "white" }}>ARRIBA</Text>
-		</View>
+		<>
+			<View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: "20%", marginVertical: 10 }}>
+				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: medioY - 34, animated: true })}>
+					<Text style={{ color: "white" }}>MEDIO1</Text>
+				</Pressable>
+
+				<Pressable onPress={() => scrollViewRef.current?.scrollTo({ y: abajoY - 34, animated: true })}>
+					<Text style={{ color: "white" }}>ABAJO1</Text>
+				</Pressable>
+			</View>
+			<View
+				onLayout={(e) => setArribaY(e.nativeEvent.layout.y)}
+				style={{
+					flex: 1,
+					minHeight: height*1.5,
+					alignItems: "center",
+					backgroundColor: "#a13377ff",
+				}}
+			>
+				<Text style={{ color: "white" }}>ARRIBA</Text>
+			</View>
+		</>
 	)
 }
 
