@@ -1,15 +1,18 @@
 import SuscriptionPlans from "@/components/Suscription"
 import { ScrollView, Text, useWindowDimensions, View } from "react-native"
+import Header from "@/components/Header"
+import { useRouter } from "expo-router"
 
 export default function Suscripcion() {
 	const { width, height } = useWindowDimensions()
 	const isNarrow = width < 600
+	const router = useRouter()
+
 	return (
+		<View style={{ flex: 1 }}>
+			<Header onPress={() => router.push("/")} />
 		<ScrollView
-			contentContainerStyle={{
-				minHeight: height * 2.75,
-				marginTop: 100,
-			}}
+			contentContainerStyle={{ paddingBottom: 150 }}
 			style={{
 				backgroundColor: "#152436ff",
 			}}
@@ -51,5 +54,6 @@ export default function Suscripcion() {
 
 			<SuscriptionPlans />
 		</ScrollView>
+		</View>
 	)
 }

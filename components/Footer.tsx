@@ -1,9 +1,7 @@
 import { useCallback, useState } from "react"
 import {
-	Image,
 	Linking,
 	Pressable,
-	ScrollView,
 	StyleSheet,
 	Text,
 	useWindowDimensions,
@@ -15,10 +13,10 @@ import ImageViewer from "./ImageViewer"
 import LogoImage from "../assets/images/logo2.png"
 
 const NAV_ITEMS = [
-	{ label: "¿Qué es EnHySa App?", to: "landing" },
-	{ label: "Inicio", to: "hero" },
-	{ label: "Mi Perfil", to: "/perfil" },
-	{ label: "Suscripción", to: "/suscripcion" },
+	{ id: "1", label: "¿Qué es EnHySa App?", to: "landing" },
+	{ id: "2", label: "Inicio", to: "hero" },
+	{ id: "3", label: "Mi Perfil", to: "/perfil" },
+	{ id: "4", label: "Suscripción", to: "/suscripcion" },
 ]
 
 const CONTACTOS = [
@@ -93,16 +91,18 @@ export default function Footer({
 				<Text style={styles.title}>Mapa del sitio</Text>
 			</View>
 
-			<ScrollView contentContainerStyle={styles.navContainer}>
-				{NAV_ITEMS.map(item => (
-					<Pressable
-						key={item.to}
-						onPress={() => item.to.includes("/") ? router.push(item.to) : scrollTo(item.to)}
-						style={styles.navItem}
-					>
-						<Text style={styles.navText}>{item.label}</Text>
-					</Pressable>
-				))}
+			<View	>
+		{
+			NAV_ITEMS.map((item) => (
+				<Pressable
+					key={item.id}
+					onPress={() => item.to.includes("/") ? router.push(item.to) : scrollTo(item.to)}
+					style={styles.navItem}
+				>
+					<Text style={styles.navText}>{item.label}</Text>
+				</Pressable>
+			))
+		}
 				<Pressable onPress={() => setSoporte(s => !s)} style={styles.navItem}>
 					<Text style={styles.navText}>Soporte técnico</Text>
 				</Pressable>
@@ -137,7 +137,7 @@ export default function Footer({
 						)}
 					</View>
 				)}
-			</ScrollView>
+			</View>
 
 			<Text style={styles.copy}>
 				© {actualYear} Enhysa. Todos los derechos reservados.
@@ -147,7 +147,7 @@ export default function Footer({
 				imgSource={LogoImage}
 				style={{
 					position: "absolute",
-					bottom: -30,
+					bottom: -10,
 					right: -30,
 					width: 200,
 					height: 200,
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
 	footer: {
 		paddingVertical: 32,
 		paddingHorizontal: 16,
-		marginBottom: 100,
 		backgroundColor: "#0e1824ff",
 		gap: 16,
 		overflow: "hidden",

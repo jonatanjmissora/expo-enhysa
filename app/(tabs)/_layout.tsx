@@ -13,51 +13,16 @@ export default function TabLayout() {
 	return (
 		<Tabs
 			screenOptions={{
-				tabBarActiveTintColor: "orange",
-				headerStyle: {
-					backgroundColor: "#152436ff",
-				},
-				headerShadowVisible: false,
-				headerTransparent: true,
-				headerTintColor: "#fff",
-				headerTitleAlign: "left",
-				headerTitleContainerStyle: {
-					width: "100%",
-					margin: 0,
-				},
-				headerTitle: () => {
-					return (
-						<Pressable
-							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								gap: 10,
-								paddingBlock: 14,
-							}}
-							onPress={() => router.push("/")}
-						>
-							<ImageViewer
-								imgSource={LogoImage}
-								style={{ width: 30, height: 30 }}
-							/>
-							<Text
-								style={{
-									color: "white",
-									fontSize: 30,
-									textAlign: "center",
-									fontFamily: "system-ui",
-									letterSpacing: 2,
-								}}
-							>
-								EnHySa
-							</Text>
-						</Pressable>
-					)
-				},
-				tabBarStyle: {
-					backgroundColor: "#0e1824ff",
-					borderTopColor: "#e3e0ec20",
-				},
+				headerShown: false,
+
+    tabBarActiveTintColor: "orange",
+
+    tabBarStyle: {
+      backgroundColor: "#0e1824ff",
+      borderTopColor: "#e3e0ec20",
+    },
+
+    animation: "none",
 			}}
 		>
 			<Tabs.Screen
