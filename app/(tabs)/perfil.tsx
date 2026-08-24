@@ -6,7 +6,13 @@ import Tecnico from "@/components/perfil/Tecnico"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native"
+import {
+	Pressable,
+	ScrollView,
+	Text,
+	useWindowDimensions,
+	View,
+} from "react-native"
 
 export default function Perfil() {
 	const router = useRouter()
@@ -14,18 +20,32 @@ export default function Perfil() {
 	const { height } = useWindowDimensions()
 	return (
 		<View style={{ flex: 1 }}>
-					<Header onPress={() => router.push("/")} />
-		<ScrollView
-			style={{
-				backgroundColor: "#152436ff",
-			}}
-		>
-			<Button variant="ghost" iconLeft="chevron-back" text="Volver" style={{ alignSelf: "flex-start" }} onPress={router.back} />
-			<HeaderPerfil activeHeader={actualHeader} onSetHeader={setActualHeader} />
-			{actualHeader === "tecnico" && <Tecnico/>}
-			{actualHeader === "empresa" && <Empresas/>}
-			{actualHeader === "instrumento" && <Instrumentos/>}
-		</ScrollView>
+			<Header onPress={() => router.push("/")} />
+			<ScrollView
+				style={{
+					backgroundColor: "#152436ff",
+					flex: 1,
+					
+				}}
+			>
+				<Button
+					variant="ghost"
+					iconLeft="chevron-back"
+					text="Volver"
+					style={{ alignSelf: "flex-start" }}
+					onPress={router.back}
+				/>
+				<HeaderPerfil
+					activeHeader={actualHeader}
+					onSetHeader={setActualHeader}
+				/>
+				<View style={{ flex: 1, minHeight: height * 0.6}}>
+
+				{actualHeader === "tecnico" && <Tecnico />}
+				{actualHeader === "empresa" && <Empresas />}
+				{actualHeader === "instrumento" && <Instrumentos />}
+				</View>
+			</ScrollView>
 		</View>
 	)
 }
@@ -38,10 +58,33 @@ function HeaderPerfil({
 	onSetHeader: (v: string) => void
 }) {
 	return (
-		<View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-			<HeaderCard text="Técnico" icon="person-outline" active={activeHeader === "tecnico"} onPress={() => onSetHeader("tecnico")} />
-			<HeaderCard text="Empresa" icon="home-outline" active={activeHeader === "empresa"} onPress={() => onSetHeader("empresa")} />
-			<HeaderCard text="Instrumento" icon="hardware-chip-outline" active={activeHeader === "instrumento"} onPress={() => onSetHeader("instrumento")} />
+		<View
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "space-between",
+				width: "100%",
+			}}
+		>
+			<HeaderCard
+				text="Técnico"
+				icon="person-outline"
+				active={activeHeader === "tecnico"}
+				onPress={() => onSetHeader("tecnico")}
+			/>
+			<HeaderCard
+				text="Empresa"
+				icon="home-outline"
+				active={activeHeader === "empresa"}
+				onPress={() => onSetHeader("empresa")}
+			/>
+			<HeaderCard
+				text="Instrumento"
+				icon="hardware-chip-outline"
+				active={activeHeader === "instrumento"}
+				onPress={() => onSetHeader("instrumento")}
+			/>
 		</View>
 	)
 }
@@ -73,7 +116,9 @@ function HeaderCard({
 			}}
 		>
 			<Ionicons name={icon} size={32} color={active ? "#fff" : "#888"} />
-			<Text style={{ color: active ? "#fff" : "#888", fontSize: 18 }}>{text}</Text>
+			<Text style={{ color: active ? "#fff" : "#888", fontSize: 18 }}>
+				{text}
+			</Text>
 		</Pressable>
 	)
 }

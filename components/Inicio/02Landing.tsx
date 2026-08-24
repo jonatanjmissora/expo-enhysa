@@ -9,7 +9,6 @@ import Animation3 from "../../assets/images/animation3.webp"
 import Animation4 from "../../assets/images/animation4.webp"
 import Button from "../Button"
 
-
 export default function Landing({
 	positionsY,
 	scrollTo,
@@ -22,12 +21,13 @@ export default function Landing({
 	const isNarrow = width < 600
 
 	return (
-		<View 
-			onLayout={(e) => { positionsY.current["landing"] = e.nativeEvent.layout.y }}
+		<View
+			onLayout={e => {
+				positionsY.current["landing"] = e.nativeEvent.layout.y
+			}}
 			style={{ paddingTop: 180, paddingHorizontal: 0 }}
 		>
 			<View
-			
 				style={{
 					width: "100%",
 					maxWidth: 1280,
@@ -48,7 +48,6 @@ export default function Landing({
 					}}
 				>
 					<View
-					
 						style={{
 							backgroundColor: "rgba(226,113,29,0.125)",
 							paddingHorizontal: 14,
@@ -116,7 +115,9 @@ export default function Landing({
 					</Text>
 
 					<View
-					onLayout={(e) => { positionsY.current["landing2"] = e.nativeEvent.layout.y }}
+						onLayout={e => {
+							positionsY.current["landing2"] = e.nativeEvent.layout.y
+						}}
 						style={{
 							flexDirection: isNarrow ? "column" : "row",
 							gap: 24,
@@ -125,14 +126,20 @@ export default function Landing({
 							marginBottom: 40,
 						}}
 					>
-						<Button variant="primary" text="Comenzar a Probar la App" onPress={() => scrollTo("hero")}/>
-						<Button variant="secondary" text="Ver Módulos Técnicos" onPress={() => scrollTo("modulos")}/>
-						
+						<Button
+							variant="primary"
+							text="Comenzar a Probar la App"
+							onPress={() => scrollTo("hero")}
+						/>
+						<Button
+							variant="secondary"
+							text="Ver Módulos Técnicos"
+							onPress={() => scrollTo("modulos")}
+						/>
 					</View>
 				</View>
 				<PhoneMockup />
 			</View>
-
 		</View>
 	)
 }
@@ -165,11 +172,3 @@ function PhoneMockup() {
 		</View>
 	)
 }
-
-
-
-
-
-
-
-

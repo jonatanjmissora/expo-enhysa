@@ -15,14 +15,14 @@ export default function TabLayout() {
 			screenOptions={{
 				headerShown: false,
 
-    tabBarActiveTintColor: "orange",
+				tabBarActiveTintColor: "orange",
 
-    tabBarStyle: {
-      backgroundColor: "#0e1824ff",
-      borderTopColor: "#e3e0ec20",
-    },
+				tabBarStyle: {
+					backgroundColor: "#0e1824ff",
+					borderTopColor: "#e3e0ec20",
+				},
 
-    animation: "none",
+				animation: "none",
 			}}
 		>
 			<Tabs.Screen

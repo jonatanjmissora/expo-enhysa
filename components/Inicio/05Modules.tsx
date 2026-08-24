@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router"
 import { Pressable, Text, useWindowDimensions, View } from "react-native"
 
-export  default function Modules({
+export default function Modules({
 	positionsY,
 }: {
 	positionsY: React.RefObject<Record<string, number>>
@@ -69,8 +69,10 @@ export  default function Modules({
 
 	return (
 		<View
-		onLayout={(e) => { positionsY.current["modulos"] = e.nativeEvent.layout.y }}
-					style={{
+			onLayout={e => {
+				positionsY.current["modulos"] = e.nativeEvent.layout.y
+			}}
+			style={{
 				paddingBottom: 200,
 				paddingHorizontal: 16,
 				alignItems: "center",
@@ -102,13 +104,13 @@ export  default function Modules({
 					</Text>
 				</View>
 
-			<View
+				<View
 					style={{
-					flexDirection: "row",
-					flexWrap: "wrap",
-					gap: 16,
-				}}
-			>
+						flexDirection: "row",
+						flexWrap: "wrap",
+						gap: 16,
+					}}
+				>
 					{items.map(item => (
 						<Pressable
 							key={item.title}

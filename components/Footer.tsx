@@ -91,18 +91,18 @@ export default function Footer({
 				<Text style={styles.title}>Mapa del sitio</Text>
 			</View>
 
-			<View	>
-		{
-			NAV_ITEMS.map((item) => (
-				<Pressable
-					key={item.id}
-					onPress={() => item.to.includes("/") ? router.push(item.to) : scrollTo(item.to)}
-					style={styles.navItem}
-				>
-					<Text style={styles.navText}>{item.label}</Text>
-				</Pressable>
-			))
-		}
+			<View>
+				{NAV_ITEMS.map(item => (
+					<Pressable
+						key={item.id}
+						onPress={() =>
+							item.to.includes("/") ? router.push(item.to) : scrollTo(item.to)
+						}
+						style={styles.navItem}
+					>
+						<Text style={styles.navText}>{item.label}</Text>
+					</Pressable>
+				))}
 				<Pressable onPress={() => setSoporte(s => !s)} style={styles.navItem}>
 					<Text style={styles.navText}>Soporte técnico</Text>
 				</Pressable>
@@ -153,7 +153,7 @@ export default function Footer({
 					height: 200,
 					opacity: 0.2,
 					transform: [{ rotate: "20deg" }],
-					zIndex: -1
+					zIndex: -1,
 				}}
 			/>
 		</View>

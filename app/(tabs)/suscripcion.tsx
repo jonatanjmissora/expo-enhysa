@@ -11,14 +11,13 @@ export default function Suscripcion() {
 	return (
 		<View style={{ flex: 1 }}>
 			<Header onPress={() => router.push("/")} />
-		<ScrollView
-			contentContainerStyle={{ paddingBottom: 150 }}
-			style={{
-				backgroundColor: "#152436ff",
-			}}
-		>
-
-			<View style={{ marginTop: 40, flexDirection: "column", gap: 10 }}>
+			<ScrollView
+				contentContainerStyle={{ paddingBottom: 150 }}
+				style={{
+					backgroundColor: "#152436ff",
+				}}
+			>
+				<View style={{ marginTop: 40, flexDirection: "column", gap: 10 }}>
 					<Text
 						style={{
 							fontSize: isNarrow ? 30 : 34,
@@ -51,9 +50,8 @@ export default function Suscripcion() {
 					aprovecha los descuentos y promociones vigentes.
 				</Text>
 
-
-			<SuscriptionPlans />
-		</ScrollView>
+				<SuscriptionPlans />
+			</ScrollView>
 		</View>
 	)
 }

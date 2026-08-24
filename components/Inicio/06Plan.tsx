@@ -84,13 +84,16 @@ export default function Plan() {
 						))}
 					</View>
 
-					<Button text={"Gestionar"} onPress={() =>
+					<Button
+						text={"Gestionar"}
+						onPress={() =>
 							router.push({
 								pathname: "/suscripcion",
 								params: { from: pathname.split("/")[1] },
-							})} 
-							style={{width: "100%"}}
-							/>
+							})
+						}
+						style={{ width: "100%" }}
+					/>
 
 					<Ionicons
 						name="shield-checkmark-outline"

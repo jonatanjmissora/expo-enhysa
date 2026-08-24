@@ -1,6 +1,12 @@
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native"
+import {
+	Pressable,
+	ScrollView,
+	Text,
+	useWindowDimensions,
+	View,
+} from "react-native"
 import Ionicons from "@expo/vector-icons/Ionicons"
 
 import { PLANS } from "@/constants"
@@ -8,7 +14,7 @@ import { PLANS } from "@/constants"
 export { ErrorBoundary } from "expo-router"
 
 export default function SuscriptionPlans({ from }: { from?: string }) {
-    const { width, height } = useWindowDimensions()
+	const { width, height } = useWindowDimensions()
 	const router = useRouter()
 	const [anual, setAnual] = useState(false)
 
@@ -17,14 +23,16 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 
 	return (
 		<>
-			<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 24, justifyContent: "center" }}>
+			<View
+				style={{
+					flexDirection: "row",
+					flexWrap: "wrap",
+					gap: 24,
+					justifyContent: "center",
+				}}
+			>
 				{DISPLAY_PLANS.map((plan, index) => (
-					<Plan
-						key={plan.title}
-						{...plan}
-						index={index as 0 | 1}
-						from={from}
-					/>
+					<Plan key={plan.title} {...plan} index={index as 0 | 1} from={from} />
 				))}
 				<CombinedPlan
 					plan={combinedPlan}
@@ -94,19 +102,12 @@ interface PlanProps {
 	from?: string
 }
 
-function Plan({
-	title,
-	price,
-	subtitle,
-	benefits,
-	index,
-	from,
-}: PlanProps) {
+function Plan({ title, price, subtitle, benefits, index, from }: PlanProps) {
 	const router = useRouter()
 
 	return (
 		<View
-			style={{ 
+			style={{
 				width: "100%",
 				maxWidth: 320,
 				borderRadius: 8,
@@ -120,9 +121,15 @@ function Plan({
 				overflow: "hidden",
 			}}
 		>
-
 			<View style={{ gap: 8 }}>
-				<Text style={{ fontSize: 20, fontWeight: "600", color: "#fff", letterSpacing: 1.5 }}>
+				<Text
+					style={{
+						fontSize: 20,
+						fontWeight: "600",
+						color: "#fff",
+						letterSpacing: 1.5,
+					}}
+				>
 					{title}
 				</Text>
 				<Text style={{ fontSize: 40, fontWeight: "700", color: "#ddd" }}>
@@ -130,11 +137,16 @@ function Plan({
 				</Text>
 			</View>
 
-			<Text style={{ fontSize: 16, fontWeight: "500", color: "#aaa" }}>{subtitle}</Text>
+			<Text style={{ fontSize: 16, fontWeight: "500", color: "#aaa" }}>
+				{subtitle}
+			</Text>
 
 			<View style={{ gap: 12 }}>
-				{benefits.map((benefit) => (
-					<View key={benefit} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+				{benefits.map(benefit => (
+					<View
+						key={benefit}
+						style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+					>
 						<Ionicons name="checkmark" size={18} color="#16a34a" />
 						<Text style={{ fontSize: 14, color: "#aaa" }}>{benefit}</Text>
 					</View>
@@ -182,7 +194,7 @@ function Plan({
 }
 
 interface CombinedPlanProps {
-	plan: typeof PLANS[2] | typeof PLANS[3]
+	plan: (typeof PLANS)[2] | (typeof PLANS)[3]
 	anual: boolean
 	setAnual: (v: boolean) => void
 	from?: string
@@ -206,9 +218,15 @@ function CombinedPlan({ plan, anual, setAnual, from }: CombinedPlanProps) {
 				overflow: "hidden",
 			}}
 		>
-
 			<View style={{ gap: 8 }}>
-				<Text style={{ fontSize: 20, fontWeight: "600", color: "#fff", letterSpacing: 1.5 }}>
+				<Text
+					style={{
+						fontSize: 20,
+						fontWeight: "600",
+						color: "#fff",
+						letterSpacing: 1.5,
+					}}
+				>
 					{plan.title}
 				</Text>
 				<View style={{ gap: 12 }}>
@@ -240,11 +258,16 @@ function CombinedPlan({ plan, anual, setAnual, from }: CombinedPlanProps) {
 				</View>
 			</View>
 
-			<Text style={{ fontSize: 16, fontWeight: "500", color: "#aaa" }}>{plan.subtitle}</Text>
+			<Text style={{ fontSize: 16, fontWeight: "500", color: "#aaa" }}>
+				{plan.subtitle}
+			</Text>
 
 			<View style={{ gap: 12 }}>
-				{plan.benefits.map((benefit) => (
-					<View key={benefit} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+				{plan.benefits.map(benefit => (
+					<View
+						key={benefit}
+						style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+					>
 						<Ionicons name="checkmark" size={18} color="#16a34a" />
 						<Text style={{ fontSize: 14, color: "#aaa" }}>{benefit}</Text>
 					</View>

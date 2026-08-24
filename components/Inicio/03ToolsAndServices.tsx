@@ -15,89 +15,131 @@ export default function ToolsAndServices({
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 	return (
-		<View style={{
+		<View
+			style={{
 				paddingBottom: 200,
 				paddingHorizontal: 16,
 				alignItems: "center",
 				gap: 140,
-			}}>
-
-				<View style={{
+			}}
+		>
+			<View
+				style={{
 					marginLeft: "auto",
 					alignItems: "center",
 					justifyContent: "center",
 					width: "100%",
-				}}>
-					<ImageViewer  imgSource={CotizacionImage}
-								style={{ position: "absolute", top: "-15%", transform: "rotate(7deg)", right: 5, width: 170, height: 250 }} />
-					<Text style={{
+				}}
+			>
+				<ImageViewer
+					imgSource={CotizacionImage}
+					style={{
+						position: "absolute",
+						top: "-15%",
+						transform: "rotate(7deg)",
+						right: 5,
+						width: 170,
+						height: 250,
+					}}
+				/>
+				<Text
+					style={{
 						color: "#e2711d",
-								fontSize: isNarrow ? 28 : 32,
-								width: "100%",
-								textAlign: "left",
-								fontWeight: "700",
-								letterSpacing: 1.5,
-								paddingTop: 20,
-					}}>
-						Cotizador 
-					</Text>
+						fontSize: isNarrow ? 28 : 32,
+						width: "100%",
+						textAlign: "left",
+						fontWeight: "700",
+						letterSpacing: 1.5,
+						paddingTop: 20,
+					}}
+				>
+					Cotizador
+				</Text>
 
-						<Text  style={{
+				<Text
+					style={{
 						color: "#e2711d",
-								fontSize: isNarrow ? 28 : 32,
-								width: "100%",
-								textAlign: "left",
-								fontWeight: "700",
-								letterSpacing: 1.5,
-								paddingBottom: 20,
-								
-							}}>
-							Profesional
-						</Text>
-					<View style={{marginRight: "auto", marginLeft: 20, marginVertical: 30,}}>
-						<Button variant="primary" size={"small"} text="Generar" onPress={() => scrollTo("hero")} style={{minWidth: 150}}/>
-					</View>
-					<Text style={{
+						fontSize: isNarrow ? 28 : 32,
+						width: "100%",
+						textAlign: "left",
+						fontWeight: "700",
+						letterSpacing: 1.5,
+						paddingBottom: 20,
+					}}
+				>
+					Profesional
+				</Text>
+				<View
+					style={{ marginRight: "auto", marginLeft: 20, marginVertical: 30 }}
+				>
+					<Button
+						variant="primary"
+						size={"small"}
+						text="Generar"
+						onPress={() => scrollTo("hero")}
+						style={{ minWidth: 150 }}
+					/>
+				</View>
+				<Text
+					style={{
 						fontSize: 16,
 						color: "#aaa",
 						fontStyle: "italic",
 						textAlign: "center",
-					}}>
-						Te permite generar cotizaciones en tiempo real y sin salir de la aplicacion. Genera, descarga y envia pdfs con las distintas cotizaciones segun tu trabajo. Precios personalizados. Lista de precios. 
-					</Text>
-				</View>
-			
-			<View style={{
+					}}
+				>
+					Te permite generar cotizaciones en tiempo real y sin salir de la
+					aplicacion. Genera, descarga y envia pdfs con las distintas
+					cotizaciones segun tu trabajo. Precios personalizados. Lista de
+					precios.
+				</Text>
+			</View>
+
+			<View
+				style={{
 					marginLeft: "auto",
 					alignItems: "center",
 					justifyContent: "center",
-				}}>
-					<Text style={{
+				}}
+			>
+				<Text
+					style={{
 						color: "#e2711d",
-								fontSize: isNarrow ? 28 : 32,
-								width: "100%",
-								textAlign: "center",
-								fontWeight: "700",
-								letterSpacing: 1.5,
-								paddingTop: 20,
-					}}>
-						Alquiler Equipos
-					</Text>
+						fontSize: isNarrow ? 28 : 32,
+						width: "100%",
+						textAlign: "center",
+						fontWeight: "700",
+						letterSpacing: 1.5,
+						paddingTop: 20,
+					}}
+				>
+					Alquiler Equipos
+				</Text>
 
-						<ImageViewer  imgSource={EquiposImage}
-									style={{ width: 300, height: 200, marginTop:20 }} />
-					
-					<Button variant="primary" size={"small"} text="Consultar" onPress={() => scrollTo("hero")} style={{marginBottom: 30, minWidth: 150}} />
-					<Text style={{
+				<ImageViewer
+					imgSource={EquiposImage}
+					style={{ width: 300, height: 200, marginTop: 20 }}
+				/>
+
+				<Button
+					variant="primary"
+					size={"small"}
+					text="Consultar"
+					onPress={() => scrollTo("hero")}
+					style={{ marginBottom: 30, minWidth: 150 }}
+				/>
+				<Text
+					style={{
 						fontSize: 16,
 						color: "#aaa",
 						fontStyle: "italic",
 						textAlign: "center",
-					}}>
-						Cubrimos una amplia gama de equipos y herramientas para la elaboracion de tus informes. Consulta nuestra lista de precios. 
-					</Text>
-				</View>
-
+					}}
+				>
+					Cubrimos una amplia gama de equipos y herramientas para la elaboracion
+					de tus informes. Consulta nuestra lista de precios.
+				</Text>
+			</View>
 		</View>
 	)
 }

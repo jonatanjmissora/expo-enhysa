@@ -25,11 +25,14 @@ export default function Hero({
 	positionsY: React.RefObject<Record<string, number>>
 	scrollTo: (section: string) => void
 }) {
-
 	const { width, height } = useWindowDimensions()
-	
+
 	return (
-		<View onLayout={(e) => { positionsY.current["hero"] = e.nativeEvent.layout.y }}>
+		<View
+			onLayout={e => {
+				positionsY.current["hero"] = e.nativeEvent.layout.y
+			}}
+		>
 			<Text
 				style={{
 					color: "#ddd",
