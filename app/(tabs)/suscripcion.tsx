@@ -2,6 +2,8 @@ import SuscriptionPlans from "@/components/Suscription"
 import { ScrollView, Text, useWindowDimensions, View } from "react-native"
 import Header from "@/components/Header"
 import { useRouter } from "expo-router"
+import { LinearGradient } from "expo-linear-gradient"
+import { theme } from "@/constants/theme"
 
 export default function Suscripcion() {
 	const { width, height } = useWindowDimensions()
@@ -11,11 +13,13 @@ export default function Suscripcion() {
 	return (
 		<View style={{ flex: 1 }}>
 			<Header onPress={() => router.push("/")} />
+				<LinearGradient
+									colors={[theme.headerBG, theme.tabBG]}
+									style={{ flex: 1, position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}
+								>					
 			<ScrollView
 				contentContainerStyle={{ paddingBottom: 150 }}
-				style={{
-					backgroundColor: "#152436ff",
-				}}
+				
 			>
 				<View style={{ marginTop: 40, flexDirection: "column", gap: 10 }}>
 					<Text
@@ -52,6 +56,7 @@ export default function Suscripcion() {
 
 				<SuscriptionPlans />
 			</ScrollView>
+			</LinearGradient>
 		</View>
 	)
 }

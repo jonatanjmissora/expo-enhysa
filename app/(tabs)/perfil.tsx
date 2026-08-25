@@ -3,7 +3,9 @@ import Header from "@/components/Header"
 import Empresas from "@/components/perfil/Empresas"
 import Instrumentos from "@/components/perfil/Instrumentos"
 import Tecnico from "@/components/perfil/Tecnico"
+import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { LinearGradient } from "expo-linear-gradient"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 import {
@@ -21,31 +23,41 @@ export default function Perfil() {
 	return (
 		<View style={{ flex: 1 }}>
 			<Header onPress={() => router.push("/")} />
-			<ScrollView
+			<LinearGradient
+				colors={[theme.headerBG, theme.tabBG]}
 				style={{
-					backgroundColor: "#152436ff",
 					flex: 1,
-					
+					position: "fixed",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					zIndex: -1,
 				}}
 			>
-				<Button
-					variant="ghost"
-					iconLeft="chevron-back"
-					text="Volver"
-					style={{ alignSelf: "flex-start" }}
-					onPress={router.back}
-				/>
-				<HeaderPerfil
-					activeHeader={actualHeader}
-					onSetHeader={setActualHeader}
-				/>
-				<View style={{ flex: 1, minHeight: height * 0.6}}>
-
-				{actualHeader === "tecnico" && <Tecnico />}
-				{actualHeader === "empresa" && <Empresas />}
-				{actualHeader === "instrumento" && <Instrumentos />}
-				</View>
-			</ScrollView>
+				<ScrollView
+					style={{
+						flex: 1,
+					}}
+				>
+					<Button
+						variant="ghost"
+						iconLeft="chevron-back"
+						text="Volver"
+						style={{ alignSelf: "flex-start" }}
+						onPress={router.back}
+					/>
+					<HeaderPerfil
+						activeHeader={actualHeader}
+						onSetHeader={setActualHeader}
+					/>
+					<View style={{ flex: 1, minHeight: height * 0.6 }}>
+						{actualHeader === "tecnico" && <Tecnico />}
+						{actualHeader === "empresa" && <Empresas />}
+						{actualHeader === "instrumento" && <Instrumentos />}
+					</View>
+				</ScrollView>
+			</LinearGradient>
 		</View>
 	)
 }

@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native"
 
 import LogoImage from "../assets/images/logo2.png"
 import ImageViewer from "./ImageViewer"
+import { theme } from "@/constants/theme"
 
 type HeaderProps = {
 	onPress?: () => void
@@ -15,7 +16,7 @@ export default function Header({ onPress }: HeaderProps) {
 		<View
 			style={{
 				paddingTop: insets.top,
-				backgroundColor: "#152436",
+				backgroundColor: theme.headerBG,
 			}}
 		>
 			<Pressable

@@ -4,21 +4,19 @@ import Hero from "@/components/Inicio/01Hero"
 import Landing from "@/components/Inicio/02Landing"
 import Plan from "@/components/Inicio/06Plan"
 import ToolsAndServices from "@/components/Inicio/03ToolsAndServices"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import {
 	ScrollView,
-	useWindowDimensions,
-	Text,
-	Pressable,
 	View,
 } from "react-native"
 import Modules from "@/components/Inicio/05Modules"
 import Button from "@/components/Button"
 import { useRouter } from "expo-router"
 import Header from "@/components/Header"
+import { LinearGradient } from 'expo-linear-gradient';
+import { theme } from "@/constants/theme"
 
 export default function Index() {
-	const { height } = useWindowDimensions()
 	const scrollViewRef = useRef<ScrollView>(null)
 	const positionsY = useRef<Record<string, number>>({})
 	const router = useRouter()
@@ -36,13 +34,16 @@ export default function Index() {
 	return (
 		<View style={{ flex: 1 }}>
 			<Header onPress={() => router.push("/")} />
+				<LinearGradient
+					colors={[theme.headerBG, theme.tabBG]}
+					style={{ flex: 1, position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}
+				>
 			<ScrollView
 				ref={scrollViewRef}
-				style={{
-					backgroundColor: "#152436",
-				}}
+				contentContainerStyle={{ paddingTop: 50 }}
 			>
-				<Hero positionsY={positionsY} scrollTo={scrollTo} />
+
+				<Hero positionsY={positionsY} />
 
 				<Landing positionsY={positionsY} scrollTo={scrollTo} />
 
@@ -68,6 +69,7 @@ export default function Index() {
 
 				<Footer scrollTo={scrollTo} />
 			</ScrollView>
+				</LinearGradient>
 		</View>
 	)
 }

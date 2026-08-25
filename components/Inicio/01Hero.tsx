@@ -4,6 +4,8 @@ import type { Href } from "expo-router/build/typed-routes/types"
 import { Pressable, Text, useWindowDimensions, View } from "react-native"
 import HeroImage from "../../assets/images/hero.webp"
 import ImageViewer from "../ImageViewer"
+import { LinearGradient } from 'expo-linear-gradient';
+import { theme } from "@/constants/theme"
 
 type ItemProps = {
 	id: string
@@ -20,17 +22,17 @@ const items: ItemProps[] = [
 
 export default function Hero({
 	positionsY,
-	scrollTo,
 }: {
 	positionsY: React.RefObject<Record<string, number>>
-	scrollTo: (section: string) => void
 }) {
-	const { width, height } = useWindowDimensions()
 
 	return (
 		<View
 			onLayout={e => {
-				positionsY.current["hero"] = e.nativeEvent.layout.y
+				positionsY.current.hero = e.nativeEvent.layout.y
+			}}
+			style={{
+				backgroundColor: theme.headerBG,
 			}}
 		>
 			<Text
@@ -44,26 +46,44 @@ export default function Hero({
 			>
 				Selecciona tu nuevo informe.
 			</Text>
-			<ImageViewer
-				imgSource={HeroImage}
-				style={{
-					width,
-					height: height * 0.66,
-					opacity: 0.75,
-				}}
-			/>
+			<HeroImageContainer />
 			<View
 				style={{
 					position: "absolute",
 					bottom: 0,
 					width: "100%",
 					height: "42%",
+					zIndex: 10,
 				}}
 			>
 				<HeroIcons />
 			</View>
 		</View>
 	)
+}
+
+function HeroImageContainer() {
+	const { width, height } = useWindowDimensions()
+	return (
+		<View style={{ position: "relative", width, height: height * 0.66,}}>
+			
+			<LinearGradient
+						colors={[theme.headerBG, "transparent", "transparent", "transparent", theme.tabBG]}
+						style={{ flex: 1, position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, opacity: 1 }}
+					>
+						</LinearGradient>
+<ImageViewer
+				imgSource={HeroImage}
+				style={{
+					width,
+					height: "100%",
+					opacity:1,
+					zIndex: 0,
+				}}
+			/>
+		</View>
+	)
+	
 }
 
 function HeroIcons() {
@@ -84,7 +104,7 @@ function HeroIcons() {
 						style={{
 							width: 86,
 							aspectRatio: 1,
-							backgroundColor: "#ffffffaa",
+							backgroundColor: "#ccccccdd",
 							borderRadius: 14,
 							justifyContent: "center",
 							alignItems: "center",

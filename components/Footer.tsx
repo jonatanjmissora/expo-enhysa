@@ -11,6 +11,7 @@ import { useRouter } from "expo-router"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import ImageViewer from "./ImageViewer"
 import LogoImage from "../assets/images/logo2.png"
+import { theme } from "@/constants/theme"
 
 const NAV_ITEMS = [
 	{ id: "1", label: "¿Qué es EnHySa App?", to: "landing" },
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
 	footer: {
 		paddingVertical: 32,
 		paddingHorizontal: 16,
-		backgroundColor: "#0e1824ff",
+		backgroundColor: theme.footerBG,
 		gap: 16,
 		overflow: "hidden",
 	},
@@ -194,23 +195,25 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		color: "#e2e8f0",
-		fontSize: 18,
+		fontSize: 22,
 		fontWeight: "600",
 		borderBottomWidth: 1,
 		borderBottomColor: "rgba(226, 232, 240, 0.2)",
 		paddingVertical: 8,
 		alignSelf: "stretch",
+		fontStyle: "italic",
+		letterSpacing: 1.5,
 	},
 	navContainer: {
 		paddingVertical: 8,
-		gap: 12,
+		gap: 20,
 	},
 	navItem: {
-		paddingVertical: 4,
+		paddingVertical: 14,
 	},
 	navText: {
 		color: "#e2e8f0",
-		fontSize: 16,
+		fontSize: 18,
 	},
 	contactosContainer: {
 		marginTop: 8,
@@ -236,7 +239,7 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 	},
 	copy: {
-		color: "#94a3b8",
+		color: "#bbb",
 		fontSize: 12,
 		textAlign: "center",
 		marginTop: 16,

@@ -1,27 +1,18 @@
 import { Tabs } from "expo-router"
 
-import ImageViewer from "@/components/ImageViewer"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { useRouter } from "expo-router"
-import { Pressable, Text } from "react-native"
-
-import LogoImage from "../../assets/images/logo2.png"
+import { theme } from "@/constants/theme"
 
 export default function TabLayout() {
-	const router = useRouter()
-
 	return (
 		<Tabs
 			screenOptions={{
 				headerShown: false,
-
 				tabBarActiveTintColor: "orange",
-
 				tabBarStyle: {
-					backgroundColor: "#0e1824ff",
+					backgroundColor: theme.tabBG,
 					borderTopColor: "#e3e0ec20",
 				},
-
 				animation: "none",
 			}}
 		>
