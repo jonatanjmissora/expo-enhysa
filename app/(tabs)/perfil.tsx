@@ -1,4 +1,3 @@
-import Button from "@/components/Button"
 import Header from "@/components/Header"
 import Empresas from "@/components/perfil/Empresas"
 import Instrumentos from "@/components/perfil/Instrumentos"
@@ -40,13 +39,6 @@ export default function Perfil() {
 						flex: 1,
 					}}
 				>
-					<Button
-						variant="ghost"
-						iconLeft="chevron-back"
-						text="Volver"
-						style={{ alignSelf: "flex-start" }}
-						onPress={router.back}
-					/>
 					<HeaderPerfil
 						activeHeader={actualHeader}
 						onSetHeader={setActualHeader}
@@ -123,7 +115,7 @@ function HeaderCard({
 				flexBasis: 0,
 				minWidth: 0,
 				paddingVertical: 8,
-				backgroundColor: active ? "#e2711d" : "transparent",
+				backgroundColor: active ? theme.orange : "transparent",
 				borderRadius: 8,
 			}}
 		>

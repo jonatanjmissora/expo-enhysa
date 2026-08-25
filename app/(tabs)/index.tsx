@@ -5,15 +5,12 @@ import Landing from "@/components/Inicio/02Landing"
 import Plan from "@/components/Inicio/06Plan"
 import ToolsAndServices from "@/components/Inicio/03ToolsAndServices"
 import { useRef } from "react"
-import {
-	ScrollView,
-	View,
-} from "react-native"
+import { ScrollView, View } from "react-native"
 import Modules from "@/components/Inicio/05Modules"
 import Button from "@/components/Button"
 import { useRouter } from "expo-router"
 import Header from "@/components/Header"
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient"
 import { theme } from "@/constants/theme"
 
 export default function Index() {
@@ -34,42 +31,49 @@ export default function Index() {
 	return (
 		<View style={{ flex: 1 }}>
 			<Header onPress={() => router.push("/")} />
-				<LinearGradient
-					colors={[theme.headerBG, theme.tabBG]}
-					style={{ flex: 1, position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}
-				>
-			<ScrollView
-				ref={scrollViewRef}
-				contentContainerStyle={{ paddingTop: 50 }}
+			<LinearGradient
+				colors={[theme.headerBG, theme.tabBG]}
+				style={{
+					flex: 1,
+					position: "fixed",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					zIndex: -1,
+				}}
 			>
+				<ScrollView
+					ref={scrollViewRef}
+					contentContainerStyle={{ paddingTop: 50 }}
+				>
+					<Hero positionsY={positionsY} />
 
-				<Hero positionsY={positionsY} />
+					<Landing positionsY={positionsY} scrollTo={scrollTo} />
 
-				<Landing positionsY={positionsY} scrollTo={scrollTo} />
+					<ToolsAndServices scrollTo={scrollTo} />
 
-				<ToolsAndServices scrollTo={scrollTo} />
+					<Features />
 
-				<Features />
+					<Modules positionsY={positionsY} />
 
-				<Modules positionsY={positionsY} />
+					<Plan />
 
-				<Plan />
+					<Button
+						variant="secondary"
+						size="xsmall"
+						text="Volver Arriba"
+						onPress={() => scrollTo("hero")}
+						style={{
+							marginHorizontal: "auto",
+							marginVertical: 12,
+							minWidth: 150,
+						}}
+					/>
 
-				<Button
-					variant="secondary"
-					size="xsmall"
-					text="Volver Arriba"
-					onPress={() => scrollTo("hero")}
-					style={{
-						marginHorizontal: "auto",
-						marginVertical: 12,
-						minWidth: 150,
-					}}
-				/>
-
-				<Footer scrollTo={scrollTo} />
-			</ScrollView>
-				</LinearGradient>
+					<Footer scrollTo={scrollTo} />
+				</ScrollView>
+			</LinearGradient>
 		</View>
 	)
 }

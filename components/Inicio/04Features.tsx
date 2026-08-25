@@ -1,3 +1,4 @@
+import { theme } from "@/constants/theme"
 import { Text, useWindowDimensions, View } from "react-native"
 
 export default function Features() {
@@ -49,7 +50,7 @@ export default function Features() {
 					</Text>
 					<Text
 						style={{
-							color: "#e2711d",
+							color: theme.orange,
 							fontSize: isNarrow ? 24 : 32,
 							textAlign: isNarrow ? "center" : "left",
 							letterSpacing: 1.5,

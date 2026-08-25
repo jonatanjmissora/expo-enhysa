@@ -1,5 +1,5 @@
 import { Image } from "expo-image"
-import { useFocusEffect, useRouter } from "expo-router"
+import { useFocusEffect } from "expo-router"
 import { useState } from "react"
 import { Text, useWindowDimensions, View } from "react-native"
 
@@ -8,6 +8,7 @@ import Animation2 from "../../assets/images/animation2.webp"
 import Animation3 from "../../assets/images/animation3.webp"
 import Animation4 from "../../assets/images/animation4.webp"
 import Button from "../Button"
+import { theme } from "@/constants/theme"
 
 export default function Landing({
 	positionsY,
@@ -16,14 +17,13 @@ export default function Landing({
 	positionsY: React.RefObject<Record<string, number>>
 	scrollTo: (section: string) => void
 }) {
-	const router = useRouter()
-	const { width, height } = useWindowDimensions()
+	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 
 	return (
 		<View
 			onLayout={e => {
-				positionsY.current["landing"] = e.nativeEvent.layout.y
+				positionsY.current.landing = e.nativeEvent.layout.y
 			}}
 			style={{ paddingTop: 180, paddingHorizontal: 0 }}
 		>
@@ -59,7 +59,7 @@ export default function Landing({
 					>
 						<Text
 							style={{
-								color: "#e2711d",
+								color: theme.orange,
 								fontSize: 14,
 								fontWeight: "600",
 								textAlign: isNarrow ? "center" : "left",
@@ -84,7 +84,7 @@ export default function Landing({
 						</Text>
 						<Text
 							style={{
-								color: "#e2711d",
+								color: theme.orange,
 								fontSize: isNarrow ? 24 : 32,
 								textAlign: isNarrow ? "center" : "left",
 								letterSpacing: 1.5,
@@ -116,7 +116,7 @@ export default function Landing({
 
 					<View
 						onLayout={e => {
-							positionsY.current["landing2"] = e.nativeEvent.layout.y
+							positionsY.current.landing2 = e.nativeEvent.layout.y
 						}}
 						style={{
 							flexDirection: isNarrow ? "column" : "row",

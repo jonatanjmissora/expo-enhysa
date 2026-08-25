@@ -1,3 +1,4 @@
+import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { Pressable, Text, View } from "react-native"
 
@@ -69,11 +70,11 @@ function HeaderCard({
 			<Ionicons
 				name={actualHeader === text ? icon : `${icon}-outline`}
 				size={32}
-				color={actualHeader === text ? "orange" : "#888"}
+				color={actualHeader === text ? theme.orange : "#888"}
 			/>
 			<Text
 				style={{
-					color: actualHeader === text ? "orange" : "#888",
+					color: actualHeader === text ? theme.orange : "#888",
 					fontSize: 18,
 				}}
 			>

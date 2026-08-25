@@ -4,7 +4,7 @@ import type { Href } from "expo-router/build/typed-routes/types"
 import { Pressable, Text, useWindowDimensions, View } from "react-native"
 import HeroImage from "../../assets/images/hero.webp"
 import ImageViewer from "../ImageViewer"
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient"
 import { theme } from "@/constants/theme"
 
 type ItemProps = {
@@ -25,7 +25,6 @@ export default function Hero({
 }: {
 	positionsY: React.RefObject<Record<string, number>>
 }) {
-
 	return (
 		<View
 			onLayout={e => {
@@ -65,25 +64,37 @@ export default function Hero({
 function HeroImageContainer() {
 	const { width, height } = useWindowDimensions()
 	return (
-		<View style={{ position: "relative", width, height: height * 0.66,}}>
-			
+		<View style={{ position: "relative", width, height: height * 0.66 }}>
 			<LinearGradient
-						colors={[theme.headerBG, "transparent", "transparent", "transparent", theme.tabBG]}
-						style={{ flex: 1, position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, opacity: 1 }}
-					>
-						</LinearGradient>
-<ImageViewer
+				colors={[
+					theme.headerBG,
+					"transparent",
+					"transparent",
+					"transparent",
+					theme.tabBG,
+				]}
+				style={{
+					flex: 1,
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					zIndex: 1,
+					opacity: 1,
+				}}
+			></LinearGradient>
+			<ImageViewer
 				imgSource={HeroImage}
 				style={{
 					width,
 					height: "100%",
-					opacity:1,
+					opacity: 1,
 					zIndex: 0,
 				}}
 			/>
 		</View>
 	)
-	
 }
 
 function HeroIcons() {

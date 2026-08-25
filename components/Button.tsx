@@ -1,3 +1,4 @@
+import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { Pressable, Text, View, ViewStyle } from "react-native"
 
@@ -23,8 +24,8 @@ export default function Button({
 
 	const variantStyle = ({ pressed }: { pressed: boolean }) => {
 		return {
-			primary: { backgroundColor: pressed ? "#4ca84c" : "#5cb85c" },
-			secondary: { backgroundColor: pressed ? "#333" : "#444" },
+			primary: { backgroundColor: pressed ? theme.greenPressed : theme.green },
+			secondary: { backgroundColor: pressed ? theme.grayPressed : theme.gray },
 			ghost: { backgroundColor: "transparent" },
 			danger: { backgroundColor: pressed ? "#dc2626" : "#e63946" },
 		}

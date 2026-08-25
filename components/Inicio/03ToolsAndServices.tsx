@@ -1,17 +1,15 @@
-import { Pressable, useWindowDimensions, View } from "react-native"
+import { useWindowDimensions, View, Text } from "react-native"
 import ImageViewer from "../ImageViewer"
-import { useRouter } from "expo-router"
 import CotizacionImage from "../../assets/images/cotizacion.webp"
 import EquiposImage from "../../assets/images/equipos.webp"
-import { Text } from "react-native"
 import Button from "../Button"
+import { theme } from "@/constants/theme"
 
 export default function ToolsAndServices({
 	scrollTo,
 }: {
 	scrollTo: (section: string) => void
 }) {
-	const router = useRouter()
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 	return (
@@ -44,7 +42,7 @@ export default function ToolsAndServices({
 				/>
 				<Text
 					style={{
-						color: "#e2711d",
+						color: theme.orange,
 						fontSize: isNarrow ? 28 : 32,
 						width: "100%",
 						textAlign: "left",
@@ -58,7 +56,7 @@ export default function ToolsAndServices({
 
 				<Text
 					style={{
-						color: "#e2711d",
+						color: theme.orange,
 						fontSize: isNarrow ? 28 : 32,
 						width: "100%",
 						textAlign: "left",
@@ -104,7 +102,7 @@ export default function ToolsAndServices({
 			>
 				<Text
 					style={{
-						color: "#e2711d",
+						color: theme.orange,
 						fontSize: isNarrow ? 28 : 32,
 						width: "100%",
 						textAlign: "center",

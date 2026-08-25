@@ -1,3 +1,4 @@
+import { theme } from "@/constants/theme"
 import { useRouter } from "expo-router"
 import { Pressable, Text, useWindowDimensions, View } from "react-native"
 
@@ -70,7 +71,7 @@ export default function Modules({
 	return (
 		<View
 			onLayout={e => {
-				positionsY.current["modulos"] = e.nativeEvent.layout.y
+				positionsY.current.modulos = e.nativeEvent.layout.y
 			}}
 			style={{
 				paddingBottom: 200,
@@ -94,7 +95,7 @@ export default function Modules({
 					</Text>
 					<Text
 						style={{
-							color: "#e2711d",
+							color: theme.orange,
 							fontSize: isNarrow ? 24 : 32,
 							textAlign: isNarrow ? "center" : "left",
 							letterSpacing: 1.5,

@@ -10,6 +10,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons"
 
 import { PLANS } from "@/constants"
+import { theme } from "@/constants/theme"
 
 export { ErrorBoundary } from "expo-router"
 
@@ -46,7 +47,7 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 				<Pressable
 					onPress={() => router.push("/")}
 					style={{
-						backgroundColor: "#5cb85c",
+						backgroundColor: theme.green,
 						paddingHorizontal: 28,
 						paddingVertical: 14,
 						borderRadius: 6,
@@ -62,7 +63,7 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 					<Text style={{ color: "#aaa", fontSize: 14 }}>
 						Lee nuestra{" "}
 						<Text
-							style={{ color: "#e2711d", textDecorationLine: "underline" }}
+							style={{ color: theme.orange, textDecorationLine: "underline" }}
 							onPress={() =>
 								router.push({
 									pathname: "/teoria/politicas-de-privacidad",
@@ -76,7 +77,7 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 					<Text style={{ color: "#aaa", fontSize: 14 }}>
 						y nuestros{" "}
 						<Text
-							style={{ color: "#e2711d", textDecorationLine: "underline" }}
+							style={{ color: theme.orange, textDecorationLine: "underline" }}
 							onPress={() =>
 								router.push({
 									pathname: "/teoria/terminos-de-uso",
@@ -147,7 +148,7 @@ function Plan({ title, price, subtitle, benefits, index, from }: PlanProps) {
 						key={benefit}
 						style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
 					>
-						<Ionicons name="checkmark" size={18} color="#16a34a" />
+						<Ionicons name="checkmark" size={18} color={theme.green} />
 						<Text style={{ fontSize: 14, color: "#aaa" }}>{benefit}</Text>
 					</View>
 				))}
@@ -158,7 +159,7 @@ function Plan({ title, price, subtitle, benefits, index, from }: PlanProps) {
 					onPress={() => router.push("/")}
 					style={{
 						width: "100%",
-						backgroundColor: "#5cb85c",
+						backgroundColor: theme.green,
 						paddingVertical: 14,
 						borderRadius: 6,
 						alignItems: "center",
@@ -178,7 +179,7 @@ function Plan({ title, price, subtitle, benefits, index, from }: PlanProps) {
 					}
 					style={{
 						width: "100%",
-						backgroundColor: "#5cb85c",
+						backgroundColor: theme.green,
 						paddingVertical: 14,
 						borderRadius: 6,
 						alignItems: "center",
@@ -243,8 +244,8 @@ function CombinedPlan({ plan, anual, setAnual, from }: CombinedPlanProps) {
 								height: 20,
 								borderRadius: 4,
 								borderWidth: 2,
-								borderColor: anual ? "#5cb85c" : "#666",
-								backgroundColor: anual ? "#5cb85c" : "transparent",
+								borderColor: anual ? theme.green : "#666",
+								backgroundColor: anual ? theme.green : "transparent",
 								alignItems: "center",
 								justifyContent: "center",
 							}}
@@ -268,7 +269,7 @@ function CombinedPlan({ plan, anual, setAnual, from }: CombinedPlanProps) {
 						key={benefit}
 						style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
 					>
-						<Ionicons name="checkmark" size={18} color="#16a34a" />
+						<Ionicons name="checkmark" size={18} color={theme.green} />
 						<Text style={{ fontSize: 14, color: "#aaa" }}>{benefit}</Text>
 					</View>
 				))}
@@ -283,7 +284,7 @@ function CombinedPlan({ plan, anual, setAnual, from }: CombinedPlanProps) {
 				}
 				style={{
 					width: "100%",
-					backgroundColor: "#5cb85c",
+					backgroundColor: theme.green,
 					paddingVertical: 14,
 					borderRadius: 6,
 					alignItems: "center",

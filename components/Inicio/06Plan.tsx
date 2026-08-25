@@ -1,7 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { usePathname, useRouter } from "expo-router"
-import { Pressable, Text, useWindowDimensions, View } from "react-native"
+import { Text, useWindowDimensions, View } from "react-native"
 import Button from "../Button"
+import { theme } from "@/constants/theme"
 
 export default function Plan() {
 	const router = useRouter()
@@ -78,7 +79,7 @@ export default function Plan() {
 								key={benefit}
 								style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
 							>
-								<Ionicons name="checkmark" size={18} color="#16a34a" />
+								<Ionicons name="checkmark" size={18} color={theme.green} />
 								<Text style={{ fontSize: 14, color: "#aaa" }}>{benefit}</Text>
 							</View>
 						))}
@@ -98,7 +99,7 @@ export default function Plan() {
 					<Ionicons
 						name="shield-checkmark-outline"
 						size={124}
-						color="#f59e0b"
+						color={theme.orange}
 						style={{
 							position: "absolute",
 							top: -10,
