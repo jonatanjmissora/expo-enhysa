@@ -28,7 +28,7 @@ export default function ImagePicker({
 			quality: 1,
 		})
 
-		console.log("ImagePicker", result)
+		// console.log("ImagePicker", result)
 
 		if (!result.canceled) {
 			setImage(result.assets[0].uri)
@@ -53,7 +53,7 @@ export default function ImagePicker({
 			quality: 1,
 		})
 
-		console.log("TakePhoto", result)
+		// console.log("TakePhoto", result)
 
 		if (!result.canceled) {
 			setImage(result.assets[0].uri)

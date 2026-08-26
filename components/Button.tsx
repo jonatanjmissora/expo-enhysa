@@ -7,6 +7,7 @@ export default function Button({
 	text,
 	iconRight,
 	style,
+	disabled,
 	onPress,
 	variant = "primary",
 	size = "medium",
@@ -16,6 +17,7 @@ export default function Button({
 	iconRight?: string
 	text?: string
 	style?: ViewStyle
+	disabled?: boolean
 	onPress: () => void
 	variant?: "primary" | "secondary" | "ghost" | "danger"
 	size?: "xsmall" | "small" | "medium" | "large"
@@ -43,6 +45,7 @@ export default function Button({
 	return (
 		<Pressable
 			onPress={onPress}
+			disabled={disabled}
 			style={({ pressed }) => ({
 				...variantStyle({ pressed })[variant],
 				...sizeStyle[size],
@@ -51,6 +54,7 @@ export default function Button({
 				justifyContent: "center",
 				alignItems: "center",
 				gap: 2,
+				opacity: disabled ? 0.5 : 1,
 				...style,
 			})}
 		>

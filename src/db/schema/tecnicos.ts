@@ -10,7 +10,7 @@ export const CREATE_TECNICOS_TABLE = `
 		matricula TEXT NOT NULL,
 		matriculaImg TEXT NOT NULL,
 		firmaImg TEXT NOT NULL,
-		empresaLogo TEXT NOT NULL,
+		empresaLogo TEXT,
 		dni INTEGER,
 		userId TEXT NOT NULL
 	);
@@ -18,8 +18,19 @@ export const CREATE_TECNICOS_TABLE = `
 
 export const tecnicoFormValidator = z.object({
 	nombre: z.string().min(3, "Mínimo 3 caracteres"),
-	dni: z.string().regex(/^\d{7,8}$/, "DNI inválido"),
-	telefono: z.string(),
+	dni: z
+		.string()
+		.refine(val => val !== "" && [...val].every(ch => ch >= "0" && ch <= "9"), {
+			message: "El DNI solo debe contener caracteres numéricos (0-9)",
+		})
+		.refine(val => val.length === 7 || val.length === 8, {
+			message: "El DNI debe tener 7 u 8 dígitos",
+		}),
+	telefono: z
+		.string()
+		.refine(val => val !== "" && [...val].every(ch => ch >= "0" && ch <= "9"), {
+			message: "El teléfono solo debe contener caracteres numéricos (0-9)",
+		}),
 	localidad: z.string(),
 	cargo: z.string().min(4, "Mínimo 4 caracteres"),
 	matricula: z.string().min(3, "Mínimo 3 caracteres"),
@@ -29,3 +40,17 @@ export const tecnicoFormValidator = z.object({
 })
 
 export type TecnicoFormType = z.infer<typeof tecnicoFormValidator>
+
+export const defaultTecnico = {
+	nombre: "",
+	telefono: "",
+	localidad: "",
+	cargo: "",
+	matricula: "",
+	matriculaImg: "",
+	firmaImg: "",
+	empresaLogo: "",
+	dni: "",
+}
+
+export type DefaultTecnicoDataType = typeof defaultTecnico

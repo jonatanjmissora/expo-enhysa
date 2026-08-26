@@ -9,6 +9,18 @@ import { Text, View } from "react-native"
 
 const USER_ID = "user-1"
 
+const FIELDS = [
+	{ key: "nombre", label: "Nombre", placeholder: "Juan Pérez" },
+	{ key: "dni", label: "DNI", placeholder: "29123456" },
+	{ key: "telefono", label: "Teléfono", placeholder: "2911234567" },
+	{ key: "localidad", label: "Localidad", placeholder: "Bahía Blanca" },
+	{ key: "cargo", label: "Cargo", placeholder: "Técnico" },
+	{ key: "matricula", label: "Matrícula", placeholder: "MAT-12345" },
+	{ key: "matriculaImagen", label: "Matricula Imágen", placeholder: "" },
+	{ key: "firmaImagen", label: "Firma Digital", placeholder: "" },
+	{ key: "empresaLogo", label: "Empresa Logo", placeholder: "" },
+] as const
+
 export default function Tecnico() {
 	const [tecnico, setTecnico] = useState<TecnicoData | null | undefined>(
 		undefined
@@ -64,7 +76,7 @@ export default function Tecnico() {
 	}
 
 	return (
-		<View style={{ flex: 1, padding: 16, gap: 8 }}>
+		<View style={{ flex: 1, padding: 16, gap: 8, paddingVertical: 20 }}>
 			<Text style={{ color: "#e2e8f0", fontSize: 18, fontWeight: "600" }}>
 				{tecnico.nombre}
 			</Text>

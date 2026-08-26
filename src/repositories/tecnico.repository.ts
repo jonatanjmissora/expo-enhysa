@@ -1,3 +1,4 @@
+import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
 import { CREATE_TECNICOS_TABLE } from "../db/schema/tecnicos"
 
@@ -10,7 +11,7 @@ export type Tecnico = {
 	matricula: string
 	matriculaImg: string
 	firmaImg: string
-	empresaLogo: string
+	empresaLogo: string | null
 	dni: number | null
 	userId: string
 }
@@ -23,7 +24,7 @@ export type CreateTecnicoInput = {
 	matricula: string
 	matriculaImg: string
 	firmaImg: string
-	empresaLogo: string
+	empresaLogo?: string | null
 	dni?: number | null
 	userId: string
 }
@@ -40,7 +41,7 @@ export const tecnicoRepository = {
 
 		const db = await getDatabase()
 
-		const id = crypto.randomUUID()
+		const id = randomUUID()
 
 		await db.runAsync(
 			`
@@ -67,7 +68,7 @@ export const tecnicoRepository = {
 			input.matricula,
 			input.matriculaImg,
 			input.firmaImg,
-			input.empresaLogo,
+			input.empresaLogo ?? null,
 			input.dni ?? null,
 			input.userId
 		)

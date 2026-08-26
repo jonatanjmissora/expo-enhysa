@@ -29,7 +29,7 @@ export default function FirmaPicker({
 			quality: 1,
 		})
 
-		console.log("ImagePicker", result)
+		// console.log("ImagePicker", result)
 
 		if (!result.canceled) {
 			setImage(result.assets[0].uri)
