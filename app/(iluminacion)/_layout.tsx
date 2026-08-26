@@ -1,8 +1,7 @@
-import { Tabs } from "expo-router"
+import { Tabs, useRouter } from "expo-router"
 
 import ImageViewer from "@/components/ImageViewer"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { useRouter } from "expo-router"
 import { Pressable, Text } from "react-native"
 
 import LogoImage from "../../assets/images/logo2.png"
@@ -58,6 +57,7 @@ export default function TabLayout() {
 					backgroundColor: "#0e1824ff",
 					borderTopColor: "#e3e0ec20",
 				},
+				animation: "none",
 			}}
 		>
 			<Tabs.Screen

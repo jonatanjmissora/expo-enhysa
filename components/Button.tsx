@@ -1,6 +1,6 @@
 import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { Pressable, Text, View, ViewStyle } from "react-native"
+import { Pressable, Text, ViewStyle } from "react-native"
 
 export default function Button({
 	iconLeft,
@@ -10,14 +10,16 @@ export default function Button({
 	onPress,
 	variant = "primary",
 	size = "medium",
+	iconSize = 24,
 }: {
 	iconLeft?: string
 	iconRight?: string
-	text: string
+	text?: string
 	style?: ViewStyle
 	onPress: () => void
 	variant?: "primary" | "secondary" | "ghost" | "danger"
 	size?: "xsmall" | "small" | "medium" | "large"
+	iconSize?: number
 }) {
 	const fontSize =
 		size === "xsmall" ? 12 : size === "small" ? 14 : size === "medium" ? 16 : 20
@@ -52,7 +54,7 @@ export default function Button({
 				...style,
 			})}
 		>
-			{iconLeft && <Ionicons name={iconLeft} size={24} color="white" />}
+			{iconLeft && <Ionicons name={iconLeft} size={iconSize} color="white" />}
 			<Text
 				style={{
 					color: "#fff",
@@ -64,7 +66,7 @@ export default function Button({
 			>
 				{text}
 			</Text>
-			{iconRight && <Ionicons name={iconRight} size={24} color="white" />}
+			{iconRight && <Ionicons name={iconRight} size={iconSize} color="white" />}
 		</Pressable>
 	)
 }

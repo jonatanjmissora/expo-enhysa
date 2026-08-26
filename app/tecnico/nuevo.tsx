@@ -1,6 +1,7 @@
 import Button from "@/components/Button"
 import Header from "@/components/Header"
-import ImagePickerExample from "@/components/ImagePicker"
+import ImagePicker from "@/components/ImagePicker"
+import FirmaPicker from "@/components/perfil/FirmaPicker"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
@@ -10,7 +11,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
+import { ScrollView, Text, TextInput, View } from "react-native"
 
 const USER_ID = "user-1"
 
@@ -41,7 +42,7 @@ export default function Nuevo() {
 					contentContainerStyle={{
 						gap: 12,
 						padding: 16,
-						paddingBottom: 150
+						paddingBottom: 150,
 					}}
 				>
 					<View
@@ -88,12 +89,15 @@ function TecnicoNuevoForm() {
 	})
 	const [saving, setSaving] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const [matriculaImg, setMatriculaImg] = useState<string | null>(null)
+	const [firmaImg, setFirmaImg] = useState<string | null>(null)
+	const [empresaLogo, setEmpresaLogo] = useState<string | null>(null)
 
 	const handleChange = (key: FieldKey, value: string) =>
-		setValues((p) => ({ ...p, [key]: value }))
+		setValues(p => ({ ...p, [key]: value }))
 
 	async function handleSave() {
-		if (Object.values(values).some((v) => !v.trim())) {
+		if (Object.values(values).some(v => !v.trim())) {
 			setError("Completá todos los campos")
 			return
 		}
@@ -120,31 +124,80 @@ function TecnicoNuevoForm() {
 		}
 	}
 	return (
-		<View style={{ gap: 12 }}>
-			
-			{FIELDS.map((f) => (
+		<View style={{ gap: 12, padding: 20 }}>
+			{FIELDS.map(f => (
 				<View key={f.key} style={{ gap: 5 }}>
 					<Text style={{ color: "#cbd5e1" }}>{f.label}</Text>
 					<TextInput
 						value={values[f.key]}
-						onChangeText={(v) => handleChange(f.key, v)}
+						onChangeText={v => handleChange(f.key, v)}
 						placeholder={f.placeholder}
 						placeholderTextColor="#64748b"
 						style={{
-							backgroundColor: "#0e1824ff",
+							backgroundColor: theme.inputBG,
 							color: "#e2e8f0",
 							padding: 12,
 							borderRadius: 6,
 							borderWidth: 1,
-							borderColor: theme.grayPressed
+							borderColor: theme.inputBorder,
 						}}
 					/>
 				</View>
 			))}
-			<ImagePickerExample />|
-     
-			<Button onPress={handleSave} text={saving ? "Guardando..." : "Guardar"} style={{ marginTop: 40 }} />
-			{error && <Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>}
+
+			<View style={{ gap: 8 }}>
+				<Text style={{ color: "#cbd5e1" }}>Matricula Imágen</Text>
+				<View
+					style={{
+						gap: 8,
+						backgroundColor: theme.inputBG,
+						borderWidth: 1,
+						borderColor: theme.inputBorder,
+						borderRadius: 6,
+					}}
+				>
+					<ImagePicker image={matriculaImg} setImage={setMatriculaImg} />
+				</View>
+			</View>
+
+			<View style={{ gap: 8 }}>
+				<Text style={{ color: "#cbd5e1" }}>Firma Digital</Text>
+				<View
+					style={{
+						gap: 8,
+						backgroundColor: theme.inputBG,
+						borderWidth: 1,
+						borderColor: theme.inputBorder,
+						borderRadius: 6,
+					}}
+				>
+					<FirmaPicker image={firmaImg} setImage={setFirmaImg} />
+				</View>
+			</View>
+
+			<View style={{ gap: 8 }}>
+				<Text style={{ color: "#cbd5e1" }}>Empresa Logo</Text>
+				<View
+					style={{
+						gap: 8,
+						backgroundColor: theme.inputBG,
+						borderWidth: 1,
+						borderColor: theme.inputBorder,
+						borderRadius: 6,
+					}}
+				>
+					<ImagePicker image={empresaLogo} setImage={setEmpresaLogo} />
+				</View>
+			</View>
+
+			<Button
+				onPress={handleSave}
+				text={saving ? "Guardando..." : "Guardar"}
+				style={{ marginTop: 40 }}
+			/>
+			{error && (
+				<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
+			)}
 		</View>
 	)
 }

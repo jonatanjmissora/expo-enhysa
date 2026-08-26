@@ -1,13 +1,13 @@
 import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, View, Text } from "react-native"
 
-export default function Header({
-	actualHeader,
-	setActualHeader,
+export default function HeaderPerfil({
+	activeHeader,
+	onSetHeader,
 }: {
-	actualHeader: string
-	setActualHeader: (header: string) => void
+	activeHeader: string
+	onSetHeader: (v: string) => void
 }) {
 	return (
 		<View
@@ -17,28 +17,25 @@ export default function Header({
 				alignItems: "center",
 				justifyContent: "space-between",
 				width: "100%",
-				position: "fixed",
-				top: 20,
-				left: 0,
 			}}
 		>
 			<HeaderCard
 				text="Técnico"
-				icon="person"
-				actualHeader={actualHeader}
-				setActualHeader={setActualHeader}
+				icon="person-outline"
+				active={activeHeader === "tecnico"}
+				onPress={() => onSetHeader("tecnico")}
 			/>
 			<HeaderCard
 				text="Empresa"
-				icon="home"
-				actualHeader={actualHeader}
-				setActualHeader={setActualHeader}
+				icon="home-outline"
+				active={activeHeader === "empresa"}
+				onPress={() => onSetHeader("empresa")}
 			/>
 			<HeaderCard
 				text="Instrumento"
-				icon="hardware-chip"
-				actualHeader={actualHeader}
-				setActualHeader={setActualHeader}
+				icon="hardware-chip-outline"
+				active={activeHeader === "instrumento"}
+				onPress={() => onSetHeader("instrumento")}
 			/>
 		</View>
 	)
@@ -47,16 +44,17 @@ export default function Header({
 function HeaderCard({
 	text,
 	icon,
-	actualHeader,
-	setActualHeader,
+	active,
+	onPress,
 }: {
 	text: string
 	icon: string
-	actualHeader: string
-	setActualHeader: (header: string) => void
+	active: boolean
+	onPress: () => void
 }) {
 	return (
 		<Pressable
+			onPress={onPress}
 			style={{
 				alignItems: "center",
 				justifyContent: "center",
@@ -64,22 +62,14 @@ function HeaderCard({
 				flex: 1,
 				flexBasis: 0,
 				minWidth: 0,
+				paddingVertical: 8,
+				backgroundColor: active ? theme.orange : "transparent",
+				borderRadius: 8,
+				opacity: active ? 0.75 : 0.5,
 			}}
-			onPress={() => setActualHeader(text)}
 		>
-			<Ionicons
-				name={actualHeader === text ? icon : `${icon}-outline`}
-				size={32}
-				color={actualHeader === text ? theme.orange : "#888"}
-			/>
-			<Text
-				style={{
-					color: actualHeader === text ? theme.orange : "#888",
-					fontSize: 18,
-				}}
-			>
-				{text}
-			</Text>
+			<Ionicons name={icon} size={32} color={"#fff"} />
+			<Text style={{ fontSize: 18, color: "#fff" }}>{text}</Text>
 		</Pressable>
 	)
 }

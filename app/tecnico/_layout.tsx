@@ -5,6 +5,7 @@ export default function TecnicoLayout() {
 		<Tabs
 			screenOptions={{
 				headerShown: false,
+				animation: "none",
 			}}
 		>
 			<Tabs.Screen

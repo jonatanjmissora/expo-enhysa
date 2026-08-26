@@ -1,8 +1,9 @@
+import Button from "@/components/Button"
 import { Alert, Image, View } from "react-native"
 import * as ExpoImagePicker from "expo-image-picker"
-import Button from "./Button"
+import FirmaBox from "./FirmaBox"
 
-export default function ImagePicker({
+export default function FirmaPicker({
 	image,
 	setImage,
 }: {
@@ -29,31 +30,6 @@ export default function ImagePicker({
 		})
 
 		console.log("ImagePicker", result)
-
-		if (!result.canceled) {
-			setImage(result.assets[0].uri)
-		}
-	}
-
-	const takePhoto = async () => {
-		const permissionResult =
-			await ExpoImagePicker.requestCameraPermissionsAsync()
-
-		if (!permissionResult.granted) {
-			Alert.alert(
-				"Permission required",
-				"Permission to access the camera is required."
-			)
-			return
-		}
-
-		const result = await ExpoImagePicker.launchCameraAsync({
-			allowsEditing: true,
-			aspect: [4, 3],
-			quality: 1,
-		})
-
-		console.log("TakePhoto", result)
 
 		if (!result.canceled) {
 			setImage(result.assets[0].uri)
@@ -113,20 +89,7 @@ export default function ImagePicker({
 							flexDirection: "column-reverse",
 						}}
 					/>
-					<Button
-						variant="ghost"
-						iconRight="camera-outline"
-						text="foto"
-						size="xsmall"
-						iconSize={30}
-						onPress={takePhoto}
-						style={{
-							flex: 1,
-							padding: 0,
-							opacity: 0.5,
-							flexDirection: "column-reverse",
-						}}
-					/>
+					<FirmaBox image={image} setImage={setImage} />
 				</View>
 			)}
 		</View>

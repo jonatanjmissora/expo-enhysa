@@ -1,19 +1,13 @@
 import Header from "@/components/Header"
 import Empresas from "@/components/perfil/Empresas"
+import HeaderPerfil from "@/components/perfil/Header"
 import Instrumentos from "@/components/perfil/Instrumentos"
 import Tecnico from "@/components/perfil/Tecnico"
 import { theme } from "@/constants/theme"
-import Ionicons from "@expo/vector-icons/Ionicons"
 import { LinearGradient } from "expo-linear-gradient"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import {
-	Pressable,
-	ScrollView,
-	Text,
-	useWindowDimensions,
-	View,
-} from "react-native"
+import { ScrollView, useWindowDimensions, View } from "react-native"
 
 export default function Perfil() {
 	const router = useRouter()
@@ -52,78 +46,5 @@ export default function Perfil() {
 				</ScrollView>
 			</LinearGradient>
 		</View>
-	)
-}
-
-function HeaderPerfil({
-	activeHeader,
-	onSetHeader,
-}: {
-	activeHeader: string
-	onSetHeader: (v: string) => void
-}) {
-	return (
-		<View
-			style={{
-				display: "flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "space-between",
-				width: "100%",
-			}}
-		>
-			<HeaderCard
-				text="Técnico"
-				icon="person-outline"
-				active={activeHeader === "tecnico"}
-				onPress={() => onSetHeader("tecnico")}
-			/>
-			<HeaderCard
-				text="Empresa"
-				icon="home-outline"
-				active={activeHeader === "empresa"}
-				onPress={() => onSetHeader("empresa")}
-			/>
-			<HeaderCard
-				text="Instrumento"
-				icon="hardware-chip-outline"
-				active={activeHeader === "instrumento"}
-				onPress={() => onSetHeader("instrumento")}
-			/>
-		</View>
-	)
-}
-
-function HeaderCard({
-	text,
-	icon,
-	active,
-	onPress,
-}: {
-	text: string
-	icon: string
-	active: boolean
-	onPress: () => void
-}) {
-	return (
-		<Pressable
-			onPress={onPress}
-			style={{
-				alignItems: "center",
-				justifyContent: "center",
-				gap: 4,
-				flex: 1,
-				flexBasis: 0,
-				minWidth: 0,
-				paddingVertical: 8,
-				backgroundColor: active ? theme.orange : "transparent",
-				borderRadius: 8,
-			}}
-		>
-			<Ionicons name={icon} size={32} color={active ? "#fff" : "#888"} />
-			<Text style={{ color: active ? "#fff" : "#888", fontSize: 18 }}>
-				{text}
-			</Text>
-		</Pressable>
 	)
 }
