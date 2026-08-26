@@ -1,5 +1,6 @@
 import Button from "@/components/Button"
 import Header from "@/components/Header"
+import ImagePickerExample from "@/components/ImagePicker"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
@@ -9,16 +10,20 @@ import {
 import { LinearGradient } from "expo-linear-gradient"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { Pressable, Text, TextInput, View } from "react-native"
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
 
 const USER_ID = "user-1"
 
 const FIELDS = [
 	{ key: "nombre", label: "Nombre", placeholder: "Juan Pérez" },
+	{ key: "dni", label: "DNI", placeholder: "29123456" },
 	{ key: "telefono", label: "Teléfono", placeholder: "2911234567" },
 	{ key: "localidad", label: "Localidad", placeholder: "Bahía Blanca" },
 	{ key: "cargo", label: "Cargo", placeholder: "Técnico" },
 	{ key: "matricula", label: "Matrícula", placeholder: "MAT-12345" },
+	{ key: "matriculaImg", label: "Matrícula Imágen", placeholder: "" },
+	{ key: "firmaImg", label: "Firma Imágen", placeholder: "" },
+	{ key: "empresaLogo", label: "Empresa Logo", placeholder: "" },
 ] as const
 
 type FieldKey = (typeof FIELDS)[number]["key"]
@@ -30,21 +35,13 @@ export default function Nuevo() {
 			<Header onPress={() => router.push("/")} />
 			<LinearGradient
 				colors={[theme.headerBG, theme.tabBG]}
-				style={{
-					flex: 1,
-					position: "fixed",
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
-					zIndex: -1,
-				}}
+				style={{ flex: 1 }}
 			>
-				<View
-					style={{
-						flex: 1,
+				<ScrollView
+					contentContainerStyle={{
 						gap: 12,
 						padding: 16,
+						paddingBottom: 150
 					}}
 				>
 					<View
@@ -59,8 +56,10 @@ export default function Nuevo() {
 						<Text
 							style={{
 								fontSize: 22,
+								color: "#eee",
 								fontWeight: "600",
 								letterSpacing: 1.5,
+								paddingHorizontal: 16,
 							}}
 						>
 							Crear Técnico
@@ -68,7 +67,7 @@ export default function Nuevo() {
 					</View>
 
 					<TecnicoNuevoForm />
-				</View>
+				</ScrollView>
 			</LinearGradient>
 		</View>
 	)
@@ -78,19 +77,23 @@ function TecnicoNuevoForm() {
 	const router = useRouter()
 	const [values, setValues] = useState<Record<FieldKey, string>>({
 		nombre: "",
+		dni: "",
 		telefono: "",
 		localidad: "",
 		cargo: "",
 		matricula: "",
+		matriculaImg: "",
+		firmaImg: "",
+		empresaLogo: "",
 	})
 	const [saving, setSaving] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
 	const handleChange = (key: FieldKey, value: string) =>
-		setValues(p => ({ ...p, [key]: value }))
+		setValues((p) => ({ ...p, [key]: value }))
 
 	async function handleSave() {
-		if (Object.values(values).some(v => !v.trim())) {
+		if (Object.values(values).some((v) => !v.trim())) {
 			setError("Completá todos los campos")
 			return
 		}
@@ -117,13 +120,14 @@ function TecnicoNuevoForm() {
 		}
 	}
 	return (
-		<View style={{ flex: 1, padding: 16, gap: 20 }}>
-			{FIELDS.map(f => (
+		<View style={{ gap: 12 }}>
+			
+			{FIELDS.map((f) => (
 				<View key={f.key} style={{ gap: 5 }}>
 					<Text style={{ color: "#cbd5e1" }}>{f.label}</Text>
 					<TextInput
 						value={values[f.key]}
-						onChangeText={v => handleChange(f.key, v)}
+						onChangeText={(v) => handleChange(f.key, v)}
 						placeholder={f.placeholder}
 						placeholderTextColor="#64748b"
 						style={{
@@ -131,12 +135,16 @@ function TecnicoNuevoForm() {
 							color: "#e2e8f0",
 							padding: 12,
 							borderRadius: 6,
+							borderWidth: 1,
+							borderColor: theme.grayPressed
 						}}
 					/>
 				</View>
 			))}
-			{error && <Text style={{ color: "#fca5a5" }}>{error}</Text>}
-			<Button onPress={handleSave} text={saving ? "Guardando..." : "Guardar"} />
+			<ImagePickerExample />|
+     
+			<Button onPress={handleSave} text={saving ? "Guardando..." : "Guardar"} style={{ marginTop: 40 }} />
+			{error && <Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>}
 		</View>
 	)
 }

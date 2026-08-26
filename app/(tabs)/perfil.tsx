@@ -37,6 +37,7 @@ export default function Perfil() {
 				<ScrollView
 					style={{
 						flex: 1,
+						paddingHorizontal: 10,
 					}}
 				>
 					<HeaderPerfil
