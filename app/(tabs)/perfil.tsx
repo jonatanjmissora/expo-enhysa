@@ -12,6 +12,7 @@ export default function Perfil() {
 	return (
 		<ViewWithLogo>
 			<ScrollView
+				// contentContainerStyle={{ flex: 1 }}
 				style={{
 					flex: 1,
 					paddingHorizontal: 10,
@@ -21,7 +22,12 @@ export default function Perfil() {
 					activeHeader={actualHeader}
 					onSetHeader={setActualHeader}
 				/>
-				<View style={{ flex: 1, minHeight: height * 0.6 }}>
+				<View
+					style={{
+						flex: 1,
+						minHeight: height * 0.6,
+					}}
+				>
 					{actualHeader === "tecnico" && <Tecnico />}
 					{actualHeader === "empresa" && <Empresas />}
 					{actualHeader === "instrumento" && <Instrumentos />}

@@ -26,13 +26,13 @@ export default function HeaderPerfil({
 				onPress={() => onSetHeader("tecnico")}
 			/>
 			<HeaderCard
-				text="Empresa"
+				text="Empresas"
 				icon="home-outline"
 				active={activeHeader === "empresa"}
 				onPress={() => onSetHeader("empresa")}
 			/>
 			<HeaderCard
-				text="Instrumento"
+				text="Instrumentos"
 				icon="hardware-chip-outline"
 				active={activeHeader === "instrumento"}
 				onPress={() => onSetHeader("instrumento")}

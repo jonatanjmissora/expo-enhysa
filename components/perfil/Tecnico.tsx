@@ -47,7 +47,6 @@ export default function Tecnico() {
 					flex: 1,
 					alignItems: "center",
 					justifyContent: "center",
-					backgroundColor: theme.safeAreaBG,
 				}}
 			>
 				<Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text>
@@ -63,7 +62,6 @@ export default function Tecnico() {
 					alignItems: "center",
 					justifyContent: "center",
 					gap: 12,
-					padding: 16,
 				}}
 			>
 				<Text style={{ color: "#94a3b8" }}>
