@@ -509,18 +509,28 @@ tabla tecnicos
 
 ---
 
-# 9. Lo que queda para el siguiente paso
+# 9. Estado de las funciones del repository
+
+Las siguientes funciones ya están implementadas en `src/repositories/tecnico.repository.ts`:
 
 ```text
-❌ tecnicoRepository.update()
-❌ tecnicoRepository.delete()
-❌ TanStack Query
+✅ tecnicoRepository.create()
+✅ tecnicoRepository.getById()
+✅ tecnicoRepository.getByUserId()
+✅ tecnicoRepository.update()
+✅ tecnicoRepository.delete()
+```
+
+Lo que **aún** queda para pasos posteriores:
+
+```text
+❌ TanStack Query (caché / invalidación)
 ❌ Backup
 ❌ Restore
-❌ Sincronización
-❌ Usuarios locales
-❌ Migraciones
-❌ Gestión de imágenes
+❌ Sincronización con servidor
+❌ Usuarios locales (tabla users)
+❌ Migraciones versionadas
+❌ Gestión de imágenes (limpieza de archivos al editar/eliminar)
 ```
 
 El objetivo de este paso se considera cumplido cuando podamos demostrar:
@@ -537,4 +547,229 @@ Abrir aplicación
 Consultar técnico
       ↓
 El técnico sigue existiendo
+```
+
+---
+
+# 10. Edición de técnico — `tecnicoRepository.update()`
+
+## 10a. `update` en el repository
+
+Actualiza un técnico existente haciendo merge de los campos recibidos sobre el registro
+actual (para no borrar columnas que no se envían). Es `Partial<CreateTecnicoInput>`:
+
+```ts
+async update(id: string, input: Partial<CreateTecnicoInput>): Promise<Tecnico> {
+	await initializeTecnicosTable()
+	const db = await getDatabase()
+
+	const existing = await db.getFirstAsync<Tecnico>(
+		`SELECT * FROM tecnicos WHERE id = ? LIMIT 1`,
+		id,
+	)
+	if (!existing) {
+		throw new Error("No se encontró el técnico a actualizar")
+	}
+
+	const tecnico = {
+		...existing,
+		...input,
+		empresaLogo: input.empresaLogo ?? existing.empresaLogo,
+		dni: input.dni ?? existing.dni,
+		userId: input.userId ?? existing.userId,
+	}
+
+	await db.runAsync(
+		`UPDATE tecnicos SET
+			nombre = ?, telefono = ?, localidad = ?, cargo = ?, matricula = ?,
+			matriculaImg = ?, firmaImg = ?, empresaLogo = ?, dni = ?, userId = ?
+		WHERE id = ?`,
+		tecnico.nombre, tecnico.telefono, tecnico.localidad, tecnico.cargo,
+		tecnico.matricula, tecnico.matriculaImg, tecnico.firmaImg,
+		tecnico.empresaLogo ?? null, tecnico.dni ?? null, tecnico.userId, id,
+	)
+
+	return tecnico
+}
+```
+
+### Detalle de merge
+
+El merge es **explícito por columna nullable** (`empresaLogo`, `dni`, `userId`) para
+evitar que un `undefined` pise el valor previo. Los campos `string` no-nullable se
+pisaron con `...input`, pero como el formulario siempre envía todos los campos de texto,
+eso no es un problema en la práctica.
+
+## 10b. Pantalla de edición — `app/tecnico/editar.tsx`
+
+Diferencias respecto a `nuevo.tsx`:
+
+1. **Carga previa**: recibe `tecnicoId` vía `useLocalSearchParams` y lo hidrata con
+   `getById` dentro de `useFocusEffect` (se recarga al volver a foco).
+2. **Estados de carga**: `tecnico === undefined` → "Cargando…"; `!tecnico` → "No existe".
+3. **`defaultValues` del form llenos** con los datos del técnico:
+
+```ts
+const form = useForm({
+	defaultValues: {
+		nombre: tecnico?.nombre ?? "",
+		dni: tecnico?.dni != null ? String(tecnico.dni) : "",
+		telefono: tecnico?.telefono ?? "",
+		localidad: tecnico?.localidad ?? "",
+		cargo: tecnico?.cargo ?? "",
+		matricula: tecnico?.matricula ?? "",
+		matriculaImg: tecnico?.matriculaImg ?? "",
+		firmaImg: tecnico?.firmaImg ?? "",
+		empresaLogo: tecnico?.empresaLogo ?? "",
+	},
+	validators: { onSubmit: tecnicoFormValidator },
+	onSubmit: async ({ value }) => {
+		// misma validación de imágenes que nuevo.tsx
+		await tecnicoRepository.update(tecnico.id, {
+			...value,
+			matriculaImg,
+			firmaImg,
+			empresaLogo,
+			dni: value.dni ? Number(value.dni) : null,
+			userId: USER_ID,
+		})
+		router.replace("/(tabs)/perfil")
+	},
+})
+```
+
+### Reutilización de `FIELDS`
+
+Tanto `nuevo.tsx` como `editar.tsx` y `components/perfil/Tecnico.tsx` comparten el mismo
+array `FIELDS` (misma forma, mismo orden de labels). Mantener este array en un único lugar
+es clave para el patrón reutilizable (ver cap. 12).
+
+---
+
+# 11. Eliminación con modal de confirmación
+
+## 11a. `delete` en el repository
+
+```ts
+async delete(id: string): Promise<void> {
+	await initializeTecnicosTable()
+	const db = await getDatabase()
+	await db.runAsync(`DELETE FROM tecnicos WHERE id = ?`, id)
+}
+```
+
+## 11b. `ModalDeleteConfirm` (componente reutilizable)
+
+Ubicado en `components/ModalDeleteConfirm.tsx`. Props:
+
+```ts
+{
+	visible: boolean
+	title: string
+	message: string
+	onClose: () => void
+	onConfirm: () => void
+}
+```
+
+Usa `Modal` de React Native (`transparent`, `animationType="fade"`) y dos `Button`:
+`variant="ghost"` para Cancelar y `variant="danger"` para Eliminar. **Siempre** se debe
+usar este modal antes de llamar a `repository.delete()` para evitar borrados accidentales.
+
+## 11c. Uso en `components/perfil/Tecnico.tsx`
+
+El menú (`MenuTecnico`) tiene un botón "Eliminar" que abre el modal y un botón "Editar"
+que navega a la pantalla de edición pasando `tecnicoId`:
+
+```ts
+const handleDelete = async () => {
+	await tecnicoRepository.delete(tecnico.id)
+	onDeleted?.() // recarga la lista (patrón callback)
+}
+
+// Navegación a edición
+router.push({
+	pathname: "/tecnico/editar",
+	params: { tecnicoId: tecnico.id },
+})
+
+// Modal
+<ModalDeleteConfirm
+	visible={modalVisible}
+	title="Eliminar técnico"
+	message="¿Estás seguro de que querés eliminar los datos del técnico? Esta acción no se puede deshacer."
+	onClose={() => setModalVisible(false)}
+	onConfirm={handleDelete}
+/>
+```
+
+### Patrón de recarga tras eliminar
+
+`Tecnico` (padre) pasa `onDeleted={load}` al item. `handleDelete` llama a
+`tecnicoRepository.delete` y luego a `onDeleted()` para refrescar el estado desde la DB.
+Esto evita guardar en estado manualmente y es el patrón a copiar para `empresa`/`instrumento`.
+
+---
+
+# 12. Patrón reutilizable ampliado (empresa, instrumento)
+
+Para crear **cualquier** entidad local con alta/edición/eliminación, seguir este patrón
+completo (no solo el de creación del cap. 7):
+
+### 12.1 Schema (`src/db/schema/<entidad>.ts`)
+
+```ts
+export const CREATE_<ENTIDAD>_TABLE = `CREATE TABLE IF NOT EXISTS <entidad> (...)`
+export const <entidad>FormValidator = z.object({ ... })
+export const default<Entidad> = { ... }
+export type <Entidad>FormType = z.infer<typeof <entidad>FormValidator>
+```
+
+Aplicar el patrón de validación por carácter (cap. 4b) a todos los campos numéricos.
+
+### 12.2 Repository (`src/repositories/<entidad>.repository.ts`)
+
+```ts
+export const <entidad>Repository = {
+	async create(input: Create<Entidad>Input): Promise<<Entidad>> { /* cap. 5 */ },
+	async getById(id: string): Promise<<Entidad> | null> { /* SELECT WHERE id */ },
+	async getByUserId(userId: string): Promise<<Entidad> | null> { /* SELECT WHERE userId LIMIT 1 */ },
+	async update(id: string, input: Partial<Create<Entidad>Input>): Promise<<Entidad>> { /* cap. 10a */ },
+	async delete(id: string): Promise<void> { /* cap. 11a */ },
+}
+```
+
+### 12.3 Pantallas
+
+| Archivo | Contenido | Basado en |
+| --- | --- | --- |
+| `app/<entidad>/nuevo.tsx` | `useForm` + `repository.create` + validación de imágenes | `app/tecnico/nuevo.tsx` |
+| `app/<entidad>/editar.tsx` | `useLocalSearchParams` + `getById` en `useFocusEffect` + `repository.update` | `app/tecnico/editar.tsx` |
+| `components/perfil/<Entidad>.tsx` | Vista de detalle + `Menu<Entidad>` con editar/eliminar | `components/perfil/Tecnico.tsx` |
+
+### 12.4 Checklist de copia
+
+```text
+✅ Mantener un array FIELDS compartido entre nuevo/editar/detalle
+✅ Validación de imágenes obligatorias en onSubmit (matriculaImg, firmaImg)
+✅ empresaLogo opcional (no se valida ausencia)
+✅ dni: string en form → number | null al guardar
+✅ Button con variant ghost/danger y disabled en isSubmitting
+✅ ModalDeleteConfirm antes de repository.delete
+✅ onDeleted callback para refrescar desde DB tras eliminar
+✅ Navegación a edición con params { "<entidad>Id": id }
+```
+
+---
+
+# 13. Flujo completo (alta → edición → eliminación)
+
+```text
+Nuevo  ──create──▶  DB
+                      │
+Editar ──getById──▶  DB
+   │                  │
+   └────update───────▶ DB
+                      │
+Detalle ──delete────▶ DB  (vía ModalDeleteConfirm + onDeleted)
 ```

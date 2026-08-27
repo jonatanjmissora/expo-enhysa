@@ -12,6 +12,10 @@ export default function TecnicoLayout() {
 				name="nuevo"
 				options={{ tabBarStyle: { display: "none" } }}
 			/>
+			<Tabs.Screen
+				name="editar"
+				options={{ tabBarStyle: { display: "none" } }}
+			/>
 		</Tabs>
 	)
 }
