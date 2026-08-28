@@ -9,6 +9,7 @@ import Animation3 from "../../assets/images/animation3.webp"
 import Animation4 from "../../assets/images/animation4.webp"
 import Button from "../Button"
 import { theme } from "@/constants/theme"
+import { LinearGradient } from "expo-linear-gradient"
 
 export default function Landing({
 	positionsY,
@@ -25,8 +26,24 @@ export default function Landing({
 			onLayout={e => {
 				positionsY.current.landing = e.nativeEvent.layout.y
 			}}
-			style={{ paddingTop: 180, paddingHorizontal: 0 }}
+			style={{
+				paddingTop: 180,
+				paddingHorizontal: 0,
+			}}
 		>
+			<LinearGradient
+				colors={[theme.footerBG, "transparent"]}
+				style={{
+					flex: 1,
+					position: "absolute",
+					top: -1,
+					left: 0,
+					height: 100,
+					width: "100%",
+					zIndex: 1,
+				}}
+			/>
+
 			<View
 				style={{
 					width: "100%",

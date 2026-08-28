@@ -1,12 +1,13 @@
 import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { Pressable, Text, ViewStyle } from "react-native"
+import { Pressable, Text, TextStyle, ViewStyle } from "react-native"
 
 export default function Button({
 	iconLeft,
 	text,
 	iconRight,
 	style,
+	textStyle,
 	disabled,
 	onPress,
 	variant = "primary",
@@ -17,6 +18,7 @@ export default function Button({
 	iconRight?: string
 	text?: string
 	style?: ViewStyle
+	textStyle?: TextStyle
 	disabled?: boolean
 	onPress: () => void
 	variant?: "primary" | "secondary" | "ghost" | "danger"
@@ -66,6 +68,7 @@ export default function Button({
 					textAlign: "center",
 					fontWeight: "600",
 					letterSpacing: 0.75,
+					...textStyle,
 				}}
 			>
 				{text}
