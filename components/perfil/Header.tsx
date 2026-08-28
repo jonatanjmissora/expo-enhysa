@@ -68,8 +68,8 @@ function HeaderCard({
 				opacity: active ? 0.75 : 0.5,
 			}}
 		>
-			<Ionicons name={icon} size={32} color={"#fff"} />
-			<Text style={{ fontSize: 18, color: "#fff" }}>{text}</Text>
+			<Ionicons name={icon} size={24} color={"#fff"} />
+			<Text style={{ fontSize: 14, color: "#fff" }}>{text}</Text>
 		</Pressable>
 	)
 }

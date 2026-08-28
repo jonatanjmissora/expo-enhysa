@@ -126,7 +126,7 @@ function EmpresaItem({
 					<Text
 						style={{
 							color: "#ccc",
-							fontSize: 20,
+							fontSize: 16,
 							fontWeight: "600",
 							letterSpacing: 2,
 							fontStyle: "italic",
@@ -196,6 +196,7 @@ function MenuEmpresa({
 					style={{
 						flexDirection: "row",
 						width: "100%",
+						gap: 8,
 					}}
 				>
 					<Button

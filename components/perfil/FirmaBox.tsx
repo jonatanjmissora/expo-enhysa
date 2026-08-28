@@ -1,11 +1,12 @@
-import { Canvas, Path, Skia, useCanvasRef } from "@shopify/react-native-skia"
-import { File, Paths } from "expo-file-system"
-import { useCallback, useState } from "react"
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native"
+import { useRef, useState } from "react"
+import { captureRef } from "react-native-view-shot"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
-import Button from "../Button"
+import { useSharedValue } from "react-native-reanimated"
 import { LinearGradient } from "expo-linear-gradient"
+import { Modal, Pressable, Text, View } from "react-native"
+import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
+import { File, Paths } from "expo-file-system"
 
 type SignaturePadProps = {
 	image: string | null
@@ -13,7 +14,7 @@ type SignaturePadProps = {
 }
 
 export default function FirmaBox({ image, setImage }: SignaturePadProps) {
-	const [showFirmaBox, setShowFirmaBox] = useState<boolean>(false)
+	const [showFirmaBox, setShowFirmaBox] = useState(false)
 
 	return (
 		<View style={{ position: "relative", flex: 1 }}>
@@ -32,11 +33,7 @@ export default function FirmaBox({ image, setImage }: SignaturePadProps) {
 				onPress={() => setShowFirmaBox(true)}
 			/>
 
-			<Modal
-				visible={showFirmaBox}
-				animationType="fade"
-				onDismiss={() => setShowFirmaBox(false)}
-			>
+			<Modal visible={showFirmaBox} animationType="fade" onDismiss={() => setShowFirmaBox(false)}>
 				<LinearGradient
 					colors={[theme.headerBG, theme.tabBG]}
 					style={{
@@ -63,57 +60,54 @@ export default function FirmaBox({ image, setImage }: SignaturePadProps) {
 	)
 }
 
+type Point = { x: number; y: number }
+
 function FirmaBoxContent({
 	image,
 	setImage,
 	setShowFirmaBox,
 }: SignaturePadProps & { setShowFirmaBox: (value: boolean) => void }) {
-	const canvasRef = useCanvasRef()
-
-	const [path, setPath] = useState(() => Skia.Path.Make())
+	const viewRef = useRef<View>(null)
+	const [paths, setPaths] = useState<Point[]>([])
+	const currentPath = useSharedValue<Point[]>([])
 
 	const gesture = Gesture.Pan()
-		.onBegin(event => {
-			const newPath = Skia.Path.Make()
-			newPath.moveTo(event.x, event.y)
-
-			setPath(newPath)
+		.onBegin((e) => {
+			currentPath.value = [{ x: e.x, y: e.y }]
 		})
-		.onUpdate(event => {
-			const newPath = path.copy()
-
-			newPath.lineTo(event.x, event.y)
-
-			setPath(newPath)
+		.onUpdate((e) => {
+			currentPath.value = [...currentPath.value, { x: e.x, y: e.y }]
+			setPaths([...paths, { x: e.x, y: e.y }])
+		})
+		.onEnd(() => {
+			currentPath.value = []
 		})
 
-	const clear = useCallback(() => {
-		setPath(Skia.Path.Make())
+	const clear = () => {
+		setPaths([])
+		currentPath.value = []
 		setImage(null)
-	}, [setImage])
+	}
 
-	const save = useCallback(() => {
-		const snapshot = canvasRef.current?.makeImageSnapshot()
+	const save = async () => {
+		try {
+			const uri = await captureRef(viewRef, {
+				format: "png",
+				quality: 1,
+			})
 
-		if (!snapshot) {
-			return
+			const file = new File(Paths.document, `signature-${Date.now()}.png`)
+			await file.write(uri)
+			setImage(file.uri)
+			setShowFirmaBox(false)
+		} catch (e) {
+			console.error("Error saving signature:", e)
 		}
-
-		const bytes = snapshot.encodeToBytes()
-
-		const file = new File(Paths.document, `signature-${Date.now()}.png`)
-
-		file.write(bytes)
-
-		setImage(file.uri)
-	}, [canvasRef, setImage])
+	}
 
 	return (
-		<View style={styles.container}>
-			<Button
-				variant="ghost"
-				iconRight="close-outline"
-				iconSize={40}
+		<View style={{ width: "100%", gap: 12 }}>
+			<Pressable
 				onPress={() => setShowFirmaBox(false)}
 				style={{
 					position: "absolute",
@@ -123,111 +117,88 @@ function FirmaBoxContent({
 					padding: 10,
 					opacity: 0.5,
 				}}
-			/>
-			<View style={styles.canvasContainer}>
-				<GestureDetector gesture={gesture}>
-					<Canvas ref={canvasRef} style={styles.canvas}>
-						<Path
-							path={path}
-							style="stroke"
-							strokeWidth={3}
-							strokeCap="round"
-							strokeJoin="round"
-							color="#000000"
-						/>
-					</Canvas>
-				</GestureDetector>
+			>
+				<Text style={{ color: "#fff", fontSize: 24 }}>✕</Text>
+			</Pressable>
 
-				{!image && (
-					<View pointerEvents="none" style={styles.placeholder}>
-						<Text style={styles.placeholderText}>Firmá aquí</Text>
+			<View
+				style={{
+					height: 200,
+					borderWidth: 1,
+					borderColor: "#475569",
+					borderRadius: 12,
+					backgroundColor: "#ffffff",
+					overflow: "hidden",
+					position: "relative",
+				}}
+			>
+				<GestureDetector gesture={gesture}>
+					<View ref={viewRef} style={{ flex: 1, position: "relative" }}>
+						{paths.map((point, i) => (
+							<View
+								key={i}
+								style={{
+									position: "absolute",
+									left: point.x - 1.5,
+									top: point.y - 1.5,
+									width: 3,
+									height: 3,
+									borderRadius: 1.5,
+									backgroundColor: "#000000",
+								}}
+							/>
+						))}
+						{!image && paths.length === 0 && (
+							<View
+								pointerEvents="none"
+								style={{
+									position: "absolute",
+									top: 0,
+									left: 0,
+									right: 0,
+									bottom: 0,
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+							>
+								<Text style={{ color: "#94a3b8", fontSize: 16 }}>Firmá aquí</Text>
+							</View>
+						)}
 					</View>
-				)}
+				</GestureDetector>
 			</View>
 
-			<View style={styles.buttons}>
-				<Button
-					text="Rehacer"
+			<View style={{ flexDirection: "row", gap: 12 }}>
+				<Pressable
 					onPress={clear}
-					iconLeft="trash-outline"
-					variant="danger"
-					size="small"
 					style={{
 						flex: 1,
-						opacity: 0.6,
+						paddingVertical: 12,
+						borderRadius: 6,
+						backgroundColor: "#334155",
+						alignItems: "center",
 						gap: 6,
 					}}
-				/>
+				>
+					<Text style={{ color: "#fff", fontWeight: "600" }}>Rehacer</Text>
+				</Pressable>
 
-				<Button
-					text="Guardar"
+				<Pressable
 					onPress={save}
-					size="small"
-					iconLeft="save-outline"
-					style={{ flex: 1, gap: 6 }}
-				/>
+					style={{
+						flex: 1,
+						paddingVertical: 12,
+						borderRadius: 6,
+						backgroundColor: "#5cb85c",
+						alignItems: "center",
+						gap: 6,
+					}}
+				>
+					<Text style={{ color: "#fff", fontWeight: "600" }}>Guardar</Text>
+				</Pressable>
 			</View>
 
-			{image && <Text style={styles.uri}>Firma guardada</Text>}
+			{image && <Text style={{ color: "#94a3b8", fontSize: 12, textAlign: "center" }}>Firma guardada</Text>}
 		</View>
 	)
 }
-
-const styles = StyleSheet.create({
-	container: {
-		width: "100%",
-		gap: 12,
-		position: "relative",
-	},
-
-	canvasContainer: {
-		height: 200,
-		borderWidth: 1,
-		borderColor: "#475569",
-		borderRadius: 12,
-		backgroundColor: "#ffffff",
-		overflow: "hidden",
-		position: "relative",
-	},
-
-	canvas: {
-		flex: 1,
-	},
-
-	placeholder: {
-		position: "absolute",
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-
-	placeholderText: {
-		color: "#94a3b8",
-		fontSize: 16,
-	},
-
-	buttons: {
-		flexDirection: "row",
-		gap: 12,
-	},
-
-	button: {
-		paddingHorizontal: 16,
-		paddingVertical: 10,
-		borderRadius: 8,
-		backgroundColor: "#334155",
-	},
-
-	buttonText: {
-		color: "#ffffff",
-		fontWeight: "600",
-	},
-
-	uri: {
-		color: "#94a3b8",
-		fontSize: 12,
-	},
-})

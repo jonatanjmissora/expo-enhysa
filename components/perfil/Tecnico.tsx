@@ -124,7 +124,7 @@ function TecnicoItem({
 					<Text
 						style={{
 							color: "#ccc",
-							fontSize: 20,
+							fontSize: 16,
 							fontWeight: "600",
 							letterSpacing: 2,
 							fontStyle: "italic",
@@ -220,6 +220,7 @@ function MenuTecnico({
 					style={{
 						flexDirection: "row",
 						width: "100%",
+						gap: 8,
 					}}
 				>
 					<Button

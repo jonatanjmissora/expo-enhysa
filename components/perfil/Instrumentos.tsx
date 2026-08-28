@@ -75,7 +75,7 @@ export default function Instrumentos() {
 	}
 
 	return (
-		<View style={{ gap: 16, padding: 16 }}>
+		<View style={{ flex: 1, gap: 24, justifyContent: "center", alignItems: "center", paddingBottom: 100 }}>
 			{instrumentos.map(instrumento => (
 				<InstrumentoItem
 					key={instrumento.id}
@@ -115,14 +115,12 @@ function InstrumentoItem({
 		<View
 			style={{
 				flex: 1,
-				padding: 16,
 				gap: 24,
 				paddingVertical: 10,
 				justifyContent: "center",
 				alignItems: "center",
 				paddingBottom: 100,
-				borderColor: "yellow",
-				borderWidth: 1,
+				width: "90%"
 			}}
 		>
 			<MenuInstrumento instrumento={instrumento} onDeleted={onDeleted} />
@@ -152,7 +150,7 @@ function InstrumentoItem({
 					<Text
 						style={{
 							color: "#ccc",
-							fontSize: 20,
+							fontSize: 16,
 							fontWeight: "600",
 							letterSpacing: 2,
 							fontStyle: "italic",
@@ -259,6 +257,7 @@ function MenuInstrumento({
 					style={{
 						flexDirection: "row",
 						width: "100%",
+						gap: 8
 					}}
 				>
 					<Button

@@ -138,3 +138,76 @@ const scrollTo = (section: string) => {
 ```
 
 **Why refs over state:** `positions.current` always holds the latest value across renders without triggering re-renders. `useState` causes stale closures where the same `y` is captured across multiple clicks.
+
+# Digital Signature Pattern (lightweight, no Skia)
+
+Use `react-native-gesture-handler` + `react-native-reanimated` + `react-native-view-shot` + `expo-file-system` for a lightweight signature capture. Do not use `@shopify/react-native-skia` for signatures; it adds several MB and often times out during install.
+
+## Component Location
+`components/perfil/FirmaBox.tsx`
+
+## Implementation Details
+
+### Gesture capture with points
+```tsx
+const [paths, setPaths] = useState<Point[]>([])
+const currentPath = useSharedValue<Point[]>([])
+
+const gesture = Gesture.Pan()
+  .onBegin((e) => {
+    currentPath.value = [{ x: e.x, y: e.y }]
+  })
+  .onUpdate((e) => {
+    currentPath.value = [...currentPath.value, { x: e.x, y: e.y }]
+    setPaths((prev) => [...prev, { x: e.x, y: e.y }])
+  })
+  .onEnd(() => {
+    currentPath.value = []
+  })
+```
+
+### Render points inside a `GestureDetector`
+```tsx
+<GestureDetector gesture={gesture}>
+  <View ref={viewRef} style={{ flex: 1, position: "relative" }}>
+    {paths.map((point, i) => (
+      <View
+        key={i}
+        style={{
+          position: "absolute",
+          left: point.x - 1.5,
+          top: point.y - 1.5,
+          width: 3,
+          height: 3,
+          borderRadius: 1.5,
+          backgroundColor: "#000000",
+        }}
+      />
+    ))}
+  </View>
+</GestureDetector>
+```
+
+### Save signature as PNG with `captureRef`
+```tsx
+import { captureRef } from "react-native-view-shot"
+import { File, Paths } from "expo-file-system"
+
+const save = async () => {
+  const uri = await captureRef(viewRef, { format: "png", quality: 1 })
+  const file = new File(Paths.document, `signature-${Date.now()}.png`)
+  await file.write(uri)
+  setImage(file.uri)
+}
+```
+
+## Dependencies
+- `react-native-gesture-handler` (already in project)
+- `react-native-reanimated` (already in project)
+- `react-native-view-shot` (lightweight, replaces Skia)
+- `expo-file-system` (already in project)
+
+## Why this pattern
+- Avoids the heavy `@shopify/react-native-skia` download/install issues.
+- Uses already-installed gesture and animation libraries.
+- `captureRef` converts the drawn view into a PNG file URI for storage/upload.
