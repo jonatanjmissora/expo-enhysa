@@ -86,7 +86,7 @@ export default function EditarInstrumento() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Editar Instrumento" href="/(tabs)/perfil" />
+				<VolverBtn title="Editar Instrumento" href="/(tabs)/perfil" header="instrumento" />
 
 				<InstrumentoEditForm instrumento={instrumento} />
 			</ScrollView>
@@ -142,7 +142,7 @@ function InstrumentoEditForm({ instrumento }: { instrumento: Instrumento }) {
 					imagenes: JSON.stringify(imagenes),
 					userId: USER_ID,
 				})
-				router.replace("/(tabs)/perfil")
+				router.replace("/(tabs)/perfil?header=instrumento")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar el instrumento"

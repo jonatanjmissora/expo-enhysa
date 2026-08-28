@@ -81,7 +81,7 @@ export default function EditarEmpresa() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Editar Empresa" href="/(tabs)/perfil" />
+				<VolverBtn title="Editar Empresa" href="/(tabs)/perfil" header="empresa" />
 
 				<EmpresaEditForm empresa={empresa} />
 			</ScrollView>
@@ -120,7 +120,7 @@ function EmpresaEditForm({ empresa }: { empresa: Empresa }) {
 					logo,
 					userId: USER_ID,
 				})
-				router.replace("/(tabs)/perfil")
+				router.replace("/(tabs)/perfil?header=empresa")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar la empresa"

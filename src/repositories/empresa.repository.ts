@@ -149,7 +149,37 @@ export const empresaRepository = {
 		return empresa ?? null
 	},
 
-	async update(id: string, input: Partial<CreateEmpresaInput>): Promise<Empresa> {
+	async getAllByUserId(userId: string): Promise<Empresa[]> {
+		await initializeEmpresasTable()
+
+		const db = await getDatabase()
+
+		const empresas = await db.getAllAsync<Empresa>(
+			`
+				SELECT
+					id,
+					cuit,
+					razonSocial,
+					direccion,
+					localidad,
+					provincia,
+					codigoPostal,
+					horarios,
+					logo,
+					userId
+				FROM empresas
+				WHERE userId = ?
+			`,
+			userId
+		)
+
+		return empresas ?? []
+	},
+
+	async update(
+		id: string,
+		input: Partial<CreateEmpresaInput>
+	): Promise<Empresa> {
 		await initializeEmpresasTable()
 
 		const db = await getDatabase()

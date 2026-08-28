@@ -16,6 +16,10 @@ export default function InstrumentoLayout() {
 				name="editar"
 				options={{ tabBarStyle: { display: "none" } }}
 			/>
+			<Tabs.Screen
+				name="instrumento"
+				options={{ tabBarStyle: { display: "none" } }}
+			/>
 		</Tabs>
 	)
 }

@@ -43,7 +43,7 @@ export default function NuevoInstrumento() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Crear Instrumento" href="/(tabs)/perfil" />
+				<VolverBtn title="Nuevo Instrumento" href="/(tabs)/perfil" header="instrumento" />
 
 				<InstrumentoNuevoForm />
 			</ScrollView>
@@ -75,7 +75,7 @@ function InstrumentoNuevoForm() {
 					imagenes: JSON.stringify(imagenes),
 					userId: USER_ID,
 				} satisfies CreateInstrumentoInput)
-				router.replace("/(tabs)/perfil")
+				router.replace("/(tabs)/perfil?header=instrumento")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar el instrumento"

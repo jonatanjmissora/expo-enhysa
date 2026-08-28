@@ -6,12 +6,19 @@ export default function VolverBtn({
 	text = "Volver",
 	title,
 	href,
+	header,
 }: {
 	text?: string
 	title?: string
 	href?: string
+	header?: string
 }) {
 	const router = useRouter()
+	const destination = href
+		? header
+			? `${href}${href.includes("?") ? "&" : "?"}header=${header}`
+			: href
+		: null
 	return (
 		<View
 			style={{
@@ -26,7 +33,7 @@ export default function VolverBtn({
 				iconLeft="chevron-back"
 				text={text}
 				style={{ alignSelf: "flex-start", paddingHorizontal: 0, opacity: 0.85 }}
-				onPress={() => (href ? router.push(href) : router.back())}
+				onPress={() => (destination ? router.push(destination) : router.back())}
 			/>
 			<Text
 				style={{

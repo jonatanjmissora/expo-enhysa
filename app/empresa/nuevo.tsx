@@ -16,8 +16,8 @@ import { defaultEmpresa, empresaFormValidator } from "@/src/db/schema/empresas"
 const USER_ID = "user-1"
 
 const FIELDS = [
-	{ key: "cuit", label: "CUIT", placeholder: "20304050607" },
 	{ key: "razonSocial", label: "Razón Social", placeholder: "Mi Empresa SRL" },
+	{ key: "cuit", label: "CUIT", placeholder: "20304050607" },
 	{ key: "direccion", label: "Dirección", placeholder: "Av. Libertador 1234" },
 	{ key: "localidad", label: "Localidad", placeholder: "Bahía Blanca" },
 	{ key: "provincia", label: "Provincia", placeholder: "Buenos Aires" },
@@ -35,7 +35,11 @@ export default function NuevaEmpresa() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Crear Empresa" href="/(tabs)/perfil" />
+				<VolverBtn
+					title="Nueva Empresa"
+					href="/(tabs)/perfil"
+					header="empresa"
+				/>
 
 				<EmpresaNuevoForm />
 			</ScrollView>
@@ -65,7 +69,7 @@ function EmpresaNuevoForm() {
 					logo,
 					userId: USER_ID,
 				} satisfies CreateEmpresaInput)
-				router.replace("/(tabs)/perfil")
+				router.replace("/(tabs)/perfil?header=empresa")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar la empresa"

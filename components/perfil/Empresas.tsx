@@ -1,36 +1,24 @@
 import Button from "@/components/Button"
-import { theme } from "@/constants/theme"
 import {
 	type Empresa as EmpresaData,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
-import { useFocusEffect, useRouter } from "expo-router"
+import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
-import { Text, View } from "react-native"
+import { Pressable, ScrollView, Text, View } from "react-native"
+import { theme } from "@/constants/theme"
 import ImageViewer from "../ImageViewer"
-import ModalDeleteConfirm from "../ModalDeleteConfirm"
-import PictureNotFound from "../PictureNotFound"
 
 const USER_ID = "user-1"
 
-const FIELDS = [
-	{ key: "cuit", label: "CUIT" },
-	{ key: "razonSocial", label: "Razón Social" },
-	{ key: "direccion", label: "Dirección" },
-	{ key: "localidad", label: "Localidad" },
-	{ key: "provincia", label: "Provincia" },
-	{ key: "codigoPostal", label: "Código Postal" },
-	{ key: "horarios", label: "Horarios" },
-] as const
-
 export default function Empresas() {
-	const [empresa, setEmpresa] = useState<EmpresaData | null | undefined>(
+	const [empresas, setEmpresas] = useState<EmpresaData[] | null | undefined>(
 		undefined
 	)
 
 	const load = useCallback(async () => {
-		const data = await empresaRepository.getByUserId(USER_ID)
-		setEmpresa(data ?? null)
+		const data = await empresaRepository.getAllByUserId(USER_ID)
+		setEmpresas(data.length ? data : null)
 	}, [])
 
 	useFocusEffect(
@@ -39,9 +27,7 @@ export default function Empresas() {
 		}, [load])
 	)
 
-	const router = useRouter()
-
-	if (empresa === undefined) {
+	if (empresas === undefined) {
 		return (
 			<View
 				style={{
@@ -50,12 +36,12 @@ export default function Empresas() {
 					justifyContent: "center",
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>Cargando empresa…</Text>
+				{/* <Text style={{ color: "#94a3b8" }}>Cargando empresas…</Text> */}
 			</View>
 		)
 	}
 
-	if (!empresa) {
+	if (!empresas) {
 		return (
 			<View
 				style={{
@@ -67,7 +53,7 @@ export default function Empresas() {
 				}}
 			>
 				<Text style={{ color: "#94a3b8" }}>
-					Aún no tenés una empresa cargada.
+					Aún no tenés empresas cargadas.
 				</Text>
 				<Button
 					text="Crear empresa"
@@ -77,159 +63,116 @@ export default function Empresas() {
 		)
 	}
 
-	return <EmpresaItem empresa={empresa} onDeleted={load} />
-}
-
-function EmpresaItem({
-	empresa,
-	onDeleted,
-}: {
-	empresa: EmpresaData
-	onDeleted: () => void
-}) {
 	return (
-		<View
+		<ScrollView
+			contentContainerStyle={{
+				justifyContent: "space-between",
+				alignItems: "center",
+				flex: 1,
+			}}
 			style={{
 				flex: 1,
-				padding: 16,
-				gap: 24,
-				paddingVertical: 10,
-				justifyContent: "center",
-				alignItems: "center",
-				paddingBottom: 100,
+				padding: 20,
 			}}
 		>
-			<MenuEmpresa empresa={empresa} onDeleted={onDeleted} />
+			{empresas.length === 0 ? (
+				<Text style={{ color: "#94a3b8" }}>No hay empresas para mostrar</Text>
+			) : (
+				<View style={{ gap: 12, paddingVertical: 40, width: "90%" }}>
+					{empresas.map(empresa => (
+						<EmpresaCard key={empresa.id} empresa={empresa} />
+					))}
+				</View>
+			)}
+			<Button
+				text="Nueva Empresa"
+				iconLeft="add-outline"
+				style={{
+					opacity: 0.75,
+				}}
+				onPress={() => router.push("/empresa/nuevo")}
+			/>
+		</ScrollView>
+	)
+}
 
-			{FIELDS.map(field => (
-				<View
-					key={field.key}
-					style={{
-						justifyContent: "center",
-						alignItems: "center",
-						width: "80%",
-					}}
-				>
+function EmpresaCard({ empresa }: { empresa: EmpresaData }) {
+	return (
+		<Pressable
+			style={{
+				padding: 16,
+				gap: 2,
+				borderWidth: 1,
+				borderColor: theme.orangeAlpha,
+				backgroundColor: theme.gray,
+				borderRadius: 4,
+				opacity: 0.75,
+				width: "100%",
+			}}
+			onPress={() => {
+				router.push({
+					pathname: "/empresa/empresa",
+					params: { empresaId: empresa.id },
+				})
+			}}
+		>
+			<Text
+				style={{
+					color: theme.orange,
+					fontWeight: "600",
+					fontSize: 18,
+					textAlign: "center",
+				}}
+			>
+				{empresa.razonSocial?.toUpperCase()}
+			</Text>
+			<View
+				style={{
+					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
+					gap: 6,
+					width: "100%",
+				}}
+			>
+				<View>
 					<Text
 						style={{
-							color: theme.orange,
-							fontWeight: "600",
-							opacity: 0.5,
-							marginRight: "auto",
-							borderBottomWidth: 1,
-							borderBottomColor: theme.orange,
-							width: "100%",
+							color: "#ccc",
+							fontSize: 11,
+							textAlign: "right",
 						}}
 					>
-						{field.label}
+						{empresa.cuit?.toUpperCase()}
 					</Text>
 					<Text
 						style={{
 							color: "#ccc",
-							fontSize: 16,
-							fontWeight: "600",
-							letterSpacing: 2,
-							fontStyle: "italic",
-							alignSelf: "flex-end",
+							fontSize: 11,
+							textAlign: "right",
 						}}
 					>
-						{String(empresa[field.key])?.toUpperCase()}
+						{empresa.direccion?.toUpperCase()}
+					</Text>
+					<Text
+						style={{
+							color: "#ccc",
+							fontSize: 11,
+							textAlign: "right",
+						}}
+					>
+						{empresa.localidad?.toUpperCase()}
 					</Text>
 				</View>
-			))}
-			<View style={{ justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
-					Logo
-				</Text>
-				{empresa?.logo ? (
-					<ImageViewer
-						imgSource={{ uri: empresa?.logo }}
-						style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
-					/>
-				) : (
-					<PictureNotFound />
-				)}
-			</View>
-		</View>
-	)
-}
-
-function MenuEmpresa({
-	empresa,
-	onDeleted,
-}: {
-	empresa: EmpresaData
-	onDeleted?: () => void
-}) {
-	const [modalVisible, setModalVisible] = useState(false)
-	const [showMenu, setShowMenu] = useState(false)
-	const router = useRouter()
-
-	const handleDelete = async () => {
-		try {
-			await empresaRepository.delete(empresa.id)
-			onDeleted?.()
-		} catch (error) {
-			console.error(error)
-		}
-	}
-
-	const confirmDelete = () => setModalVisible(true)
-
-	return (
-		<View
-			style={{
-				width: "90%",
-				marginBottom: 20,
-				opacity: 0.75,
-			}}
-		>
-			<Button
-				variant="ghost"
-				iconLeft="menu"
-				iconSize={24}
-				style={{ alignSelf: "flex-end", paddingVertical: 10 }}
-				onPress={() => setShowMenu(!showMenu)}
-			/>
-			{showMenu && (
-				<View
+				<ImageViewer
+					imgSource={{ uri: empresa.logo }}
 					style={{
-						flexDirection: "row",
-						width: "100%",
-						gap: 8,
+						height: 50,
+						aspectRatio: 4 / 3,
+						borderRadius: 4,
 					}}
-				>
-					<Button
-						variant="danger"
-						text="Eliminar"
-						iconLeft="trash"
-						iconSize={18}
-						size="small"
-						style={{ flex: 1, gap: 4 }}
-						onPress={confirmDelete}
-					/>
-					<Button
-						text="Editar"
-						iconLeft="pencil"
-						iconSize={18}
-						size="small"
-						style={{ flex: 1, gap: 4 }}
-						onPress={() => {
-							router.push({
-								pathname: "/empresa/editar",
-								params: { empresaId: empresa.id },
-							})
-						}}
-					/>
-				</View>
-			)}
-			<ModalDeleteConfirm
-				visible={modalVisible}
-				title="Eliminar empresa"
-				message="¿Estás seguro de que querés eliminar los datos de la empresa? Esta acción no se puede deshacer."
-				onClose={() => setModalVisible(false)}
-				onConfirm={handleDelete}
-			/>
-		</View>
+				/>
+			</View>
+		</Pressable>
 	)
 }

@@ -16,6 +16,10 @@ export default function EmpresaLayout() {
 				name="editar"
 				options={{ tabBarStyle: { display: "none" } }}
 			/>
+			<Tabs.Screen
+				name="empresa"
+				options={{ tabBarStyle: { display: "none" } }}
+			/>
 		</Tabs>
 	)
 }
