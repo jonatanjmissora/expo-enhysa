@@ -46,6 +46,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bebee02a-7c07-46bf-9e0b-1931b3981d6e"
+      }
+    },
+    "owner": "katodev"
   }
 }
