@@ -173,7 +173,7 @@ function MenuEmpresa({ empresa }: { empresa: EmpresaData }) {
 		try {
 			await empresaRepository.delete(empresa.id)
 			setModalVisible(false)
-			router.replace("/(tabs)/perfil")
+			router.replace("/(tabs)/perfil?header=empresa")
 		} catch (error) {
 			console.error(error)
 		}

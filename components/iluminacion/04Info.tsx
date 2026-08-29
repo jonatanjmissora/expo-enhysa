@@ -24,20 +24,18 @@ export default function Info() {
 			</Text>
 
 			<View style={styles.titleWrap}>
-				<Text style={styles.title}>
-					Aspectos clave de la Res. 84/12 SRT:
-				</Text>
+				<Text style={styles.title}>Aspectos clave de la Res. 84/12 SRT:</Text>
 			</View>
 
 			<View style={styles.cards}>
 				<Card
-					icon="resize-outline"
+					icon="bar-chart-outline"
 					title="Finalidad"
 					align="left"
 					body="Medir la iluminancia (en luxes) en puestos de trabajo para asegurar que cumple con la Resolución 295/03, garantizando confort visual y seguridad."
 				/>
 				<Card
-					icon="people-outline"
+					icon="briefcase-outline"
 					title="Obligatorio"
 					align="right"
 					body="Aplica a todos los establecimientos con trabajadores en relación de dependencia."
@@ -54,12 +52,11 @@ export default function Info() {
 					align="right"
 					body="Las mediciones tienen una validez de 12 meses, o menos si se modifican los puestos de tabajo. Contenido: El informe incluye datos del establecimiento, el luxómetro utilizado, croquis del lugar, resultados de las mediciones y la firma del profesional responsable."
 				/>
+				<Text style={styles.paragraph}>
+					El incumplimiento de este protocolo puede derivar en observaciones de
+					la ART y multas.
+				</Text>
 			</View>
-
-			<Text style={styles.paragraph}>
-				El incumplimiento de este protocolo puede derivar en observaciones de
-				la ART y multas.
-			</Text>
 		</View>
 	)
 }
@@ -78,10 +75,7 @@ function Card({
 	const isRight = align === "right"
 	return (
 		<View
-			style={[
-				styles.cardRow,
-				isRight ? styles.cardRight : styles.cardLeft,
-			]}
+			style={[styles.cardRow, isRight ? styles.cardRight : styles.cardLeft]}
 		>
 			<View style={styles.cardBox}>
 				<Ionicons name={icon as any} size={30} color={amberText} />
@@ -144,6 +138,7 @@ const styles = StyleSheet.create({
 		borderRadius: 6,
 		padding: 16,
 		marginRight: 16,
+		alignSelf: "stretch",
 	},
 	cardTitle: {
 		fontSize: 16,

@@ -18,6 +18,7 @@ const NAV_ITEMS = [
 	{ id: "2", label: "Inicio", to: "hero" },
 	{ id: "3", label: "Mi Perfil", to: "/perfil" },
 	{ id: "4", label: "Suscripción", to: "/suscripcion" },
+	{ id: "5", label: "Debug DB", to: "/debug/db" },
 ]
 
 const CONTACTOS = [

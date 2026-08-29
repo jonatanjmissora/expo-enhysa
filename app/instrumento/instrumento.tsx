@@ -88,7 +88,11 @@ export default function Instrumento() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Instrumento" href="/(tabs)/perfil" header="instrumento" />
+				<VolverBtn
+					title="Instrumento"
+					href="/(tabs)/perfil"
+					header="instrumento"
+				/>
 
 				<InstrumentoItem instrumento={instrumento} />
 			</ScrollView>
@@ -223,7 +227,7 @@ function MenuInstrumento({ instrumento }: { instrumento: InstrumentoData }) {
 		try {
 			await instrumentoRepository.delete(instrumento.id)
 			setModalVisible(false)
-			router.replace("/(tabs)/perfil")
+			router.replace("/(tabs)/perfil?header=instrumento")
 		} catch (error) {
 			console.error(error)
 		}
