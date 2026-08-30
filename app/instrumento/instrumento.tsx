@@ -5,7 +5,7 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
-	type Instrumento as InstrumentoData,
+	type InstrumentoType,
 	instrumentoRepository,
 } from "@/src/repositories/instrumento.repository"
 import {
@@ -27,7 +27,7 @@ const FIELDS = [
 
 export default function Instrumento() {
 	const { instrumentoId } = useLocalSearchParams<{ instrumentoId?: string }>()
-	const [instrumento, setInstrumento] = useState<InstrumentoData | null>(null)
+	const [instrumento, setInstrumento] = useState<InstrumentoType | null>(null)
 
 	const load = useCallback(async () => {
 		const id = Array.isArray(instrumentoId) ? instrumentoId[0] : instrumentoId
@@ -100,7 +100,7 @@ export default function Instrumento() {
 	)
 }
 
-function InstrumentoItem({ instrumento }: { instrumento: InstrumentoData }) {
+function InstrumentoItem({ instrumento }: { instrumento: InstrumentoType }) {
 	let imagenesCalibracionParsed: string[] = []
 	let imagenesParsed: string[] = []
 	let fechaCalibracionFormatted = ""
@@ -218,7 +218,7 @@ function InstrumentoItem({ instrumento }: { instrumento: InstrumentoData }) {
 	)
 }
 
-function MenuInstrumento({ instrumento }: { instrumento: InstrumentoData }) {
+function MenuInstrumento({ instrumento }: { instrumento: InstrumentoType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()

@@ -1,7 +1,7 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import {
-	type Instrumento as InstrumentoData,
+	type InstrumentoType,
 	instrumentoRepository,
 } from "@/src/repositories/instrumento.repository"
 import { router, useFocusEffect } from "expo-router"
@@ -12,7 +12,7 @@ import ImageViewer from "../ImageViewer"
 const USER_ID = "user-1"
 
 export default function Instrumentos() {
-	const [instrumentos, setInstrumentos] = useState<InstrumentoData[]>([])
+	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
 	const [loading, setLoading] = useState(true)
 
 	const load = useCallback(async () => {
@@ -109,7 +109,7 @@ function parseImages(value: string): string[] {
 	}
 }
 
-function InstrumentoCard({ instrumento }: { instrumento: InstrumentoData }) {
+function InstrumentoCard({ instrumento }: { instrumento: InstrumentoType }) {
 	const imagenCalibracion =
 		parseImages(instrumento.imagenesCalibracion)[0] ?? null
 	const imagenLabel = parseImages(instrumento.imagenes)[0] ?? "Sin imagen"

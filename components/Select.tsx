@@ -75,7 +75,7 @@ export default function Select<T extends SelectItem>({
 							borderRadius: 12,
 							padding: 16,
 							width: "80%",
-							maxHeight: "60%",
+							maxHeight: "80%",
 						}}
 					>
 						<Text

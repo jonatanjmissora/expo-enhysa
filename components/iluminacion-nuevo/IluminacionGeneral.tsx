@@ -7,7 +7,7 @@ import {
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
 import {
-	Instrumento,
+	type InstrumentoType,
 	instrumentoRepository,
 } from "@/src/repositories/instrumento.repository"
 import {
@@ -38,7 +38,7 @@ export default function IluminacionGeneral({
 	const [loading, setLoading] = useState<boolean>(true)
 	const [tecnico, setTecnico] = useState<Tecnico | null | undefined>(undefined)
 	const [empresas, setEmpresas] = useState<EmpresaType[]>([])
-	const [instrumentos, setInstrumentos] = useState<Instrumento[]>([])
+	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
 
 	const load = useCallback(async () => {
 		const [tecnicoData, empresasData, instrumentosData] = await Promise.all([
@@ -124,7 +124,7 @@ function IluminacionGeneralForm({
 }: {
 	tecnico: Tecnico
 	empresas: EmpresaType[]
-	instrumentos: Instrumento[]
+	instrumentos: InstrumentoType[]
 	setStep: (step: 1 | 2 | 3) => void
 	onCreated: (id: string) => void
 	informeId: string | null
@@ -160,14 +160,14 @@ function IluminacionGeneralForm({
 	})
 	return (
 		<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-			<Text style={{ color: "#ccc" }}>informe {informeId}</Text>
+
 			<TecnicoContent tecnico={tecnico} />
 
 			<View
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
-					width: "80%",
+					width: "90%",
 					marginHorizontal: "auto",
 				}}
 			>
@@ -214,7 +214,7 @@ function IluminacionGeneralForm({
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
-					width: "80%",
+					width: "90%",
 					marginHorizontal: "auto",
 				}}
 			>
@@ -263,7 +263,7 @@ function IluminacionGeneralForm({
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
-					width: "80%",
+					width: "90%",
 					marginHorizontal: "auto",
 				}}
 			>
@@ -310,7 +310,7 @@ function IluminacionGeneralForm({
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
-					width: "80%",
+					width: "90%",
 					marginHorizontal: "auto",
 				}}
 			>
@@ -357,7 +357,7 @@ function IluminacionGeneralForm({
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
-					width: "80%",
+					width: "90%",
 					marginHorizontal: "auto",
 				}}
 			>
@@ -406,7 +406,7 @@ function IluminacionGeneralForm({
 						onPress={form.handleSubmit}
 						text={isSubmitting ? "Guardando..." : "Siguiente"}
 						disabled={isSubmitting}
-						style={{ marginTop: 40 }}
+						style={{ marginTop: 40, width: "90%", marginHorizontal: "auto" }}
 					/>
 				)}
 			</form.Subscribe>
@@ -417,7 +417,7 @@ function IluminacionGeneralForm({
 				variant="secondary"
 				text="Cancelar"
 				onPress={() => router.push("/(iluminacion)/informes")}
-				style={{ marginTop: 10 }}
+				style={{ marginTop: 10, width: "90%", marginHorizontal: "auto" }}
 			/>
 		</View>
 	)
@@ -429,7 +429,7 @@ function TecnicoContent({ tecnico }: { tecnico: Tecnico }) {
 			style={{
 				justifyContent: "center",
 				alignItems: "center",
-				width: "80%",
+				width: "90%",
 				marginHorizontal: "auto",
 			}}
 		>

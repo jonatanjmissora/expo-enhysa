@@ -2,7 +2,7 @@ import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
 import { CREATE_INSTRUMENTOS_TABLE } from "../db/schema/instrumentos"
 
-export type Instrumento = {
+export type InstrumentoType = {
 	id: string
 	nombre: string
 	marca: string
@@ -31,7 +31,7 @@ async function initializeInstrumentosTable() {
 }
 
 export const instrumentoRepository = {
-	async create(input: CreateInstrumentoInput): Promise<Instrumento> {
+	async create(input: CreateInstrumentoInput): Promise<InstrumentoType> {
 		await initializeInstrumentosTable()
 
 		const db = await getDatabase()
@@ -64,7 +64,7 @@ export const instrumentoRepository = {
 			input.userId
 		)
 
-		const instrumento = await db.getFirstAsync<Instrumento>(
+		const instrumento = await db.getFirstAsync<InstrumentoType>(
 			`
 				SELECT
 					id,
@@ -89,12 +89,12 @@ export const instrumentoRepository = {
 		return instrumento
 	},
 
-	async getById(id: string): Promise<Instrumento | null> {
+	async getById(id: string): Promise<InstrumentoType | null> {
 		await initializeInstrumentosTable()
 
 		const db = await getDatabase()
 
-		const instrumento = await db.getFirstAsync<Instrumento>(
+		const instrumento = await db.getFirstAsync<InstrumentoType>(
 			`
 				SELECT
 					id,
@@ -115,12 +115,12 @@ export const instrumentoRepository = {
 		return instrumento ?? null
 	},
 
-	async getByUserId(userId: string): Promise<Instrumento | null> {
+	async getByUserId(userId: string): Promise<InstrumentoType | null> {
 		await initializeInstrumentosTable()
 
 		const db = await getDatabase()
 
-		const instrumento = await db.getFirstAsync<Instrumento>(
+		const instrumento = await db.getFirstAsync<InstrumentoType>(
 			`
 				SELECT
 					id,
@@ -142,12 +142,12 @@ export const instrumentoRepository = {
 		return instrumento ?? null
 	},
 
-	async getAllByUserId(userId: string): Promise<Instrumento[]> {
+	async getAllByUserId(userId: string): Promise<InstrumentoType[]> {
 		await initializeInstrumentosTable()
 
 		const db = await getDatabase()
 
-		const instrumentos = await db.getAllAsync<Instrumento>(
+		const instrumentos = await db.getAllAsync<InstrumentoType>(
 			`
 				SELECT
 					id,
@@ -168,12 +168,12 @@ export const instrumentoRepository = {
 		return instrumentos
 	},
 
-	async update(id: string, input: Partial<CreateInstrumentoInput>): Promise<Instrumento> {
+	async update(id: string, input: Partial<CreateInstrumentoInput>): Promise<InstrumentoType> {
 		await initializeInstrumentosTable()
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<Instrumento>(
+		const existing = await db.getFirstAsync<InstrumentoType>(
 			`SELECT * FROM instrumentos WHERE id = ? LIMIT 1`,
 			id
 		)

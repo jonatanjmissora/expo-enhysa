@@ -7,7 +7,7 @@ import {
 } from "expo-router"
 import { useCallback, useState } from "react"
 import {
-	type Empresa as EmpresaData,
+	type EmpresaType,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
 import Button from "@/components/Button"
@@ -30,7 +30,7 @@ const FIELDS = [
 
 export default function Empresa() {
 	const { empresaId } = useLocalSearchParams<{ empresaId?: string }>()
-	const [empresa, setEmpresa] = useState<EmpresaData | null>(null)
+	const [empresa, setEmpresa] = useState<EmpresaType | null>(null)
 
 	const load = useCallback(async () => {
 		const id = Array.isArray(empresaId) ? empresaId[0] : empresaId
@@ -98,7 +98,7 @@ export default function Empresa() {
 	)
 }
 
-function EmpresaItem({ empresa }: { empresa: EmpresaData }) {
+function EmpresaItem({ empresa }: { empresa: EmpresaType }) {
 	return (
 		<View
 			style={{
@@ -164,7 +164,7 @@ function EmpresaItem({ empresa }: { empresa: EmpresaData }) {
 	)
 }
 
-function MenuEmpresa({ empresa }: { empresa: EmpresaData }) {
+function MenuEmpresa({ empresa }: { empresa: EmpresaType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()

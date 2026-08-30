@@ -41,25 +41,6 @@ export default function Recientes() {
 
 				<InformesList qnt={3} />
 
-				<View
-					style={{
-						width: "100%",
-						borderTopWidth: 1,
-						borderTopColor: theme.orangeAlpha,
-						opacity: 0.6,
-					}}
-				>
-					<Button
-						text="ver todos"
-						onPress={() => router.push("/(iluminacion)/informes")}
-						variant="ghost"
-						style={{
-							alignSelf: "flex-end",
-							padding: 2,
-						}}
-					/>
-				</View>
-
 				<Button
 					iconLeft="add-sharp"
 					text="Nuevo Informe"

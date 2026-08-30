@@ -21,13 +21,17 @@ export default function IluminacionSteps({ step }: { step: 1 | 2 | 3 }) {
 					flexDirection: "row",
 					justifyContent: "center",
 					alignItems: "center",
-					gap: 10,
+					gap: 0,
 					marginBottom: 30,
 				}}
 			>
 				<Text
 					style={{
-						color: theme.orange,
+						backgroundColor: theme.orangeAlpha,
+						color: "#fff",
+						paddingHorizontal: 10,
+						paddingVertical: 4,
+						borderRadius: 4
 					}}
 				>
 					General
@@ -36,12 +40,16 @@ export default function IluminacionSteps({ step }: { step: 1 | 2 | 3 }) {
 					style={{
 						height: 1,
 						width: 30,
-						backgroundColor: step === 3 || step === 2 ? theme.orange : "#aaa",
+						backgroundColor: step === 3 || step === 2 ? theme.orangeAlpha : "#888",
 					}}
 				></View>
 				<Text
 					style={{
-						color: step === 3 || step === 2 ? theme.orange : "#aaa",
+						backgroundColor: step === 3 || step === 2 ? theme.orangeAlpha : "transparent",
+						color: step === 3 || step === 2 ? "#fff" : "#888",
+						paddingHorizontal: 10,
+						paddingVertical: 4,
+						borderRadius: 4
 					}}
 				>
 					Medición
@@ -50,12 +58,16 @@ export default function IluminacionSteps({ step }: { step: 1 | 2 | 3 }) {
 					style={{
 						height: 1,
 						width: 30,
-						backgroundColor: step === 3 ? theme.orange : "#aaa",
+						backgroundColor: step === 3 ? theme.orangeAlpha : "#888",
 					}}
 				></View>
 				<Text
 					style={{
-						color: step === 3 ? theme.orange : "#aaa",
+						backgroundColor: step === 3 ? theme.orangeAlpha : "transparent",
+						color: step === 3 ? "#fff" : "#888",
+						paddingHorizontal: 10,
+						paddingVertical: 4,
+						borderRadius: 4
 					}}
 				>
 					Conclusión

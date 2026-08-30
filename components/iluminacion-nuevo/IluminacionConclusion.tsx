@@ -14,9 +14,7 @@ export default function IluminacionConclusion({
 	setStep: (step: 1 | 2 | 3) => void
 	informeId: string | null
 }) {
-	const [observacion, setObservacion] = useState<string>("")
-	const [conclusion, setConclusion] = useState<string>("")
-	const [recomendacion, setRecomendacion] = useState<string>("")
+	
 	const [loading, setLoading] = useState<boolean>(true)
 	const [informeIluminacion, setInformeIluminacion] =
 		useState<InformeIluminacionType | null>(null)
@@ -38,7 +36,7 @@ export default function IluminacionConclusion({
 	if (loading)
 		return (
 			<View style={{}}>
-				<Text style={{ color: "#ccc" }}>Cargando...</Text>
+				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}
 			</View>
 		)
 
@@ -52,8 +50,28 @@ export default function IluminacionConclusion({
 		)
 
 	return (
-		<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-			<Text style={{ color: "#ccc" }}>informe {informeId}</Text>
+				<IluminacionConclusionForm
+					informeIluminacion={informeIluminacion}
+					setStep={setStep}
+				/>
+	)
+}
+
+function IluminacionConclusionForm({
+	informeIluminacion,
+	setStep,
+}: {
+	informeIluminacion: InformeIluminacionType
+	setStep: (step: 1 | 2 | 3) => void
+}) {
+	const [observacion, setObservacion] = useState<string>("")
+	const [conclusion, setConclusion] = useState<string>("")
+	const [recomendacion, setRecomendacion] = useState<string>("")
+
+	// TODO: useForm para editar el informe
+	
+	return (
+<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
 			<View
 				style={{
 					justifyContent: "center",

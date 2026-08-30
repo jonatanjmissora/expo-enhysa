@@ -4,7 +4,7 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
-	Empresa,
+	type EmpresaType,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
@@ -27,7 +27,7 @@ const FIELDS = [
 
 export default function EditarEmpresa() {
 	const { empresaId } = useLocalSearchParams<{ empresaId: string }>()
-	const [empresa, setEmpresa] = useState<Empresa | null>(null)
+	const [empresa, setEmpresa] = useState<EmpresaType | null>(null)
 	useFocusEffect(
 		useCallback(() => {
 			async function loadEmpresaById() {
@@ -89,7 +89,7 @@ export default function EditarEmpresa() {
 	)
 }
 
-function EmpresaEditForm({ empresa }: { empresa: Empresa }) {
+function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 	const router = useRouter()
 
 	const [error, setError] = useState<string | null>(null)

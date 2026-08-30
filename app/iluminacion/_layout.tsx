@@ -21,7 +21,7 @@ export default function IluminacionLayout() {
 							title: "General",
 							tabBarIcon: ({ color, focused }) => (
 								<Ionicons
-									name={focused ? "home-sharp" : "home-outline"}
+									name={focused ? "list-sharp" : "list-outline"}
 									color={color}
 									size={24}
 								/>
@@ -34,7 +34,7 @@ export default function IluminacionLayout() {
 							title: "Medición",
 							tabBarIcon: ({ color, focused }) => (
 								<Ionicons
-									name={focused ? "person" : "person-outline"}
+									name={focused ? "stats-chart" : "stats-chart-outline"}
 									color={color}
 									size={24}
 								/>
@@ -47,7 +47,7 @@ export default function IluminacionLayout() {
 							title: "Conclusión",
 							tabBarIcon: ({ color, focused }) => (
 								<Ionicons
-									name={focused ? "shield" : "shield-outline"}
+									name={focused ? "newspaper" : "newspaper-outline"}
 									color={color}
 									size={24}
 								/>

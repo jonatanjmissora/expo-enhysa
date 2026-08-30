@@ -10,7 +10,7 @@ export default function IluminacionMedicion({
 }) {
 	return (
 		<View style={{}}>
-			<Text style={{ color: "#ccc" }}>informe {informeId}</Text>
+			<Text style={{ color: "#ccc", textAlign: "center", paddingVertical: 80 }}>ACA VA LA MEDICION DE PUNTOS</Text>
 			<Button
 				variant="secondary"
 				text="Volver"
@@ -18,7 +18,7 @@ export default function IluminacionMedicion({
 				style={{
 					marginHorizontal: "auto",
 					marginVertical: 12,
-					minWidth: 150,
+					width: "80%",
 				}}
 			/>
 			<Button
@@ -27,7 +27,7 @@ export default function IluminacionMedicion({
 				style={{
 					marginHorizontal: "auto",
 					marginVertical: 12,
-					minWidth: 150,
+					width: "80%",
 				}}
 			/>
 		</View>

@@ -4,8 +4,8 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
-	Instrumento,
 	instrumentoRepository,
+	InstrumentoType,
 } from "@/src/repositories/instrumento.repository"
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
 import { useCallback, useState } from "react"
@@ -32,7 +32,7 @@ const FIELDS = [
 
 export default function EditarInstrumento() {
 	const { instrumentoId } = useLocalSearchParams<{ instrumentoId: string }>()
-	const [instrumento, setInstrumento] = useState<Instrumento | null>(null)
+	const [instrumento, setInstrumento] = useState<InstrumentoType | null>(null)
 	useFocusEffect(
 		useCallback(() => {
 			async function loadInstrumentoById() {
@@ -94,7 +94,7 @@ export default function EditarInstrumento() {
 	)
 }
 
-function InstrumentoEditForm({ instrumento }: { instrumento: Instrumento }) {
+function InstrumentoEditForm({ instrumento }: { instrumento: InstrumentoType }) {
 	const router = useRouter()
 
 	const [error, setError] = useState<string | null>(null)
