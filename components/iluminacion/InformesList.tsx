@@ -72,7 +72,7 @@ export default function InformesList({ qnt }: { qnt: number }) {
 
 function InformesListContent({ informe, empresas, qnt }: { informe: InformeIluminacionType[], empresas: EmpresaType[], qnt: number }) {
 	return (
-		<View style={{ gap: 12, paddingVertical: 40, width: "90%" }}>
+		<View style={{ gap: 12, paddingVertical: 40, width: "100%" }}>
 			{informe.slice(0, qnt).map(informe => (
 				<InformeCard key={informe.id} informe={informe} empresas={empresas}/>
 			))}
@@ -87,7 +87,7 @@ function InformeCard({ informe, empresas }: { informe: InformeIluminacionType, e
 	return (
 		<Pressable
 			onPress={() => router.push({
-				pathname: "/(iluminacion)/iluminacion",
+				pathname: "/iluminacion/general",
 				params: {
 					id: informe.id,
 				},
@@ -100,7 +100,6 @@ function InformeCard({ informe, empresas }: { informe: InformeIluminacionType, e
 				borderRadius: 6,
 				gap: 4,
 				backgroundColor: theme.grayPressed,
-				maxWidth: 600,
 			}}
 		>
 			<Text
