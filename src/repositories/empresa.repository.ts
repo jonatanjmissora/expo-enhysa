@@ -2,7 +2,7 @@ import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
 import { CREATE_EMPRESAS_TABLE } from "../db/schema/empresas"
 
-export type Empresa = {
+export type EmpresaType = {
 	id: string
 	cuit: string
 	razonSocial: string
@@ -33,7 +33,7 @@ async function initializeEmpresasTable() {
 }
 
 export const empresaRepository = {
-	async create(input: CreateEmpresaInput): Promise<Empresa> {
+	async create(input: CreateEmpresaInput): Promise<EmpresaType> {
 		await initializeEmpresasTable()
 
 		const db = await getDatabase()
@@ -68,7 +68,7 @@ export const empresaRepository = {
 			input.userId
 		)
 
-		const empresa = await db.getFirstAsync<Empresa>(
+		const empresa = await db.getFirstAsync<EmpresaType>(
 			`
 				SELECT
 					id,
@@ -94,12 +94,12 @@ export const empresaRepository = {
 		return empresa
 	},
 
-	async getById(id: string): Promise<Empresa | null> {
+	async getById(id: string): Promise<EmpresaType | null> {
 		await initializeEmpresasTable()
 
 		const db = await getDatabase()
 
-		const empresa = await db.getFirstAsync<Empresa>(
+		const empresa = await db.getFirstAsync<EmpresaType>(
 			`
 				SELECT
 					id,
@@ -121,12 +121,12 @@ export const empresaRepository = {
 		return empresa ?? null
 	},
 
-	async getByUserId(userId: string): Promise<Empresa | null> {
+	async getByUserId(userId: string): Promise<EmpresaType | null> {
 		await initializeEmpresasTable()
 
 		const db = await getDatabase()
 
-		const empresa = await db.getFirstAsync<Empresa>(
+		const empresa = await db.getFirstAsync<EmpresaType>(
 			`
 				SELECT
 					id,
@@ -149,12 +149,12 @@ export const empresaRepository = {
 		return empresa ?? null
 	},
 
-	async getAllByUserId(userId: string): Promise<Empresa[]> {
+	async getAllByUserId(userId: string): Promise<EmpresaType[]> {
 		await initializeEmpresasTable()
 
 		const db = await getDatabase()
 
-		const empresas = await db.getAllAsync<Empresa>(
+		const empresas = await db.getAllAsync<EmpresaType>(
 			`
 				SELECT
 					id,
@@ -179,12 +179,12 @@ export const empresaRepository = {
 	async update(
 		id: string,
 		input: Partial<CreateEmpresaInput>
-	): Promise<Empresa> {
+	): Promise<EmpresaType> {
 		await initializeEmpresasTable()
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<Empresa>(
+		const existing = await db.getFirstAsync<EmpresaType>(
 			`SELECT * FROM empresas WHERE id = ? LIMIT 1`,
 			id
 		)

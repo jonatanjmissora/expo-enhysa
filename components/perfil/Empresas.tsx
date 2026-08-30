@@ -1,18 +1,15 @@
 import Button from "@/components/Button"
-import {
-	type Empresa as EmpresaData,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
 import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
 import ImageViewer from "../ImageViewer"
+import { type EmpresaType, empresaRepository } from "@/src/repositories/empresa.repository"
 
 const USER_ID = "user-1"
 
 export default function Empresas() {
-	const [empresas, setEmpresas] = useState<EmpresaData[] | null | undefined>(
+	const [empresas, setEmpresas] = useState<EmpresaType[] | null | undefined>(
 		undefined
 	)
 
@@ -96,7 +93,7 @@ export default function Empresas() {
 	)
 }
 
-function EmpresaCard({ empresa }: { empresa: EmpresaData }) {
+function EmpresaCard({ empresa }: { empresa: EmpresaType }) {
 	return (
 		<Pressable
 			style={{

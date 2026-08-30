@@ -1,0 +1,140 @@
+import { InformeIluminacionType } from "@/src/db/schema/informe-iluminacion"
+import { useCallback, useState } from "react"
+import { View, Text, Pressable } from "react-native"
+import { informeIluminacionRepository } from "@/src/repositories/informe-iluminacion.repository"
+import { router, useFocusEffect } from "expo-router"
+import Button from "../Button"
+import { theme } from "@/constants/theme"
+import { empresaRepository, EmpresaType } from "@/src/repositories/empresa.repository"
+
+const USER_ID = "user-1"
+
+export default function InformesList({ qnt }: { qnt: number }) {
+	const [informes, setInformes] = useState<
+		InformeIluminacionType[] | null | undefined
+	>(
+		undefined
+	)
+	const [empresas, setEmpresas] = useState<EmpresaType[] | null | undefined>([])
+
+	const load = useCallback(async () => {
+		const [informesData, empresasData] = await Promise.all([
+					informeIluminacionRepository.getAllByUserId(USER_ID),
+					empresaRepository.getAllByUserId(USER_ID),
+				])
+				setEmpresas(empresasData ?? [])
+				setInformes(informesData ?? [])
+	}, [])
+  
+	useFocusEffect(
+		useCallback(() => {
+			load()
+		}, [load])
+	)
+  
+	if (informes === undefined || empresas === undefined) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				{/* <Text style={{ color: "#94a3b8" }}>Cargando...</Text> */}
+			</View>
+		)
+	}
+  
+	if (!informes || !empresas) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					alignItems: "center",
+					justifyContent: "center",
+					gap: 12,
+				}}
+			>
+				<Text style={{ color: "#94a3b8" }}>
+					Aún no tenés informes cargados.
+				</Text>
+				<Button
+					text="Crear informe"
+					onPress={() => router.push("/(iluminacion)/nuevo")}
+				/>
+			</View>
+		)
+	}
+  
+	return <InformesListContent informe={informes} empresas={empresas} qnt={qnt} />
+}
+
+function InformesListContent({ informe, empresas, qnt }: { informe: InformeIluminacionType[], empresas: EmpresaType[], qnt: number }) {
+	return (
+		<View style={{ gap: 12, paddingVertical: 40, width: "90%" }}>
+			{informe.slice(0, qnt).map(informe => (
+				<InformeCard key={informe.id} informe={informe} empresas={empresas}/>
+			))}
+		</View>
+	)
+}
+
+function InformeCard({ informe, empresas }: { informe: InformeIluminacionType, empresas: EmpresaType[] }) {
+	const empresa = empresas.find(e => e.id === informe.empresaId)
+	if (!empresa) return null
+
+	return (
+		<Pressable
+			onPress={() => router.push({
+				pathname: "/(iluminacion)/iluminacion",
+				params: {
+					id: informe.id,
+				},
+			})}
+			style={{
+				padding: 20,
+				marginBottom: 20,
+				borderWidth: 1,
+				borderColor: theme.orangeAlpha,
+				borderRadius: 6,
+				gap: 4,
+				backgroundColor: theme.grayPressed,
+				maxWidth: 600,
+			}}
+		>
+			<Text
+				style={{
+					fontWeight: 600,
+					fontSize: 20,
+					color: theme.orange,
+					textAlign: "center",
+					gap: 0,
+				}}
+			>
+				{informe.title ? informe.title.toUpperCase() : empresa.razonSocial.toUpperCase()}
+			</Text>
+			<View style={{ flexDirection: "row", gap: 20, justifyContent: "center" }}>
+				<Text
+					style={{
+						textAlign: "center",
+						color: "#ddd",
+					}}
+				>
+					{informe.finishedAt ? informe.finishedAt.toLocaleString() : "pendiente"}
+				</Text>
+				<Text style={{ textAlign: "center", color: "#ddd" }}>
+					{empresa.direccion}
+				</Text>
+			</View>
+			<View style={{ flexDirection: "row", gap: 20, justifyContent: "center" }}>
+				<Text style={{ textAlign: "center", color: "#ddd" }}>
+					{empresa.localidad}
+				</Text>
+				<Text style={{ textAlign: "center", color: "#ddd" }}>
+					{empresa.provincia}
+				</Text>
+			</View>
+		</Pressable>	
+	)
+}

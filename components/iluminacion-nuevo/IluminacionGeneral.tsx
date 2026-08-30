@@ -3,7 +3,7 @@ import Select from "@/components/Select"
 import { ESTADO, HUMEDAD, TEMPERATURA } from "@/constants"
 import { theme } from "@/constants/theme"
 import {
-	Empresa,
+	type EmpresaType,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
 import {
@@ -37,7 +37,7 @@ export default function IluminacionGeneral({
 }) {
 	const [loading, setLoading] = useState<boolean>(true)
 	const [tecnico, setTecnico] = useState<Tecnico | null | undefined>(undefined)
-	const [empresas, setEmpresas] = useState<Empresa[]>([])
+	const [empresas, setEmpresas] = useState<EmpresaType[]>([])
 	const [instrumentos, setInstrumentos] = useState<Instrumento[]>([])
 
 	const load = useCallback(async () => {
@@ -123,7 +123,7 @@ function IluminacionGeneralForm({
 	informeId,
 }: {
 	tecnico: Tecnico
-	empresas: Empresa[]
+	empresas: EmpresaType[]
 	instrumentos: Instrumento[]
 	setStep: (step: 1 | 2 | 3) => void
 	onCreated: (id: string) => void
@@ -413,6 +413,12 @@ function IluminacionGeneralForm({
 			{error && (
 				<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
 			)}
+			<Button
+				variant="secondary"
+				text="Cancelar"
+				onPress={() => router.push("/(iluminacion)/informes")}
+				style={{ marginTop: 10 }}
+			/>
 		</View>
 	)
 }
