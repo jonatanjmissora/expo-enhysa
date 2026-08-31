@@ -4,8 +4,33 @@ import { router, useFocusEffect } from "expo-router"
 import { Text, View } from "react-native"
 import TextArea from "../TextArea"
 import { useCallback, useState } from "react"
-import { InformeIluminacionType } from "@/src/db/schema/informe-iluminacion"
-import { informeIluminacionRepository } from "@/src/repositories/informe-iluminacion.repository"
+import {
+	defaultIluminacionConclusion,
+	iluminacionConclusionFormValidator,
+} from "@/src/db/schema/informe-iluminacion"
+import {
+	informeIluminacionRepository,
+	InformeIluminacionType,
+} from "@/src/repositories/informe-iluminacion.repository"
+import { useForm } from "@tanstack/react-form"
+
+const FIELDS = [
+	{
+		key: "observacion",
+		label: "Observación",
+		placeholder: "Escribe una observación...",
+	},
+	{
+		key: "conclusion",
+		label: "Conclusión",
+		placeholder: "Escribe una conclusión...",
+	},
+	{
+		key: "recomendacion",
+		label: "Recomendación",
+		placeholder: "Escribe una recomendación...",
+	},
+] as const
 
 export default function IluminacionConclusion({
 	setStep,
@@ -14,7 +39,6 @@ export default function IluminacionConclusion({
 	setStep: (step: 1 | 2 | 3) => void
 	informeId: string | null
 }) {
-	
 	const [loading, setLoading] = useState<boolean>(true)
 	const [informeIluminacion, setInformeIluminacion] =
 		useState<InformeIluminacionType | null>(null)
@@ -50,10 +74,10 @@ export default function IluminacionConclusion({
 		)
 
 	return (
-				<IluminacionConclusionForm
-					informeIluminacion={informeIluminacion}
-					setStep={setStep}
-				/>
+		<IluminacionConclusionForm
+			informeIluminacion={informeIluminacion}
+			setStep={setStep}
+		/>
 	)
 }
 
@@ -64,97 +88,78 @@ function IluminacionConclusionForm({
 	informeIluminacion: InformeIluminacionType
 	setStep: (step: 1 | 2 | 3) => void
 }) {
-	const [observacion, setObservacion] = useState<string>("")
-	const [conclusion, setConclusion] = useState<string>("")
-	const [recomendacion, setRecomendacion] = useState<string>("")
+	const [error, setError] = useState<string | null>(null)
 
-	// TODO: useForm para editar el informe
-	
+	const form = useForm({
+		defaultValues: defaultIluminacionConclusion,
+		validators: { onSubmit: iluminacionConclusionFormValidator },
+		onSubmit: async ({ value }) => {
+			console.log("VALUE", value)
+			setError(null)
+			try {
+				await informeIluminacionRepository.update(informeIluminacion.id, {
+					...value,
+					finishedAt: new Date().toISOString(),
+					observacion: value.observacion,
+					conclusion: value.conclusion,
+					recomendacion: value.recomendacion,
+				})
+				setStep(1)
+				router.replace("/(iluminacion)/informes")
+			} catch (e) {
+				setError(
+					e instanceof Error ? e.message : "No se pudo actualizar el informe"
+				)
+			}
+		},
+	})
+
 	return (
-<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
-					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
-					}}
-				>
-					Observación
-				</Text>
-				<TextArea
-					placeholder="Escribe una observación..."
-					value={observacion}
-					onChangeText={setObservacion}
-				/>
-			</View>
-
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
-					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
-					}}
-				>
-					Conclusión
-				</Text>
-				<TextArea
-					placeholder="Escribe una conclusión..."
-					value={conclusion}
-					onChangeText={setConclusion}
-				/>
-			</View>
-
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
-					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
-					}}
-				>
-					Recomendación
-				</Text>
-				<TextArea
-					placeholder="Escribe una recomendación..."
-					value={recomendacion}
-					onChangeText={setRecomendacion}
-				/>
-			</View>
+		<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
+			{FIELDS.map(f => (
+				<form.Field key={f.key} name={f.key}>
+					{field => (
+						<View
+							style={{
+								justifyContent: "center",
+								alignItems: "center",
+								width: "90%",
+								marginHorizontal: "auto",
+							}}
+						>
+							<Text
+								style={{
+									color: theme.orange,
+									fontWeight: "600",
+									opacity: 0.65,
+									marginRight: "auto",
+									borderBottomWidth: 1,
+									borderBottomColor: theme.orange,
+									width: "100%",
+								}}
+							>
+								{f.label}
+							</Text>
+							<TextArea
+								placeholder={f.placeholder}
+								value={field.state.value}
+								onChangeText={field.handleChange}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+			))}
 
 			<View
 				style={{
@@ -173,14 +178,22 @@ function IluminacionConclusionForm({
 						width: "90%",
 					}}
 				/>
-				<Button
-					text="Finalizar"
-					onPress={() => router.push("/(iluminacion)/informes")}
-					style={{
-						marginHorizontal: "auto",
-						width: "90%",
-					}}
-				/>
+				<form.Subscribe selector={state => state.isSubmitting}>
+					{isSubmitting => (
+						<Button
+							text={isSubmitting ? "Guardando..." : "Finalizar"}
+							disabled={isSubmitting}
+							onPress={form.handleSubmit}
+							style={{
+								marginHorizontal: "auto",
+								width: "90%",
+							}}
+						/>
+					)}
+				</form.Subscribe>
+				{error && (
+					<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
+				)}
 			</View>
 		</View>
 	)

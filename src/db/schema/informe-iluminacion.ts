@@ -1,5 +1,4 @@
 import { z } from "zod"
-import { ESTADO, HUMEDAD, TEMPERATURA } from "@/constants"
 
 export const CREATE_INFORME_ILUMINACION_TABLE = `
 	CREATE TABLE IF NOT EXISTS informe_iluminacion (
@@ -21,6 +20,9 @@ export const CREATE_INFORME_ILUMINACION_TABLE = `
 		creditConsumedAt TEXT
 	);
 `
+
+// 			INFORME ILUMINACION GENERAL
+
 export const iluminacionGeneralFormValidator = z.object({
 	empresaId: z.string().min(1, "Seleccioná una empresa"),
 	instrumentoId: z.string().min(1, "Seleccioná un instrumento"),
@@ -33,46 +35,33 @@ export type IluminacionGeneralFormType = z.infer<
 	typeof iluminacionGeneralFormValidator
 >
 
-export const iluminacionValidator = iluminacionGeneralFormValidator.extend({
-	id: z.string().min(1, "Requerido"),
-	title: z.string().min(3, "Mínimo 3 caracteres"),
-	tecnicoId: z.string().min(1, "Requerido"),
-	createdAt: z.string().min(1, "Requerido"),
-	observacion: z.string(),
-	conclusion: z.string(),
-	recomendacion: z.string(),
-	userId: z.string(),
-	finishedAt: z.string().nullable().optional(),
-	creditConsumed: z.boolean(),
-	creditConsumedAt: z.string().nullable().optional(),
-})
-
-export type InformeIluminacionType = z.infer<typeof iluminacionValidator>
-
 export const defaultIluminacionGeneral = {
 	empresaId: "",
 	instrumentoId: "",
 	estado: "",
 	humedad: "",
 	temperatura: "",
-
-	// title: "",
-	// tecnicoId: "",
-	// empresaId: "",
-	// instrumentoId: "",
-	// clima: [],
-	// observacion: "",
-	// conclusion: "",
-	// recomendacion: "",
-	// creditConsumed: false,
 }
 
 export type DefaultIluminacionGeneralType = typeof defaultIluminacionGeneral
 
-// const climaTupleValidator = z.tuple([
-// 	z.enum(ESTADO),
-// 	z.enum(HUMEDAD),
-// 	z.enum(TEMPERATURA),
-// ])
+// 		INFORME ILUMINACION CONCLUSION
 
-// export type ClimaType = z.infer<typeof climaTupleValidator>
+export const iluminacionConclusionFormValidator = z.object({
+	observacion: z.string().min(1, "Escribe una observación"),
+	conclusion: z.string().min(1, "Escribe una conclusión"),
+	recomendacion: z.string().min(1, "Escribe una recomendación"),
+})
+
+export type IluminacionConclusionFormType = z.infer<
+	typeof iluminacionConclusionFormValidator
+>
+
+export const defaultIluminacionConclusion = {
+	observacion: "",
+	conclusion: "",
+	recomendacion: "",
+}
+
+export type DefaultIluminacionConclusionType =
+	typeof defaultIluminacionConclusion

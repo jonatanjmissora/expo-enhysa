@@ -142,12 +142,12 @@ function IluminacionGeneralForm({
 					userId: USER_ID,
 					title: "",
 					createdAt: new Date().toISOString(),
-					finishedAt: null,
+					finishedAt: "",
 					observacion: "",
 					conclusion: "",
 					recomendacion: "",
 					creditConsumed: false,
-					creditConsumedAt: null,
+					creditConsumedAt: "",
 				})
 				onCreated(informe.id)
 				setStep(2)
@@ -160,7 +160,6 @@ function IluminacionGeneralForm({
 	})
 	return (
 		<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-
 			<TecnicoContent tecnico={tecnico} />
 
 			<View

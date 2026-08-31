@@ -1,11 +1,25 @@
 import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
-import {
-	CREATE_INFORME_ILUMINACION_TABLE,
-	InformeIluminacionType,
-} from "../db/schema/informe-iluminacion"
+import { CREATE_INFORME_ILUMINACION_TABLE } from "../db/schema/informe-iluminacion"
 
-export type InformeIluminacion = InformeIluminacionType
+export type InformeIluminacionType = {
+	empresaId: string
+	instrumentoId: string
+	estado: string
+	humedad: string
+	temperatura: string
+	id: string
+	title: string
+	tecnicoId: string
+	createdAt: string
+	observacion: string
+	conclusion: string
+	recomendacion: string
+	userId: string
+	finishedAt: string
+	creditConsumed: boolean
+	creditConsumedAt: string
+}
 
 export type CreateInformeIluminacionInput = Omit<
 	InformeIluminacionType,
@@ -41,7 +55,7 @@ async function initializeInformeIluminacionTable() {
 export const informeIluminacionRepository = {
 	async create(
 		input: CreateInformeIluminacionInput
-	): Promise<InformeIluminacion> {
+	): Promise<InformeIluminacionType> {
 		await initializeInformeIluminacionTable()
 
 		const db = await getDatabase()
@@ -88,7 +102,7 @@ export const informeIluminacionRepository = {
 			input.creditConsumedAt ?? null
 		)
 
-		const informe = await db.getFirstAsync<InformeIluminacion>(
+		const informe = await db.getFirstAsync<InformeIluminacionType>(
 			`SELECT ${SELECT_COLUMNS} FROM informe_iluminacion WHERE id = ?`,
 			id
 		)
@@ -100,12 +114,12 @@ export const informeIluminacionRepository = {
 		return informe
 	},
 
-	async getById(id: string): Promise<InformeIluminacion | null> {
+	async getById(id: string): Promise<InformeIluminacionType | null> {
 		await initializeInformeIluminacionTable()
 
 		const db = await getDatabase()
 
-		const informe = await db.getFirstAsync<InformeIluminacion>(
+		const informe = await db.getFirstAsync<InformeIluminacionType>(
 			`SELECT ${SELECT_COLUMNS} FROM informe_iluminacion WHERE id = ?`,
 			id
 		)
@@ -113,12 +127,12 @@ export const informeIluminacionRepository = {
 		return informe ?? null
 	},
 
-	async getAllByUserId(userId: string): Promise<InformeIluminacion[]> {
+	async getAllByUserId(userId: string): Promise<InformeIluminacionType[]> {
 		await initializeInformeIluminacionTable()
 
 		const db = await getDatabase()
 
-		const informes = await db.getAllAsync<InformeIluminacion>(
+		const informes = await db.getAllAsync<InformeIluminacionType>(
 			`SELECT ${SELECT_COLUMNS} FROM informe_iluminacion WHERE userId = ?`,
 			userId
 		)
@@ -129,12 +143,12 @@ export const informeIluminacionRepository = {
 	async update(
 		id: string,
 		input: Partial<CreateInformeIluminacionInput>
-	): Promise<InformeIluminacion> {
+	): Promise<InformeIluminacionType> {
 		await initializeInformeIluminacionTable()
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<InformeIluminacion>(
+		const existing = await db.getFirstAsync<InformeIluminacionType>(
 			`SELECT * FROM informe_iluminacion WHERE id = ? LIMIT 1`,
 			id
 		)

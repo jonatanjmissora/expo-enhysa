@@ -53,7 +53,7 @@ export default function EditarTecnico() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text>
+				{/* <Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text> */}
 			</View>
 		)
 	}
