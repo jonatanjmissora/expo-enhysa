@@ -6,12 +6,30 @@ import {
 	informeIluminacionRepository,
 	InformeIluminacionType,
 } from "@/src/repositories/informe-iluminacion.repository"
-import { useFocusEffect, useLocalSearchParams } from "expo-router"
+import { useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 import { Text, ScrollView, View } from "react-native"
 
+const FIELDS = [
+	{
+		key: "observacion",
+		label: "Observación",
+		placeholder: "Escribe una observación...",
+	},
+	{
+		key: "conclusion",
+		label: "Conclusión",
+		placeholder: "Escribe una conclusión...",
+	},
+	{
+		key: "recomendacion",
+		label: "Recomendación",
+		placeholder: "Escribe una recomendación...",
+	},
+] as const
+
 export default function ConclusionContainer() {
-	const { id } = useLocalSearchParams<{ id: string }>()
+	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [informe, setInforme] = useState<
 		InformeIluminacionType | null | undefined
 	>(undefined)
@@ -40,9 +58,7 @@ export default function ConclusionContainer() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>
-					Cargando informe {JSON.stringify(id)}
-				</Text>
+				{/* <Text style={{ color: "#94a3b8" }}>Cargando informe</Text> */}
 			</View>
 		)
 	}
@@ -64,43 +80,51 @@ export default function ConclusionContainer() {
 	return (
 		<ViewWithLogo>
 			<ScrollView
-				contentContainerStyle={{ justifyContent: "center" }}
+				contentContainerStyle={{
+					justifyContent: "center",
+					paddingTop: 40,
+					paddingBottom: 200,
+					paddingHorizontal: 30,
+				}}
 				style={{
 					flex: 1,
-					paddingHorizontal: 10,
 				}}
 			>
-				<View style={{ gap: 20, alignItems: "center" }}>
-					<View
-						style={{
-							flexDirection: "row",
-							justifyContent: "space-between",
-							alignItems: "center",
-							gap: 6,
-							width: "100%",
-						}}
-					>
-						<Text
-							style={{
-								fontWeight: 600,
-								letterSpacing: 1.5,
-								color: "#ccc",
-								fontSize: 18,
-							}}
-						>
-							Conclusiones
-						</Text>
-						<Button
-							text="Cambiar"
-							variant="secondary"
-							size="xsmall"
-							onPress={() => {
-								// TODO
-							}}
-							style={{ opacity: 0.5 }}
-						/>
-					</View>
-					<TextArea value={informe.conclusion} onChangeText={() => {}} />
+				<View style={{ gap: 40 }}>
+					{FIELDS.map(f => (
+						<View key={f.key} style={{ gap: 10, alignItems: "center" }}>
+							<View
+								style={{
+									flexDirection: "row",
+									justifyContent: "space-between",
+									alignItems: "center",
+									gap: 6,
+									width: "100%",
+								}}
+							>
+								<Text
+									style={{
+										fontWeight: 600,
+										letterSpacing: 1.5,
+										color: "#ccc",
+										fontSize: 18,
+									}}
+								>
+									{f.label}
+								</Text>
+								<Button
+									text="Cambiar"
+									variant="secondary"
+									size="xsmall"
+									onPress={() => {
+										// TODO
+									}}
+									style={{ opacity: 0.5 }}
+								/>
+							</View>
+							<TextArea value={informe[f.key]} onChangeText={() => {}} />
+						</View>
+					))}
 				</View>
 			</ScrollView>
 		</ViewWithLogo>

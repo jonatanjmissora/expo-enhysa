@@ -3,11 +3,14 @@ import IluminacionHero from "@/components/iluminacion/01Hero"
 import Recientes from "@/components/iluminacion/02Recientes"
 import AlquilerIluminacion from "@/components/iluminacion/03Alquiler"
 import Info from "@/components/iluminacion/04Info"
+import Plan from "@/components/Inicio/06Plan"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { router } from "expo-router"
+import { useRef } from "react"
 import { ScrollView } from "react-native"
 
 export default function Iluminacion() {
+	const scrollViewRef = useRef<ScrollView>(null)
 	return (
 		<ViewWithLogo>
 			<Button
@@ -22,16 +25,25 @@ export default function Iluminacion() {
 				}}
 				onPress={() => router.push("/")}
 			/>
-			<ScrollView contentContainerStyle={{ paddingTop: 30 }}>
+			<ScrollView
+				ref={scrollViewRef}
+				contentContainerStyle={{ paddingTop: 30 }}
+			>
 				<IluminacionHero />
 				<Recientes />
 				<AlquilerIluminacion />
 				<Info />
+				<Plan />
 				<Button
 					variant="secondary"
 					size="xsmall"
 					text="Volver Arriba"
-					onPress={() => {}}
+					onPress={() => {
+						scrollViewRef.current?.scrollTo({
+							y: 0,
+							animated: true,
+						})
+					}}
 					style={{
 						marginHorizontal: "auto",
 						marginVertical: 12,

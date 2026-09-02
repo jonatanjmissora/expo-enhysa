@@ -1,5 +1,6 @@
 import Button from "@/components/Button"
 import InformesList from "@/components/iluminacion/InformesList"
+import Plan from "@/components/Inicio/06Plan"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { router } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
@@ -54,6 +55,7 @@ export default function Informes() {
 						textDecorationLine: "underline",
 					}}
 				/>
+				<Plan />
 			</ScrollView>
 		</ViewWithLogo>
 	)

@@ -211,3 +211,11 @@ const save = async () => {
 - Avoids the heavy `@shopify/react-native-skia` download/install issues.
 - Uses already-installed gesture and animation libraries.
 - `captureRef` converts the drawn view into a PNG file URI for storage/upload.
+
+# RN SQLite Repo (agent preset)
+
+Para crear tablas SQLite locales + repositories con CRUD (convertir un schema Drizzle `pgTable` a SQLite, crear un schema nuevo o un repository, y registrar la tabla en `src/db/client.ts`), seguir el preset completo:
+
+- `C:\Users\Usuario1\.dsh\skills\react-native-patterns\SKILL.md`
+
+Resumen de lo que cubre: mapeo de tipos Drizzle → SQLite, plantilla de archivo de schema (con `zod` + defaults), plantilla de repository (CRUD con `randomUUID`, serialización de arrays a JSON y `mapRow`), y registro de la tabla en `client.ts`.

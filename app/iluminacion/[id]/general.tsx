@@ -8,7 +8,7 @@ import {
 	type EmpresaType,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
+import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { useCallback, useState } from "react"
 import {
@@ -17,11 +17,12 @@ import {
 } from "@/src/repositories/instrumento.repository"
 import { theme } from "@/constants/theme"
 import ImageViewer from "@/components/ImageViewer"
+import MiniCard from "@/components/MiniCard"
 
 const USER_ID = "user-1"
 
 export default function General() {
-	const { id } = useLocalSearchParams<{ id: string }>()
+	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [informe, setInforme] = useState<
 		InformeIluminacionType | null | undefined
 	>(undefined)
@@ -164,7 +165,7 @@ function EmpresaData({ empresa }: { empresa: EmpresaType }) {
 					style={{ opacity: 0.5 }}
 				/>
 			</View>
-			<View
+			{/* <View
 				style={{
 					padding: 16,
 					gap: 2,
@@ -232,15 +233,23 @@ function EmpresaData({ empresa }: { empresa: EmpresaType }) {
 						}}
 					/>
 				</View>
-			</View>
+			</View> */}
+			<MiniCard
+				title={empresa.razonSocial?.toUpperCase()}
+				line1={empresa.cuit?.toUpperCase()}
+				line2={empresa.direccion?.toUpperCase()}
+				line3={empresa.localidad?.toUpperCase()}
+				imagen={empresa.logo}
+			/>
 		</View>
 	)
 }
 
 function InstrumentoData({ instrumento }: { instrumento: InstrumentoType }) {
-	const imagenCalibracion =
-		parseImages(instrumento.imagenesCalibracion)[0] ?? null
-	const imagenLabel = parseImages(instrumento.imagenes)[0] ?? "Sin imagen"
+	const imagen =
+		parseImages(instrumento.imagenes)[0] ??
+		parseImages(instrumento.imagenesCalibracion)[0] ??
+		null
 	return (
 		<View style={{ gap: 20, alignItems: "center" }}>
 			<View
@@ -272,79 +281,15 @@ function InstrumentoData({ instrumento }: { instrumento: InstrumentoType }) {
 					style={{ opacity: 0.5 }}
 				/>
 			</View>
-			<View
-				style={{
-					padding: 16,
-					gap: 2,
-					borderWidth: 1,
-					borderColor: theme.orangeAlpha,
-					backgroundColor: theme.gray,
-					borderRadius: 4,
-					width: "100%",
-				}}
-			>
-				<Text
-					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						fontSize: 18,
-						textAlign: "center",
-					}}
-				>
-					{instrumento.nombre?.toUpperCase()}
-				</Text>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "center",
-						alignItems: "center",
-						gap: 6,
-						width: "100%",
-					}}
-				>
-					<View>
-						<Text
-							style={{
-								color: "#ccc",
-								fontSize: 11,
-								textAlign: "right",
-							}}
-						>
-							{instrumento.marca?.toUpperCase()}
-						</Text>
-						<Text
-							style={{
-								color: "#ccc",
-								fontSize: 11,
-								textAlign: "right",
-							}}
-						>
-							{instrumento.modelo?.toUpperCase()}
-						</Text>
-						<Text
-							style={{
-								color: "#ccc",
-								fontSize: 11,
-								textAlign: "right",
-							}}
-						>
-							{new Date(instrumento.fechaCalibracion).toLocaleDateString(
-								"es-AR"
-							)}
-						</Text>
-					</View>
-					{imagenCalibracion ? (
-						<ImageViewer
-							imgSource={{ uri: imagenLabel }}
-							style={{
-								height: 50,
-								aspectRatio: 4 / 3,
-								borderRadius: 4,
-							}}
-						/>
-					) : null}
-				</View>
-			</View>
+			<MiniCard
+				title={instrumento.nombre}
+				line1={instrumento.marca}
+				line2={instrumento.modelo}
+				line3={new Date(instrumento.fechaCalibracion).toLocaleDateString(
+					"es-AR"
+				)}
+				imagen={imagen}
+			/>
 		</View>
 	)
 }
@@ -393,6 +338,10 @@ function GeneralData({ informe }: { informe: InformeIluminacionType }) {
 				if (value) {
 					if (field.key === "createdAt" || field.key === "finishedAt") {
 						displayValue = new Date(value).toLocaleDateString("es-AR")
+					} else if (field.key === "humedad") {
+						displayValue = `${value} %`
+					} else if (field.key === "temperatura") {
+						displayValue = `${value}°C`
 					} else {
 						displayValue = value.toUpperCase()
 					}

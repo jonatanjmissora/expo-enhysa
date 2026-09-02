@@ -1,9 +1,9 @@
 import ViewWithLogo from "@/components/ViewWithLogo"
-import { useLocalSearchParams } from "expo-router"
+import { useGlobalSearchParams } from "expo-router"
 import { Text, ScrollView } from "react-native"
 
 export default function Medicion() {
-	const { id } = useLocalSearchParams<{ id: string }>()
+	const { id } = useGlobalSearchParams<{ id: string }>()
 	return (
 		<ViewWithLogo>
 			<ScrollView

@@ -29,7 +29,8 @@ export default function InformeCard({
 			onPress={() => router.push(`/iluminacion/${informe.id}/general`)}
 			style={{
 				position: "relative",
-				paddingVertical: 20,
+				paddingTop: 20,
+				paddingBottom: 10,
 				borderWidth: 1,
 				borderColor: theme.orangeAlpha,
 				borderRadius: 6,
@@ -41,7 +42,7 @@ export default function InformeCard({
 					textAlign: "right",
 					color: "#ccc",
 					position: "absolute",
-					zIndex: 2,
+					zIndex: 20,
 					top: -10,
 					left: -10,
 					fontSize: 18,
@@ -59,7 +60,13 @@ export default function InformeCard({
 				name="lock-closed"
 				size={16}
 				color={theme.orange}
-				style={{ position: "absolute", top: 5, right: 5, opacity: 0.75 }}
+				style={{
+					position: "absolute",
+					top: 5,
+					right: 5,
+					opacity: 0.75,
+					zIndex: 20,
+				}}
 			/>
 			{empresa.logo && (
 				<ImageViewWithMask
@@ -91,7 +98,7 @@ export default function InformeCard({
 						fontWeight: 600,
 						fontSize: 20,
 						color: theme.orange,
-						paddingVertical: 10,
+						paddingTop: 10,
 					}}
 				>
 					{informe.title
@@ -111,20 +118,6 @@ export default function InformeCard({
 					}}
 				>
 					{empresa.direccion}
-				</Text>
-			</GradientBackground>
-			<GradientBackground
-				colors={["transparent", theme.grayPressed, theme.grayPressed]}
-			>
-				<Text
-					style={{
-						textAlign: "right",
-						color: "#eee",
-						alignSelf: "flex-end",
-						paddingVertical: 2,
-					}}
-				>
-					{empresa.cuit}
 				</Text>
 			</GradientBackground>
 			<GradientBackground
