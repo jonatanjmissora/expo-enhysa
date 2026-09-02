@@ -54,6 +54,14 @@ export default function IluminacionLayout() {
 							),
 						}}
 					/>
+				<Tabs.Screen
+			name="area/nueva"
+			options={{ href: null }}
+		/>
+		<Tabs.Screen
+			name="localizada/nueva"
+			options={{ href: null }}
+		/>
 				</Tabs>
 	)
 }

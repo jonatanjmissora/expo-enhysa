@@ -4,7 +4,7 @@ import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
-import { useFocusEffect } from "expo-router"
+import { router, useFocusEffect } from "expo-router"
 import { Suspense, useCallback, useState } from "react"
 import { Text, View } from "react-native"
 
@@ -68,9 +68,9 @@ function AreasContent({ informeId }: { informeId: string | null }) {
 		}, [load])
 	)
 
-	if (loading)
+	if (loading || !areasIluminacion)
 		return (
-			<View style={{}}>
+			<View style={{flex:1, minHeight: 1000, backgroundColor: theme.safeAreaBG}}>
 				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}
 			</View>
 		)
@@ -106,12 +106,12 @@ function Areas({
 					Mediciones en Area
 				</Text>
 				<Button
-					text="Añadir Area"
+					text="Añadir"
 					variant="secondary"
 					size="xsmall"
 					iconLeft="add"
 					iconSize={10}
-					onPress={() => {}}
+					onPress={() => router.push("/iluminacion/[id]/area/nueva")}
 				/>
 			</View>
 			{areasIluminacion.length > 0 ? (
@@ -170,9 +170,9 @@ function LocalizadasContent({ informeId }: { informeId: string | null }) {
 		}, [load])
 	)
 
-	if (loading)
+	if (loading || !localizadasIluminacion)
 		return (
-			<View style={{}}>
+			<View style={{flex:1, minHeight: 1000, backgroundColor: theme.safeAreaBG}}>
 				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}
 			</View>
 		)
@@ -208,12 +208,12 @@ function Localizadas({
 					Mediciones Localizadas
 				</Text>
 				<Button
-					text="Añadir Area"
+					text="Añadir"
 					variant="secondary"
 					size="xsmall"
 					iconLeft="add"
 					iconSize={10}
-					onPress={() => {}}
+					onPress={() => router.push("/iluminacion/[id]/localizada/nueva")}
 				/>
 			</View>
 			{localizadasIluminacion.length > 0 ? (
