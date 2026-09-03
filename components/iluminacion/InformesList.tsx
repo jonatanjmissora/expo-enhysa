@@ -43,6 +43,7 @@ export default function InformesList({ qnt }: { qnt: number }) {
 					flex: 1,
 					alignItems: "center",
 					justifyContent: "center",
+					minHeight: 1000,
 				}}
 			>
 				{/* <Text style={{ color: "#94a3b8" }}>Cargando...</Text> */}

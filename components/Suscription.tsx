@@ -1,12 +1,6 @@
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import {
-	Pressable,
-	ScrollView,
-	Text,
-	useWindowDimensions,
-	View,
-} from "react-native"
+import { Pressable, Text, View } from "react-native"
 import Ionicons from "@expo/vector-icons/Ionicons"
 
 import { PLANS } from "@/constants"
@@ -15,7 +9,6 @@ import { theme } from "@/constants/theme"
 export { ErrorBoundary } from "expo-router"
 
 export default function SuscriptionPlans({ from }: { from?: string }) {
-	const { width, height } = useWindowDimensions()
 	const router = useRouter()
 	const [anual, setAnual] = useState(false)
 

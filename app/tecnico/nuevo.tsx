@@ -35,7 +35,7 @@ export default function NuevoTecnico() {
 					paddingBottom: 150,
 				}}
 			>
-						<VolverBtn title="Crear Técnico" href="/(tabs)/perfil" />
+				<VolverBtn title="Crear Técnico" href="/(tabs)/perfil" />
 
 				<TecnicoNuevoForm />
 			</ScrollView>

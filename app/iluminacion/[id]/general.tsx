@@ -16,7 +16,6 @@ import {
 	InstrumentoType,
 } from "@/src/repositories/instrumento.repository"
 import { theme } from "@/constants/theme"
-import ImageViewer from "@/components/ImageViewer"
 import MiniCard from "@/components/MiniCard"
 
 const USER_ID = "user-1"

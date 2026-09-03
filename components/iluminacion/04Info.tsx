@@ -1,7 +1,8 @@
-import { theme } from "@/constants/theme"
-import { LinearGradient } from "expo-linear-gradient"
 import { View, Text, StyleSheet } from "react-native"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { ComponentProps } from "react"
+
+type IconName = ComponentProps<typeof Ionicons>["name"]
 
 const softText = "#94a3b8"
 const foreground = "#e2e8f0"
@@ -67,7 +68,7 @@ function Card({
 	align,
 	body,
 }: {
-	icon: string
+	icon: IconName
 	title: string
 	align: "left" | "right"
 	body: string
@@ -78,7 +79,7 @@ function Card({
 			style={[styles.cardRow, isRight ? styles.cardRight : styles.cardLeft]}
 		>
 			<View style={styles.cardBox}>
-				<Ionicons name={icon as any} size={30} color={amberText} />
+				<Ionicons name={icon} size={30} color={amberText} />
 				<Text style={[styles.cardTitle, { color: amberText }]}>{title}</Text>
 			</View>
 			<Text style={styles.cardBody}>{body}</Text>

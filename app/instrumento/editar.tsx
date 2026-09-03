@@ -86,7 +86,11 @@ export default function EditarInstrumento() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Editar Instrumento" href="/(tabs)/perfil" header="instrumento" />
+				<VolverBtn
+					title="Editar Instrumento"
+					href="/(tabs)/perfil"
+					header="instrumento"
+				/>
 
 				<InstrumentoEditForm instrumento={instrumento} />
 			</ScrollView>
@@ -94,7 +98,11 @@ export default function EditarInstrumento() {
 	)
 }
 
-function InstrumentoEditForm({ instrumento }: { instrumento: InstrumentoType }) {
+function InstrumentoEditForm({
+	instrumento,
+}: {
+	instrumento: InstrumentoType
+}) {
 	const router = useRouter()
 
 	const [error, setError] = useState<string | null>(null)

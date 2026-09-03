@@ -8,7 +8,7 @@ export default function Suscripcion() {
 
 	return (
 		<ViewWithLogo>
-			<ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
+			<ScrollView contentContainerStyle={{ paddingBottom: 150 }} >
 				<View style={{ marginTop: 40, flexDirection: "column", gap: 10 }}>
 					<Text
 						style={{

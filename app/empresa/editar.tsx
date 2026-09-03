@@ -81,7 +81,11 @@ export default function EditarEmpresa() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Editar Empresa" href="/(tabs)/perfil" header="empresa" />
+				<VolverBtn
+					title="Editar Empresa"
+					href="/(tabs)/perfil"
+					header="empresa"
+				/>
 
 				<EmpresaEditForm empresa={empresa} />
 			</ScrollView>

@@ -168,7 +168,10 @@ export const instrumentoRepository = {
 		return instrumentos
 	},
 
-	async update(id: string, input: Partial<CreateInstrumentoInput>): Promise<InstrumentoType> {
+	async update(
+		id: string,
+		input: Partial<CreateInstrumentoInput>
+	): Promise<InstrumentoType> {
 		await initializeInstrumentosTable()
 
 		const db = await getDatabase()

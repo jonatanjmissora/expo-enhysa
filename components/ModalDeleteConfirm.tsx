@@ -1,5 +1,5 @@
 import { theme } from "@/constants/theme"
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native"
+import { Modal, View, Text, StyleSheet } from "react-native"
 import Button from "./Button"
 
 export default function ModalDeleteConfirm({

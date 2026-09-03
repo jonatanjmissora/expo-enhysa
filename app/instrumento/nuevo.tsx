@@ -43,7 +43,11 @@ export default function NuevoInstrumento() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Nuevo Instrumento" href="/(tabs)/perfil" header="instrumento" />
+				<VolverBtn
+					title="Nuevo Instrumento"
+					href="/(tabs)/perfil"
+					header="instrumento"
+				/>
 
 				<InstrumentoNuevoForm />
 			</ScrollView>

@@ -59,10 +59,13 @@ function mapRow(row: LocalizadaIluminacionRow): LocalizadaIluminacionType {
 		reportId: row.reportId,
 		nombre: row.nombre,
 		tipo: row.tipo,
-		iluminacionTipo: row.iluminacionTipo as LocalizadaIluminacionType["iluminacionTipo"],
-		iluminacionFuente: row.iluminacionFuente as LocalizadaIluminacionType["iluminacionFuente"],
+		iluminacionTipo:
+			row.iluminacionTipo as LocalizadaIluminacionType["iluminacionTipo"],
+		iluminacionFuente:
+			row.iluminacionFuente as LocalizadaIluminacionType["iluminacionFuente"],
 		iluminacion: row.iluminacion as LocalizadaIluminacionType["iluminacion"],
-		valorRequerido: row.valorRequerido as LocalizadaIluminacionType["valorRequerido"],
+		valorRequerido:
+			row.valorRequerido as LocalizadaIluminacionType["valorRequerido"],
 		observaciones: row.observaciones,
 		imagenes: parseStringArray(row.imagenes),
 		valor: row.valor,

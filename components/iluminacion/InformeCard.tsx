@@ -1,13 +1,6 @@
 import { theme } from "@/constants/theme"
 import { router } from "expo-router"
-import {
-	Text,
-	Pressable,
-	View,
-	ColorValue,
-	ViewStyle,
-	StyleProp,
-} from "react-native"
+import { Text, Pressable, View, ColorValue } from "react-native"
 import { EmpresaType } from "@/src/repositories/empresa.repository"
 import { InformeIluminacionType } from "@/src/repositories/informe-iluminacion.repository"
 import ImageViewer from "../ImageViewer"

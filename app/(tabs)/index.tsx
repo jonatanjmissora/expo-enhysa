@@ -28,7 +28,6 @@ export default function Index() {
 		<ViewWithLogo>
 			<ScrollView
 				ref={scrollViewRef}
-				contentContainerStyle={{ paddingTop: 30 }}
 			>
 				<Hero positionsY={positionsY} />
 

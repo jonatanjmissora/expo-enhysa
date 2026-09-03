@@ -89,7 +89,7 @@ export default function Select<T extends SelectItem>({
 						>
 							{placeholder || "Seleccionar"}
 						</Text>
-						{data.map((item, i) => {
+						{data.map((item, _i) => {
 							const id = getId(item)
 							return (
 								<Pressable

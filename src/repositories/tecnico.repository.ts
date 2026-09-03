@@ -1,6 +1,9 @@
 import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
-import { CREATE_TECNICOS_TABLE, MIGRATE_TECNICOS_EMPRESA } from "../db/schema/tecnicos"
+import {
+	CREATE_TECNICOS_TABLE,
+	MIGRATE_TECNICOS_EMPRESA,
+} from "../db/schema/tecnicos"
 
 export type Tecnico = {
 	id: string
@@ -37,7 +40,7 @@ async function initializeTecnicosTable() {
 	// Migration: allow NULL empresaLogo (table created in earlier builds had NOT NULL)
 	const shouldMigrate = await db
 		.getFirstAsync<{ count: number }>(
-			`SELECT COUNT(*) as count FROM pragma_table_info('tecnicos') WHERE name = 'empresaLogo' AND "notnull" = 1`,
+			`SELECT COUNT(*) as count FROM pragma_table_info('tecnicos') WHERE name = 'empresaLogo' AND "notnull" = 1`
 		)
 		.then(r => r?.count ?? 0)
 
@@ -176,12 +179,18 @@ export const tecnicoRepository = {
 		await db.runAsync(`DELETE FROM tecnicos WHERE id = ?`, id)
 	},
 
-	async update(id: string, input: Partial<CreateTecnicoInput>): Promise<Tecnico> {
+	async update(
+		id: string,
+		input: Partial<CreateTecnicoInput>
+	): Promise<Tecnico> {
 		await initializeTecnicosTable()
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<Tecnico>(`SELECT * FROM tecnicos WHERE id = ? LIMIT 1`, id)
+		const existing = await db.getFirstAsync<Tecnico>(
+			`SELECT * FROM tecnicos WHERE id = ? LIMIT 1`,
+			id
+		)
 		if (!existing) {
 			throw new Error("No se encontró el técnico a actualizar")
 		}

@@ -32,6 +32,7 @@ export default function Hero({
 			}}
 			style={{
 				backgroundColor: theme.headerBG,
+				paddingTop: 20,
 			}}
 		>
 			<Text

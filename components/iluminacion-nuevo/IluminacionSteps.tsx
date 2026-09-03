@@ -31,7 +31,7 @@ export default function IluminacionSteps({ step }: { step: 1 | 2 | 3 }) {
 						color: "#fff",
 						paddingHorizontal: 10,
 						paddingVertical: 4,
-						borderRadius: 4
+						borderRadius: 4,
 					}}
 				>
 					General
@@ -40,16 +40,18 @@ export default function IluminacionSteps({ step }: { step: 1 | 2 | 3 }) {
 					style={{
 						height: 1,
 						width: 30,
-						backgroundColor: step === 3 || step === 2 ? theme.orangeAlpha : "#888",
+						backgroundColor:
+							step === 3 || step === 2 ? theme.orangeAlpha : "#888",
 					}}
 				></View>
 				<Text
 					style={{
-						backgroundColor: step === 3 || step === 2 ? theme.orangeAlpha : "transparent",
+						backgroundColor:
+							step === 3 || step === 2 ? theme.orangeAlpha : "transparent",
 						color: step === 3 || step === 2 ? "#fff" : "#888",
 						paddingHorizontal: 10,
 						paddingVertical: 4,
-						borderRadius: 4
+						borderRadius: 4,
 					}}
 				>
 					Medición
@@ -67,7 +69,7 @@ export default function IluminacionSteps({ step }: { step: 1 | 2 | 3 }) {
 						color: step === 3 ? "#fff" : "#888",
 						paddingHorizontal: 10,
 						paddingVertical: 4,
-						borderRadius: 4
+						borderRadius: 4,
 					}}
 				>
 					Conclusión

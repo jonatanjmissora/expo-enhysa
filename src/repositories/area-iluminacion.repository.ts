@@ -73,8 +73,10 @@ function mapRow(row: AreaIluminacionRow): AreaIluminacionType {
 		reportId: row.reportId,
 		nombre: row.nombre,
 		tipo: row.tipo,
-		iluminacionTipo: row.iluminacionTipo as AreaIluminacionType["iluminacionTipo"],
-		iluminacionFuente: row.iluminacionFuente as AreaIluminacionType["iluminacionFuente"],
+		iluminacionTipo:
+			row.iluminacionTipo as AreaIluminacionType["iluminacionTipo"],
+		iluminacionFuente:
+			row.iluminacionFuente as AreaIluminacionType["iluminacionFuente"],
 		iluminacion: row.iluminacion as AreaIluminacionType["iluminacion"],
 		valorRequerido: row.valorRequerido as AreaIluminacionType["valorRequerido"],
 		observaciones: row.observaciones,
@@ -94,7 +96,9 @@ async function initializeAreasIluminacionTable() {
 }
 
 export const areaIluminacionRepository = {
-	async create(input: CreateAreaIluminacionInput): Promise<AreaIluminacionType> {
+	async create(
+		input: CreateAreaIluminacionInput
+	): Promise<AreaIluminacionType> {
 		await initializeAreasIluminacionTable()
 
 		const db = await getDatabase()
