@@ -17,15 +17,17 @@ export default function ViewWithLogo({
 				colors={[theme.headerBG, theme.tabBG]}
 				style={{
 					flex: 1,
-					position: "fixed",
-					top: 0,
+					position: "absolute",
+					top: 100,
 					left: 0,
 					right: 0,
 					bottom: 0,
 					zIndex: -1,
 				}}
 			>
-				{children}
+				
+					{children}
+				
 			</LinearGradient>
 		</View>
 	)

@@ -5,7 +5,7 @@ import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminaci
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 import { useFocusEffect } from "expo-router"
-import { Suspense, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 import { Text, View } from "react-native"
 
 const USER_ID = "user-1"
@@ -19,10 +19,8 @@ export default function IluminacionMedicion({
 }) {
 	return (
 		<View style={{ width: "90%", marginHorizontal: "auto" }}>
-			<Suspense fallback={<Text>Loading...</Text>}>
-				<AreasContent informeId={informeId} />
-				<LocalizadasContent informeId={informeId} />
-			</Suspense>
+			<AreasContent informeId={informeId} />
+			<LocalizadasContent informeId={informeId} />
 			<Button
 				variant="secondary"
 				text="Volver"

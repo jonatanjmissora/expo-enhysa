@@ -1,6 +1,9 @@
 import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { ComponentProps } from "react"
 import { Pressable, View, Text } from "react-native"
+
+type IconName = ComponentProps<typeof Ionicons>["name"]
 
 export default function HeaderPerfil({
 	activeHeader,
@@ -48,7 +51,7 @@ function HeaderCard({
 	onPress,
 }: {
 	text: string
-	icon: string
+	icon: IconName
 	active: boolean
 	onPress: () => void
 }) {

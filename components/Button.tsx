@@ -1,6 +1,9 @@
 import { theme } from "@/constants/theme"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { ComponentProps } from "react"
 import { Pressable, Text, TextStyle, ViewStyle } from "react-native"
+
+type IconName = ComponentProps<typeof Ionicons>["name"]
 
 export default function Button({
 	iconLeft,
@@ -14,8 +17,8 @@ export default function Button({
 	size = "medium",
 	iconSize = 24,
 }: {
-	iconLeft?: string
-	iconRight?: string
+	iconLeft?: IconName
+	iconRight?: IconName
 	text?: string
 	style?: ViewStyle
 	textStyle?: TextStyle

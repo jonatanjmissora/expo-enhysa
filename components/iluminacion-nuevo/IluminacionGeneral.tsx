@@ -61,7 +61,7 @@ export default function IluminacionGeneral({
 	if (loading) {
 		return (
 			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>Cargando...</Text>
+				{/* <Text style={{ color: "#cbd5e1" }}>Cargando...</Text> */}
 			</View>
 		)
 	}

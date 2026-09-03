@@ -49,7 +49,7 @@ export default function Tecnico() {
 					justifyContent: "center",
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text>
+				{/* <Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text> */}
 			</View>
 		)
 	}

@@ -33,12 +33,16 @@ export default function FirmaBox({ image, setImage }: SignaturePadProps) {
 				onPress={() => setShowFirmaBox(true)}
 			/>
 
-			<Modal visible={showFirmaBox} animationType="fade" onDismiss={() => setShowFirmaBox(false)}>
+			<Modal
+				visible={showFirmaBox}
+				animationType="fade"
+				onDismiss={() => setShowFirmaBox(false)}
+			>
 				<LinearGradient
 					colors={[theme.headerBG, theme.tabBG]}
 					style={{
 						flex: 1,
-						position: "fixed",
+						position: "absolute",
 						top: 0,
 						left: 0,
 						right: 0,
@@ -72,10 +76,10 @@ function FirmaBoxContent({
 	const currentPath = useSharedValue<Point[]>([])
 
 	const gesture = Gesture.Pan()
-		.onBegin((e) => {
+		.onBegin(e => {
 			currentPath.value = [{ x: e.x, y: e.y }]
 		})
-		.onUpdate((e) => {
+		.onUpdate(e => {
 			currentPath.value = [...currentPath.value, { x: e.x, y: e.y }]
 			setPaths([...paths, { x: e.x, y: e.y }])
 		})
@@ -161,7 +165,9 @@ function FirmaBoxContent({
 									justifyContent: "center",
 								}}
 							>
-								<Text style={{ color: "#94a3b8", fontSize: 16 }}>Firmá aquí</Text>
+								<Text style={{ color: "#94a3b8", fontSize: 16 }}>
+									Firmá aquí
+								</Text>
 							</View>
 						)}
 					</View>
@@ -198,7 +204,11 @@ function FirmaBoxContent({
 				</Pressable>
 			</View>
 
-			{image && <Text style={{ color: "#94a3b8", fontSize: 12, textAlign: "center" }}>Firma guardada</Text>}
+			{image && (
+				<Text style={{ color: "#94a3b8", fontSize: 12, textAlign: "center" }}>
+					Firma guardada
+				</Text>
+			)}
 		</View>
 	)
 }
