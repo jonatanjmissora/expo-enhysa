@@ -33,7 +33,9 @@ export default function VolverBtn({
 				iconLeft="chevron-back"
 				text={text}
 				style={{ alignSelf: "flex-start", paddingHorizontal: 0, opacity: 0.85 }}
-				onPress={() => (destination ? router.push(destination) : router.back())}
+				onPress={() =>
+					destination ? router.dismissTo(destination) : router.back()
+				}
 			/>
 			<Text
 				style={{
