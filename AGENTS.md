@@ -19,7 +19,7 @@ netsh advfirewall firewall delete rule name="Expo Dev"
 # PhoneMockup Image Slider Implementation
 
 ## Component Location
-`app/(tabs)/index.tsx` - `PhoneMockup()` function
+`app/(inicio)/index.tsx` - `PhoneMockup()` function
 
 ## Implementation Details
 
@@ -105,7 +105,7 @@ import { useFocusEffect } from "expo-router";
 Use `onLayout` + `useState` in the parent to store each section's `layout.y`, then call `scrollTo({ y })` with those values. This is the most reliable pattern in React Native because `layout.y` is already relative to the `ScrollView` content, which is exactly what `scrollTo` expects.
 
 ## Component Location
-`app/(tabs)/suscripcion.tsx` - `Suscripcion()` function
+`app/(inicio)/suscripcion.tsx` - `Suscripcion()` function
 
 ### Refs for positions and scroll (no stale state)
 ```tsx

@@ -37,7 +37,7 @@ export default function NuevaEmpresa() {
 			>
 				<VolverBtn
 					title="Nueva Empresa"
-					href="/(tabs)/perfil"
+					href="/(inicio)/perfil"
 					header="empresa"
 				/>
 
@@ -69,7 +69,7 @@ function EmpresaNuevoForm() {
 					logo,
 					userId: USER_ID,
 				} satisfies CreateEmpresaInput)
-				router.replace("/(tabs)/perfil?header=empresa")
+				router.dismissTo("/(inicio)/perfil?header=empresa")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar la empresa"

@@ -77,7 +77,7 @@ export default function Empresa() {
 				<Text style={{ color: "#94a3b8" }}>
 					No existe la empresa seleccionada.
 				</Text>
-				<Button text="Volver" onPress={() => router.push("/perfil")} />
+				<Button text="Volver" onPress={() => router.dismissTo("/perfil")} />
 			</View>
 		)
 	}
@@ -90,7 +90,7 @@ export default function Empresa() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Empresa" href="/(tabs)/perfil" header="empresa" />
+				<VolverBtn title="Empresa" href="/(inicio)/perfil" header="empresa" />
 
 				<EmpresaItem empresa={empresa} />
 			</ScrollView>
@@ -173,7 +173,7 @@ function MenuEmpresa({ empresa }: { empresa: EmpresaType }) {
 		try {
 			await empresaRepository.delete(empresa.id)
 			setModalVisible(false)
-			router.replace("/(tabs)/perfil?header=empresa")
+			router.dismissTo("/(inicio)/perfil?header=empresa")
 		} catch (error) {
 			console.error(error)
 		}

@@ -5,14 +5,14 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
-	Tecnico,
+	type CreateTecnicoInput,
 	tecnicoRepository,
 } from "@/src/repositories/tecnico.repository"
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
-import { useCallback, useState } from "react"
+import { useRouter } from "expo-router"
+import { useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
 import { useForm } from "@tanstack/react-form"
-import { tecnicoFormValidator } from "@/src/db/schema/tecnicos"
+import { defaultTecnico, tecnicoFormValidator } from "@/src/db/schema/tecnicos"
 
 const USER_ID = "user-1"
 
@@ -25,53 +25,7 @@ const FIELDS = [
 	{ key: "matricula", label: "Matrícula", placeholder: "MAT-12345" },
 ] as const
 
-export default function EditarTecnico() {
-	const { tecnicoId } = useLocalSearchParams<{ tecnicoId: string }>()
-	const [tecnico, setTecnico] = useState<Tecnico | null>(null)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadTecnicoById() {
-				if (!tecnicoId) return
-				try {
-					const data = await tecnicoRepository.getById(tecnicoId)
-					setTecnico(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadTecnicoById()
-		}, [tecnicoId])
-	)
-
-	if (tecnico === undefined) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					backgroundColor: theme.safeAreaBG,
-				}}
-			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text> */}
-			</View>
-		)
-	}
-
-	if (!tecnico)
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					backgroundColor: theme.safeAreaBG,
-				}}
-			>
-				<Text style={{ color: "#94a3b8" }}>No existe el técnico</Text>
-			</View>
-		)
-
+export default function NuevoTecnico() {
 	return (
 		<ViewWithLogo>
 			<ScrollView
@@ -81,40 +35,24 @@ export default function EditarTecnico() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Editar Técnico" href="/(tabs)/perfil" />
+				<VolverBtn title="Crear Técnico" href="/(inicio)/perfil" />
 
-				<TecnicoEditForm tecnico={tecnico} />
+				<TecnicoNuevoForm />
 			</ScrollView>
 		</ViewWithLogo>
 	)
 }
 
-function TecnicoEditForm({ tecnico }: { tecnico: Tecnico }) {
+function TecnicoNuevoForm() {
 	const router = useRouter()
 
 	const [error, setError] = useState<string | null>(null)
-	const [matriculaImg, setMatriculaImg] = useState<string | null>(
-		tecnico?.matriculaImg ?? null
-	)
-	const [firmaImg, setFirmaImg] = useState<string | null>(
-		tecnico?.firmaImg ?? null
-	)
-	const [empresaLogo, setEmpresaLogo] = useState<string | null>(
-		tecnico?.empresaLogo ?? null
-	)
+	const [matriculaImg, setMatriculaImg] = useState<string | null>(null)
+	const [firmaImg, setFirmaImg] = useState<string | null>(null)
+	const [empresaLogo, setEmpresaLogo] = useState<string | null>(null)
 
 	const form = useForm({
-		defaultValues: {
-			nombre: tecnico?.nombre ?? "",
-			dni: tecnico?.dni != null ? String(tecnico.dni) : "",
-			telefono: tecnico?.telefono ?? "",
-			localidad: tecnico?.localidad ?? "",
-			cargo: tecnico?.cargo ?? "",
-			matricula: tecnico?.matricula ?? "",
-			matriculaImg: tecnico?.matriculaImg ?? "",
-			firmaImg: tecnico?.firmaImg ?? "",
-			empresaLogo: tecnico?.empresaLogo ?? "",
-		},
+		defaultValues: defaultTecnico,
 		validators: { onSubmit: tecnicoFormValidator },
 		onSubmit: async ({ value }) => {
 			if (!matriculaImg) {
@@ -128,15 +66,15 @@ function TecnicoEditForm({ tecnico }: { tecnico: Tecnico }) {
 
 			setError(null)
 			try {
-				await tecnicoRepository.update(tecnico.id, {
+				await tecnicoRepository.create({
 					...value,
 					matriculaImg,
 					firmaImg,
 					empresaLogo,
 					dni: value.dni ? Number(value.dni) : null,
 					userId: USER_ID,
-				})
-				router.replace("/(tabs)/perfil")
+				} satisfies CreateTecnicoInput)
+				router.dismissTo("/(inicio)/perfil")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar el técnico"

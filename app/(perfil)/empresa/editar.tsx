@@ -27,7 +27,9 @@ const FIELDS = [
 
 export default function EditarEmpresa() {
 	const { empresaId } = useLocalSearchParams<{ empresaId: string }>()
-	const [empresa, setEmpresa] = useState<EmpresaType | null>(null)
+	const [empresa, setEmpresa] = useState<EmpresaType | null | undefined>(
+		undefined
+	)
 	useFocusEffect(
 		useCallback(() => {
 			async function loadEmpresaById() {
@@ -53,7 +55,7 @@ export default function EditarEmpresa() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>Cargando empresa…</Text>
+				{/* <Text style={{ color: "#94a3b8" }}>Cargando empresa…</Text> */}
 			</View>
 		)
 	}
@@ -83,7 +85,7 @@ export default function EditarEmpresa() {
 			>
 				<VolverBtn
 					title="Editar Empresa"
-					href="/(tabs)/perfil"
+					href="/(inicio)/perfil"
 					header="empresa"
 				/>
 
@@ -124,7 +126,7 @@ function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 					logo,
 					userId: USER_ID,
 				})
-				router.replace("/(tabs)/perfil?header=empresa")
+				router.dismissTo("/(inicio)/perfil?header=empresa")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar la empresa"

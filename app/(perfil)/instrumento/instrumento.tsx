@@ -74,7 +74,7 @@ export default function Instrumento() {
 				<Text style={{ color: "#94a3b8" }}>
 					No existe el instrumento seleccionado.
 				</Text>
-				<Button text="Volver" onPress={() => router.push("/perfil")} />
+				<Button text="Volver" onPress={() => router.dismissTo("/perfil")} />
 			</View>
 		)
 	}
@@ -90,7 +90,7 @@ export default function Instrumento() {
 			>
 				<VolverBtn
 					title="Instrumento"
-					href="/(tabs)/perfil"
+					href="/(inicio)/perfil"
 					header="instrumento"
 				/>
 
@@ -227,7 +227,7 @@ function MenuInstrumento({ instrumento }: { instrumento: InstrumentoType }) {
 		try {
 			await instrumentoRepository.delete(instrumento.id)
 			setModalVisible(false)
-			router.replace("/(tabs)/perfil?header=instrumento")
+			router.dismissTo("/(inicio)/perfil?header=instrumento")
 		} catch (error) {
 			console.error(error)
 		}

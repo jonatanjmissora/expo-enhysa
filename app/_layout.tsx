@@ -13,12 +13,14 @@ export default function RootLayout() {
 				initialMetrics={initialWindowMetrics}
 				style={{ backgroundColor: theme.safeAreaBG }}
 			>
-				<Stack>
-					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+				<Stack
+					screenOptions={{
+						contentStyle: { backgroundColor: theme.safeAreaBG },
+					}}
+				>
+					<Stack.Screen name="(inicio)" options={{ headerShown: false }} />
 					<Stack.Screen name="(iluminacion)" options={{ headerShown: false }} />
-					<Stack.Screen name="tecnico" options={{ headerShown: false }} />
-					<Stack.Screen name="empresa" options={{ headerShown: false }} />
-					<Stack.Screen name="instrumento" options={{ headerShown: false }} />
+					<Stack.Screen name="(perfil)" options={{ headerShown: false }} />
 					<Stack.Screen
 						name="iluminacion/[id]"
 						options={{ headerShown: false }}

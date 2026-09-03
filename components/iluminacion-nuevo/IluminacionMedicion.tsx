@@ -4,7 +4,7 @@ import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
-import { useFocusEffect } from "expo-router"
+import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import { Text, View } from "react-native"
 

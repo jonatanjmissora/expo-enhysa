@@ -32,7 +32,9 @@ const FIELDS = [
 
 export default function EditarInstrumento() {
 	const { instrumentoId } = useLocalSearchParams<{ instrumentoId: string }>()
-	const [instrumento, setInstrumento] = useState<InstrumentoType | null>(null)
+	const [instrumento, setInstrumento] = useState<
+		InstrumentoType | null | undefined
+	>(undefined)
 	useFocusEffect(
 		useCallback(() => {
 			async function loadInstrumentoById() {
@@ -58,7 +60,7 @@ export default function EditarInstrumento() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>Cargando instrumento…</Text>
+				{/* <Text style={{ color: "#94a3b8" }}>Cargando instrumento…</Text> */}
 			</View>
 		)
 	}
@@ -88,7 +90,7 @@ export default function EditarInstrumento() {
 			>
 				<VolverBtn
 					title="Editar Instrumento"
-					href="/(tabs)/perfil"
+					href="/(inicio)/perfil"
 					header="instrumento"
 				/>
 
@@ -150,7 +152,7 @@ function InstrumentoEditForm({
 					imagenes: JSON.stringify(imagenes),
 					userId: USER_ID,
 				})
-				router.replace("/(tabs)/perfil?header=instrumento")
+				router.dismissTo("/(inicio)/perfil?header=instrumento")
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar el instrumento"
