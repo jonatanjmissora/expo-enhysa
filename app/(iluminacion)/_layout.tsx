@@ -43,7 +43,7 @@ export default function TabLayout() {
 							onPress={() => {
 								const id = randomUUID()
 								router.push({
-									pathname: "/iluminacion/[id]/general",
+									pathname: "/iluminacion/nuevo/[id]/general",
 									params: { id },
 								})
 							}}

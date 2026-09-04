@@ -25,6 +25,10 @@ export default function RootLayout() {
 						name="iluminacion/[id]"
 						options={{ headerShown: false }}
 					/>
+					<Stack.Screen
+						name="iluminacion/nuevo/[id]"
+						options={{ headerShown: false }}
+					/>
 					<Stack.Screen name="debug/db" options={{ title: "SQLite Debug" }} />
 				</Stack>
 			</SafeAreaProvider>

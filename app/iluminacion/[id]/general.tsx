@@ -71,39 +71,19 @@ export default function General() {
 
 	return (
 		<ViewWithLogo>
-			<View
+			<Button
+				variant="ghost"
+				iconLeft="chevron-back"
+				text="Volver"
 				style={{
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					gap: 6,
-					width: "100%",
+					alignSelf: "flex-start",
+					paddingHorizontal: 20,
+					opacity: 0.85,
+					padding: 4,
 				}}
-			>
-				<Button
-					variant="ghost"
-					iconLeft="chevron-back"
-					text="Volver"
-					style={{
-						alignSelf: "flex-start",
-						paddingHorizontal: 20,
-						opacity: 0.85,
-						padding: 4,
-					}}
-					onPress={() => router.push("/(iluminacion)/informes")}
-				/>
-				<Text
-					style={{
-						color: "#ddd",
-						fontWeight: "600",
-						letterSpacing: 1.5,
-						fontSize: 20,
-						paddingRight: 20,
-					}}
-				>
-					Informe Nuevo
-				</Text>
-			</View>
+				onPress={() => router.push("/(iluminacion)/informes")}
+			/>
+
 			{!empresas || !instrumentos || !informe ? (
 				<View>
 					<IluminacionSteps />

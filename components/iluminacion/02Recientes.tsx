@@ -4,6 +4,7 @@ import { View, Text } from "react-native"
 import Button from "../Button"
 import InformesList from "./InformesList"
 import { router } from "expo-router"
+import { randomUUID } from "expo-crypto"
 
 export default function Recientes() {
 	return (
@@ -44,7 +45,13 @@ export default function Recientes() {
 				<Button
 					iconLeft="add-sharp"
 					text="Nuevo Informe"
-					onPress={() => router.push("/(iluminacion)/nuevo")}
+					onPress={() => {
+						const id = randomUUID()
+						router.push({
+							pathname: "/iluminacion/nuevo/[id]/general",
+							params: { id },
+						})
+					}}
 					style={{
 						marginHorizontal: "auto",
 						marginVertical: 12,

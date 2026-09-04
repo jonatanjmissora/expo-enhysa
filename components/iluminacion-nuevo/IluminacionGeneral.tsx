@@ -120,27 +120,53 @@ function IluminacionGeneralForm({
 		validators: { onSubmit: iluminacionGeneralFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
-			// TODO: check si valores nuevos son distintos a los viejos
+			const informeId = id ?? randomUUID()
 
 			try {
-				await informeIluminacionRepository.create({
-					...value,
-					id: id ?? randomUUID(),
-					tecnicoId: tecnico?.id ?? "",
-					userId: USER_ID,
-					title: "",
-					createdAt: new Date().toISOString(),
-					finishedAt: "",
-					observacion: "",
-					conclusion: "",
-					recomendacion: "",
-					creditConsumed: false,
-					creditConsumedAt: "",
-				})
+				const existente = await informeIluminacionRepository.getById(informeId)
+
+				const camposGenerales = {
+					empresaId: value.empresaId,
+					instrumentoId: value.instrumentoId,
+					estado: value.estado,
+					humedad: value.humedad,
+					temperatura: value.temperatura,
+				}
+
+				if (existente) {
+					const sinCambios =
+						existente.empresaId === value.empresaId &&
+						existente.instrumentoId === value.instrumentoId &&
+						existente.estado === value.estado &&
+						existente.humedad === value.humedad &&
+						existente.temperatura === value.temperatura
+
+					if (!sinCambios) {
+						await informeIluminacionRepository.update(
+							informeId,
+							camposGenerales
+						)
+					}
+				} else {
+					await informeIluminacionRepository.create({
+						...camposGenerales,
+						id: informeId,
+						tecnicoId: tecnico?.id ?? "",
+						userId: USER_ID,
+						title: "",
+						createdAt: new Date().toISOString(),
+						finishedAt: "",
+						observacion: "",
+						conclusion: "",
+						recomendacion: "",
+						creditConsumed: false,
+						creditConsumedAt: "",
+					})
+				}
 
 				router.push({
-					pathname: "/iluminacion/[id]/medicion",
-					params: { id },
+					pathname: "/iluminacion/nuevo/[id]/medicion",
+					params: { id: informeId },
 				})
 			} catch (e) {
 				setError(
