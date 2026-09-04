@@ -111,7 +111,7 @@ function EmpresaCard({ empresa }: { empresa: EmpresaType }) {
 			}}
 			onPress={() => {
 				router.push({
-					pathname: "/empresa/empresa",
+					pathname: "/empresa/index",
 					params: { empresaId: empresa.id },
 				})
 			}}

@@ -128,7 +128,7 @@ function InstrumentoCard({ instrumento }: { instrumento: InstrumentoType }) {
 			}}
 			onPress={() => {
 				router.push({
-					pathname: "/instrumento/instrumento",
+					pathname: "/instrumento/index",
 					params: { instrumentoId: instrumento.id },
 				})
 			}}

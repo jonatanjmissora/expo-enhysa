@@ -27,7 +27,7 @@ export default function Iluminacion() {
 			/>
 			<ScrollView
 				ref={scrollViewRef}
-				contentContainerStyle={{ paddingTop: 30 }}
+				contentContainerStyle={{ paddingVertical: 30 }}
 			>
 				<IluminacionHero />
 				<Recientes />

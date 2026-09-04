@@ -8,7 +8,7 @@ import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "./schema/localizadas-ilumi
 
 const DATABASE_NAME = "app.db"
 
-let db: SQLite.SQLiteDatabase | null = null
+let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null
 
 async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await database.execAsync(CREATE_TECNICOS_TABLE)
@@ -19,11 +19,14 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await database.execAsync(CREATE_LOCALIZADAS_ILUMINACION_TABLE)
 }
 
-export async function getDatabase() {
-	if (!db) {
-		db = await SQLite.openDatabaseAsync(DATABASE_NAME)
-		await initializeDatabase(db)
+export function getDatabase(): Promise<SQLite.SQLiteDatabase> {
+	if (!dbPromise) {
+		dbPromise = (async () => {
+			const database = await SQLite.openDatabaseAsync(DATABASE_NAME)
+			await initializeDatabase(database)
+			return database
+		})()
 	}
 
-	return db
+	return dbPromise
 }

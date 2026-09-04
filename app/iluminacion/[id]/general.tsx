@@ -17,6 +17,8 @@ import {
 } from "@/src/repositories/instrumento.repository"
 import { theme } from "@/constants/theme"
 import MiniCard from "@/components/MiniCard"
+import IluminacionSteps from "@/components/iluminacion-nuevo/IluminacionSteps"
+import IluminacionGeneral from "@/components/iluminacion-nuevo/IluminacionGeneral"
 
 const USER_ID = "user-1"
 
@@ -67,28 +69,54 @@ export default function General() {
 		)
 	}
 
-	if (!informe || !empresas || !instrumentos) {
-		return (
+	return (
+		<ViewWithLogo>
 			<View
 				style={{
-					flex: 1,
+					flexDirection: "row",
+					justifyContent: "space-between",
 					alignItems: "center",
-					justifyContent: "center",
-					gap: 12,
+					gap: 6,
+					width: "100%",
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>No se encontró el informe.</Text>
-				<Button text="Volver" onPress={() => router.back()} />
+				<Button
+					variant="ghost"
+					iconLeft="chevron-back"
+					text="Volver"
+					style={{
+						alignSelf: "flex-start",
+						paddingHorizontal: 20,
+						opacity: 0.85,
+						padding: 4,
+					}}
+					onPress={() => router.push("/(iluminacion)/informes")}
+				/>
+				<Text
+					style={{
+						color: "#ddd",
+						fontWeight: "600",
+						letterSpacing: 1.5,
+						fontSize: 20,
+						paddingRight: 20,
+					}}
+				>
+					Informe Nuevo
+				</Text>
 			</View>
-		)
-	}
-
-	return (
-		<InformeContent
-			informe={informe}
-			empresas={empresas}
-			instrumentos={instrumentos}
-		/>
+			{!empresas || !instrumentos || !informe ? (
+				<View>
+					<IluminacionSteps />
+					<IluminacionGeneral />
+				</View>
+			) : (
+				<InformeContent
+					informe={informe}
+					empresas={empresas}
+					instrumentos={instrumentos}
+				/>
+			)}
+		</ViewWithLogo>
 	)
 }
 
@@ -108,27 +136,14 @@ function InformeContent({
 	if (!instrumento) return null
 
 	return (
-		<ViewWithLogo>
-			<Button
-				variant="ghost"
-				iconLeft="chevron-back"
-				text="Volver"
-				style={{
-					alignSelf: "flex-start",
-					paddingHorizontal: 20,
-					opacity: 0.85,
-					padding: 4,
-				}}
-				onPress={() => router.push("/(iluminacion)/informes")}
-			/>
-			<ScrollView>
-				<View style={{ padding: 30, gap: 40, paddingBottom: 200 }}>
-					<EmpresaData empresa={empresa} />
-					<InstrumentoData instrumento={instrumento} />
-					<GeneralData informe={informe} />
-				</View>
-			</ScrollView>
-		</ViewWithLogo>
+		<ScrollView>
+			<View style={{ padding: 30, gap: 40, paddingBottom: 200 }}>
+				<EmpresaData empresa={empresa} />
+				<InstrumentoData instrumento={instrumento} />
+				<GeneralData informe={informe} />
+			</View>
+			<Text style={{ color: "#222" }}>INFORME</Text>
+		</ScrollView>
 	)
 }
 
@@ -164,75 +179,6 @@ function EmpresaData({ empresa }: { empresa: EmpresaType }) {
 					style={{ opacity: 0.5 }}
 				/>
 			</View>
-			{/* <View
-				style={{
-					padding: 16,
-					gap: 2,
-					borderWidth: 1,
-					borderColor: theme.orangeAlpha,
-					backgroundColor: theme.gray,
-					borderRadius: 4,
-					width: "100%",
-				}}
-			>
-				<Text
-					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						fontSize: 18,
-						textAlign: "center",
-					}}
-				>
-					{empresa.razonSocial?.toUpperCase()}
-				</Text>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "center",
-						alignItems: "center",
-						gap: 6,
-						width: "100%",
-					}}
-				>
-					<View>
-						<Text
-							style={{
-								color: "#ccc",
-								fontSize: 11,
-								textAlign: "right",
-							}}
-						>
-							{empresa.cuit?.toUpperCase()}
-						</Text>
-						<Text
-							style={{
-								color: "#ccc",
-								fontSize: 11,
-								textAlign: "right",
-							}}
-						>
-							{empresa.direccion?.toUpperCase()}
-						</Text>
-						<Text
-							style={{
-								color: "#ccc",
-								fontSize: 11,
-								textAlign: "right",
-							}}
-						>
-							{empresa.localidad?.toUpperCase()}
-						</Text>
-					</View>
-					<ImageViewer
-						imgSource={{ uri: empresa.logo }}
-						style={{
-							height: 50,
-							aspectRatio: 4 / 3,
-							borderRadius: 4,
-						}}
-					/>
-				</View>
-			</View> */}
 			<MiniCard
 				title={empresa.razonSocial?.toUpperCase()}
 				line1={empresa.cuit?.toUpperCase()}

@@ -25,9 +25,7 @@ export default function ViewWithLogo({
 					zIndex: -1,
 				}}
 			>
-				
-					{children}
-				
+				{children}
 			</LinearGradient>
 		</View>
 	)

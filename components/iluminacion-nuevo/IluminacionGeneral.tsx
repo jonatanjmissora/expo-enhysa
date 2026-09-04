@@ -16,25 +16,18 @@ import {
 } from "@/src/repositories/tecnico.repository"
 import { informeIluminacionRepository } from "@/src/repositories/informe-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
-import { router, useFocusEffect } from "expo-router"
+import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
-import { Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import {
 	defaultIluminacionGeneral,
 	iluminacionGeneralFormValidator,
 } from "@/src/db/schema/informe-iluminacion"
+import { randomUUID } from "expo-crypto"
 
 const USER_ID = "user-1"
 
-export default function IluminacionGeneral({
-	setStep,
-	onCreated,
-	informeId,
-}: {
-	setStep: (step: 1 | 2 | 3) => void
-	onCreated: (id: string) => void
-	informeId: string | null
-}) {
+export default function IluminacionGeneral() {
 	const [loading, setLoading] = useState<boolean>(true)
 	const [tecnico, setTecnico] = useState<Tecnico | null | undefined>(undefined)
 	const [empresas, setEmpresas] = useState<EmpresaType[]>([])
@@ -107,9 +100,6 @@ export default function IluminacionGeneral({
 			tecnico={tecnico}
 			empresas={empresas}
 			instrumentos={instrumentos}
-			setStep={setStep}
-			onCreated={onCreated}
-			informeId={informeId}
 		/>
 	)
 }
@@ -118,26 +108,24 @@ function IluminacionGeneralForm({
 	tecnico,
 	empresas,
 	instrumentos,
-	setStep,
-	onCreated,
-	informeId,
 }: {
 	tecnico: Tecnico
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
-	setStep: (step: 1 | 2 | 3) => void
-	onCreated: (id: string) => void
-	informeId: string | null
 }) {
+	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
 	const form = useForm({
 		defaultValues: defaultIluminacionGeneral,
 		validators: { onSubmit: iluminacionGeneralFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			// TODO: check si valores nuevos son distintos a los viejos
+
 			try {
-				const informe = await informeIluminacionRepository.create({
+				await informeIluminacionRepository.create({
 					...value,
+					id: id ?? randomUUID(),
 					tecnicoId: tecnico?.id ?? "",
 					userId: USER_ID,
 					title: "",
@@ -149,8 +137,11 @@ function IluminacionGeneralForm({
 					creditConsumed: false,
 					creditConsumedAt: "",
 				})
-				onCreated(informe.id)
-				setStep(2)
+
+				router.push({
+					pathname: "/iluminacion/[id]/medicion",
+					params: { id },
+				})
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo guardar el informe"
@@ -159,266 +150,268 @@ function IluminacionGeneralForm({
 		},
 	})
 	return (
-		<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-			<TecnicoContent tecnico={tecnico} />
+		<ScrollView contentContainerStyle={{ paddingBottom: 230 }}>
+			<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
+				<TecnicoContent tecnico={tecnico} />
 
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
+				<View
 					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "90%",
+						marginHorizontal: "auto",
 					}}
 				>
-					Empresa
-				</Text>
-				<form.Field name="empresaId">
-					{field => (
-						<>
-							<Select
-								data={empresas}
-								value={informeId ? "EDIT" : field.state.value}
-								onChange={field.handleChange}
-								placeholder="Seleccionar empresa"
-								renderItem={item => item.razonSocial}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</>
-					)}
-				</form.Field>
-			</View>
+					<Text
+						style={{
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.65,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
+						}}
+					>
+						Empresa
+					</Text>
+					<form.Field name="empresaId">
+						{field => (
+							<>
+								<Select
+									data={empresas}
+									value={field.state.value}
+									onChange={field.handleChange}
+									placeholder="Seleccionar empresa"
+									renderItem={item => item.razonSocial}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</>
+						)}
+					</form.Field>
+				</View>
 
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
+				<View
 					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "90%",
+						marginHorizontal: "auto",
 					}}
 				>
-					Instrumento
-				</Text>
-				<form.Field name="instrumentoId">
-					{field => (
-						<>
-							<Select
-								data={instrumentos}
-								value={field.state.value}
-								onChange={field.handleChange}
-								placeholder="Seleccionar instrumento"
-								renderItem={item =>
-									`${item.nombre} ${item.marca} ${item.modelo}`
-								}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</>
-					)}
-				</form.Field>
-			</View>
+					<Text
+						style={{
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.65,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
+						}}
+					>
+						Instrumento
+					</Text>
+					<form.Field name="instrumentoId">
+						{field => (
+							<>
+								<Select
+									data={instrumentos}
+									value={field.state.value}
+									onChange={field.handleChange}
+									placeholder="Seleccionar instrumento"
+									renderItem={item =>
+										`${item.nombre} ${item.marca} ${item.modelo}`
+									}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</>
+						)}
+					</form.Field>
+				</View>
 
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
+				<View
 					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "90%",
+						marginHorizontal: "auto",
 					}}
 				>
-					Estado
-				</Text>
-				<form.Field name="estado">
-					{field => (
-						<>
-							<Select
-								data={ESTADO}
-								value={field.state.value}
-								onChange={field.handleChange}
-								placeholder="Seleccionar estado"
-								renderItem={item => `${item}`}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</>
-					)}
-				</form.Field>
-			</View>
+					<Text
+						style={{
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.65,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
+						}}
+					>
+						Estado
+					</Text>
+					<form.Field name="estado">
+						{field => (
+							<>
+								<Select
+									data={ESTADO}
+									value={field.state.value}
+									onChange={field.handleChange}
+									placeholder="Seleccionar estado"
+									renderItem={item => `${item}`}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</>
+						)}
+					</form.Field>
+				</View>
 
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
+				<View
 					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "90%",
+						marginHorizontal: "auto",
 					}}
 				>
-					Humedad
-				</Text>
-				<form.Field name="humedad">
-					{field => (
-						<>
-							<Select
-								data={HUMEDAD}
-								value={field.state.value}
-								onChange={field.handleChange}
-								placeholder="Seleccionar humedad"
-								renderItem={item => `${item}%`}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</>
-					)}
-				</form.Field>
-			</View>
+					<Text
+						style={{
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.65,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
+						}}
+					>
+						Humedad
+					</Text>
+					<form.Field name="humedad">
+						{field => (
+							<>
+								<Select
+									data={HUMEDAD}
+									value={field.state.value}
+									onChange={field.handleChange}
+									placeholder="Seleccionar humedad"
+									renderItem={item => `${item}%`}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</>
+						)}
+					</form.Field>
+				</View>
 
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					width: "90%",
-					marginHorizontal: "auto",
-				}}
-			>
-				<Text
+				<View
 					style={{
-						color: theme.orange,
-						fontWeight: "600",
-						opacity: 0.65,
-						marginRight: "auto",
-						borderBottomWidth: 1,
-						borderBottomColor: theme.orange,
-						width: "100%",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "90%",
+						marginHorizontal: "auto",
 					}}
 				>
-					Temperatura
-				</Text>
-				<form.Field name="temperatura">
-					{field => (
-						<>
-							<Select
-								data={TEMPERATURA}
-								value={field.state.value}
-								onChange={field.handleChange}
-								placeholder="Seleccionar temperatura"
-								renderItem={item => `${item}°C`}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</>
-					)}
-				</form.Field>
-			</View>
+					<Text
+						style={{
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.65,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
+						}}
+					>
+						Temperatura
+					</Text>
+					<form.Field name="temperatura">
+						{field => (
+							<>
+								<Select
+									data={TEMPERATURA}
+									value={field.state.value}
+									onChange={field.handleChange}
+									placeholder="Seleccionar temperatura"
+									renderItem={item => `${item}°C`}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</>
+						)}
+					</form.Field>
+				</View>
 
-			<form.Subscribe selector={state => state.isSubmitting}>
-				{isSubmitting => (
-					<Button
-						onPress={form.handleSubmit}
-						text={isSubmitting ? "Guardando..." : "Siguiente"}
-						disabled={isSubmitting}
-						style={{ marginTop: 40, width: "90%", marginHorizontal: "auto" }}
-					/>
+				<form.Subscribe selector={state => state.isSubmitting}>
+					{isSubmitting => (
+						<Button
+							onPress={form.handleSubmit}
+							text={isSubmitting ? "Guardando..." : "Siguientes"}
+							disabled={isSubmitting}
+							style={{ marginTop: 40, width: "90%", marginHorizontal: "auto" }}
+						/>
+					)}
+				</form.Subscribe>
+				{error && (
+					<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
 				)}
-			</form.Subscribe>
-			{error && (
-				<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
-			)}
-			<Button
-				variant="secondary"
-				text="Cancelar"
-				onPress={() => router.push("/(iluminacion)/informes")}
-				style={{ marginTop: 10, width: "90%", marginHorizontal: "auto" }}
-			/>
-		</View>
+				<Button
+					variant="secondary"
+					text="Cancelar"
+					onPress={() => router.push("/(iluminacion)/informes")}
+					style={{ marginTop: 10, width: "90%", marginHorizontal: "auto" }}
+				/>
+			</View>
+		</ScrollView>
 	)
 }
 
