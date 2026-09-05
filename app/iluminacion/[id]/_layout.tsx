@@ -48,7 +48,20 @@ export default function IluminacionLayout() {
 					title: "Conclusión",
 					tabBarIcon: ({ color, focused }) => (
 						<Ionicons
-							name={focused ? "newspaper" : "newspaper-outline"}
+							name={focused ? "chatbubbles" : "chatbubbles-outline"}
+							color={color}
+							size={24}
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="pdf"
+				options={{
+					title: "PDF",
+					tabBarIcon: ({ color, focused }) => (
+						<Ionicons
+							name={focused ? "document" : "document-outline"}
 							color={color}
 							size={24}
 						/>

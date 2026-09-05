@@ -60,7 +60,7 @@ export const informeIluminacionRepository = {
 
 		const db = await getDatabase()
 
-		const id = randomUUID()
+		const id = input.id ?? randomUUID()
 
 		await db.runAsync(
 			`

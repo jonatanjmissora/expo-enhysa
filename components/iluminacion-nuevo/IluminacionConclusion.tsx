@@ -1,7 +1,7 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import { router, useFocusEffect } from "expo-router"
-import { Text, View } from "react-native"
+import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
+import { ScrollView, Text, View } from "react-native"
 import TextArea from "../TextArea"
 import { useCallback, useState } from "react"
 import {
@@ -32,24 +32,19 @@ const FIELDS = [
 	},
 ] as const
 
-export default function IluminacionConclusion({
-	setStep,
-	informeId,
-}: {
-	setStep: (step: 1 | 2 | 3) => void
-	informeId: string | null
-}) {
+export default function IluminacionConclusion() {
+	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [loading, setLoading] = useState<boolean>(true)
 	const [informeIluminacion, setInformeIluminacion] =
 		useState<InformeIluminacionType | null>(null)
 
 	const load = useCallback(async () => {
 		const informeIluminacionData = await informeIluminacionRepository.getById(
-			informeId ?? ""
+			id ?? ""
 		)
 		setInformeIluminacion(informeIluminacionData ?? null)
 		setLoading(false)
-	}, [informeId])
+	}, [id])
 
 	useFocusEffect(
 		useCallback(() => {
@@ -66,27 +61,20 @@ export default function IluminacionConclusion({
 
 	if (!informeIluminacion)
 		return (
-			<View style={{}}>
-				<Text style={{ color: "#ccc" }}>
-					No se encontro el informe {informeId}
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<Text style={{ color: "#ccc", textAlign: "center" }}>
+					No se encontro el informe {id}
 				</Text>
 			</View>
 		)
 
-	return (
-		<IluminacionConclusionForm
-			informeIluminacion={informeIluminacion}
-			setStep={setStep}
-		/>
-	)
+	return <IluminacionConclusionForm informeIluminacion={informeIluminacion} />
 }
 
 function IluminacionConclusionForm({
 	informeIluminacion,
-	setStep,
 }: {
 	informeIluminacion: InformeIluminacionType
-	setStep: (step: 1 | 2 | 3) => void
 }) {
 	const [error, setError] = useState<string | null>(null)
 
@@ -94,7 +82,6 @@ function IluminacionConclusionForm({
 		defaultValues: defaultIluminacionConclusion,
 		validators: { onSubmit: iluminacionConclusionFormValidator },
 		onSubmit: async ({ value }) => {
-			console.log("VALUE", value)
 			setError(null)
 			try {
 				await informeIluminacionRepository.update(informeIluminacion.id, {
@@ -104,8 +91,9 @@ function IluminacionConclusionForm({
 					conclusion: value.conclusion,
 					recomendacion: value.recomendacion,
 				})
-				setStep(1)
-				router.replace("/(iluminacion)/informes")
+				router.push({
+					pathname: "/(iluminacion)/informes",
+				})
 			} catch (e) {
 				setError(
 					e instanceof Error ? e.message : "No se pudo actualizar el informe"
@@ -115,86 +103,81 @@ function IluminacionConclusionForm({
 	})
 
 	return (
-		<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-			{FIELDS.map(f => (
-				<form.Field key={f.key} name={f.key}>
-					{field => (
-						<View
-							style={{
-								justifyContent: "center",
-								alignItems: "center",
-								width: "90%",
-								marginHorizontal: "auto",
-							}}
-						>
-							<Text
+		<ScrollView contentContainerStyle={{ paddingBottom: 230 }}>
+			<View style={{ gap: 20, padding: 20, paddingBottom: 30 }}>
+				{FIELDS.map(f => (
+					<form.Field key={f.key} name={f.key}>
+						{field => (
+							<View
 								style={{
-									color: theme.orange,
-									fontWeight: "600",
-									opacity: 0.65,
-									marginRight: "auto",
-									borderBottomWidth: 1,
-									borderBottomColor: theme.orange,
-									width: "100%",
+									justifyContent: "center",
+									alignItems: "center",
+									width: "90%",
+									marginHorizontal: "auto",
 								}}
 							>
-								{f.label}
-							</Text>
-							<TextArea
-								placeholder={f.placeholder}
-								value={field.state.value}
-								onChangeText={field.handleChange}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
+								<Text
+									style={{
+										color: theme.orange,
+										fontWeight: "600",
+										opacity: 0.65,
+										marginRight: "auto",
+										borderBottomWidth: 1,
+										borderBottomColor: theme.orange,
+										width: "100%",
+									}}
+								>
+									{f.label}
 								</Text>
-							)}
-						</View>
-					)}
-				</form.Field>
-			))}
+								<TextArea
+									placeholder={f.placeholder}
+									value={field.state.value}
+									onChangeText={field.handleChange}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</View>
+						)}
+					</form.Field>
+				))}
 
-			<View
-				style={{
-					justifyContent: "center",
-					alignItems: "center",
-					gap: 16,
-					marginVertical: 40,
-				}}
-			>
-				<Button
-					variant="secondary"
-					text="Volver"
-					onPress={() => setStep(2)}
+				<View
 					style={{
-						marginHorizontal: "auto",
-						width: "90%",
+						justifyContent: "center",
+						alignItems: "center",
+						gap: 16,
+						marginVertical: 40,
 					}}
-				/>
-				<form.Subscribe selector={state => state.isSubmitting}>
-					{isSubmitting => (
-						<Button
-							text={isSubmitting ? "Guardando..." : "Finalizar"}
-							disabled={isSubmitting}
-							onPress={form.handleSubmit}
-							style={{
-								marginHorizontal: "auto",
-								width: "90%",
-							}}
-						/>
+				>
+					<form.Subscribe selector={state => state.isSubmitting}>
+						{isSubmitting => (
+							<Button
+								text={isSubmitting ? "Guardando..." : "Finalizar"}
+								disabled={isSubmitting}
+								onPress={form.handleSubmit}
+								style={{
+									marginHorizontal: "auto",
+									width: "90%",
+								}}
+							/>
+						)}
+					</form.Subscribe>
+					{error && (
+						<Text style={{ color: "#fc4444", textAlign: "center" }}>
+							{error}
+						</Text>
 					)}
-				</form.Subscribe>
-				{error && (
-					<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
-				)}
+				</View>
 			</View>
-		</View>
+		</ScrollView>
 	)
 }

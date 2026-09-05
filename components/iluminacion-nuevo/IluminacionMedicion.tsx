@@ -16,7 +16,7 @@ export default function IluminacionMedicion() {
 	return (
 		<ScrollView
 			style={{ flex: 1 }}
-			contentContainerStyle={{ paddingBottom: 60 }}
+			contentContainerStyle={{ paddingBottom: 150 }}
 		>
 			<View style={{ width: "90%", marginHorizontal: "auto" }}>
 				<AreasContent id={id} />
@@ -263,7 +263,7 @@ function Localizadas({
 						color: "#aaa",
 						textAlign: "center",
 						fontStyle: "italic",
-						marginVertical: 40,
+						marginVertical: 80,
 					}}
 				>
 					No se encontraron mediciones localizadas

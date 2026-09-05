@@ -16,7 +16,7 @@ import {
 } from "@/src/repositories/tecnico.repository"
 import { informeIluminacionRepository } from "@/src/repositories/informe-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
+import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
 import {
@@ -113,56 +113,69 @@ function IluminacionGeneralForm({
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
 }) {
-	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
 	const form = useForm({
 		defaultValues: defaultIluminacionGeneral,
 		validators: { onSubmit: iluminacionGeneralFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
-			const informeId = id ?? randomUUID()
+			const informeId = randomUUID()
 
 			try {
-				const existente = await informeIluminacionRepository.getById(informeId)
+				// const existente = await informeIluminacionRepository.getById(informeId)
 
-				const camposGenerales = {
-					empresaId: value.empresaId,
-					instrumentoId: value.instrumentoId,
-					estado: value.estado,
-					humedad: value.humedad,
-					temperatura: value.temperatura,
-				}
+				// const camposGenerales = {
+				// 	empresaId: value.empresaId,
+				// 	instrumentoId: value.instrumentoId,
+				// 	estado: value.estado,
+				// 	humedad: value.humedad,
+				// 	temperatura: value.temperatura,
+				// }
 
-				if (existente) {
-					const sinCambios =
-						existente.empresaId === value.empresaId &&
-						existente.instrumentoId === value.instrumentoId &&
-						existente.estado === value.estado &&
-						existente.humedad === value.humedad &&
-						existente.temperatura === value.temperatura
+				// if (existente) {
+				// 	const sinCambios =
+				// 		existente.empresaId === value.empresaId &&
+				// 		existente.instrumentoId === value.instrumentoId &&
+				// 		existente.estado === value.estado &&
+				// 		existente.humedad === value.humedad &&
+				// 		existente.temperatura === value.temperatura
 
-					if (!sinCambios) {
-						await informeIluminacionRepository.update(
-							informeId,
-							camposGenerales
-						)
-					}
-				} else {
-					await informeIluminacionRepository.create({
-						...camposGenerales,
-						id: informeId,
-						tecnicoId: tecnico?.id ?? "",
-						userId: USER_ID,
-						title: "",
-						createdAt: new Date().toISOString(),
-						finishedAt: "",
-						observacion: "",
-						conclusion: "",
-						recomendacion: "",
-						creditConsumed: false,
-						creditConsumedAt: "",
-					})
-				}
+				// 	if (!sinCambios) {
+				// 		await informeIluminacionRepository.update(
+				// 			informeId,
+				// 			camposGenerales
+				// 		)
+				// 	}
+				// } else {
+				// await informeIluminacionRepository.create({
+				// 	// ...camposGenerales,
+				// 	id: informeId,
+				// 	tecnicoId: tecnico?.id ?? "",
+				// 	userId: USER_ID,
+				// 	title: "",
+				// 	createdAt: new Date().toISOString(),
+				// 	finishedAt: "",
+				// 	observacion: "",
+				// 	conclusion: "",
+				// 	recomendacion: "",
+				// 	creditConsumed: false,
+				// 	creditConsumedAt: "",
+				// })
+				// }
+				await informeIluminacionRepository.create({
+					...value,
+					id: informeId,
+					tecnicoId: tecnico?.id ?? "",
+					userId: USER_ID,
+					title: "",
+					createdAt: new Date().toISOString(),
+					finishedAt: "",
+					observacion: "",
+					conclusion: "",
+					recomendacion: "",
+					creditConsumed: false,
+					creditConsumedAt: "",
+				})
 
 				router.push({
 					pathname: "/iluminacion/nuevo/[id]/medicion",
