@@ -1,6 +1,6 @@
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { useGlobalSearchParams } from "expo-router"
-import { Text, ScrollView } from "react-native"
+import { ScrollView, Text } from "react-native"
 
 export default function Medicion() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
@@ -23,7 +23,7 @@ export default function Medicion() {
 						paddingVertical: 80,
 					}}
 				>
-					ACA VAN LAS MEDICIONES {id}
+					ACA VAN LAS MEDICIONES
 				</Text>
 			</ScrollView>
 		</ViewWithLogo>

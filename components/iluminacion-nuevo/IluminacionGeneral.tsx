@@ -120,54 +120,17 @@ function IluminacionGeneralForm({
 		onSubmit: async ({ value }) => {
 			setError(null)
 			const informeId = randomUUID()
-
+			const empresa = empresas.find(e => e.id === value.empresaId)
+			const titleStr = empresa
+				? `${empresa?.razonSocial} - ${empresa?.cuit} - iluminacion`
+				: ""
 			try {
-				// const existente = await informeIluminacionRepository.getById(informeId)
-
-				// const camposGenerales = {
-				// 	empresaId: value.empresaId,
-				// 	instrumentoId: value.instrumentoId,
-				// 	estado: value.estado,
-				// 	humedad: value.humedad,
-				// 	temperatura: value.temperatura,
-				// }
-
-				// if (existente) {
-				// 	const sinCambios =
-				// 		existente.empresaId === value.empresaId &&
-				// 		existente.instrumentoId === value.instrumentoId &&
-				// 		existente.estado === value.estado &&
-				// 		existente.humedad === value.humedad &&
-				// 		existente.temperatura === value.temperatura
-
-				// 	if (!sinCambios) {
-				// 		await informeIluminacionRepository.update(
-				// 			informeId,
-				// 			camposGenerales
-				// 		)
-				// 	}
-				// } else {
-				// await informeIluminacionRepository.create({
-				// 	// ...camposGenerales,
-				// 	id: informeId,
-				// 	tecnicoId: tecnico?.id ?? "",
-				// 	userId: USER_ID,
-				// 	title: "",
-				// 	createdAt: new Date().toISOString(),
-				// 	finishedAt: "",
-				// 	observacion: "",
-				// 	conclusion: "",
-				// 	recomendacion: "",
-				// 	creditConsumed: false,
-				// 	creditConsumedAt: "",
-				// })
-				// }
 				await informeIluminacionRepository.create({
 					...value,
 					id: informeId,
 					tecnicoId: tecnico?.id ?? "",
 					userId: USER_ID,
-					title: "",
+					title: titleStr,
 					createdAt: new Date().toISOString(),
 					finishedAt: "",
 					observacion: "",

@@ -96,9 +96,7 @@ export default function InformeCard({
 						paddingTop: 10,
 					}}
 				>
-					{informe.title
-						? informe.title.toUpperCase()
-						: empresa.razonSocial.toUpperCase()}
+					{empresa.razonSocial.toUpperCase()}
 				</Text>
 			</GradientBackground>
 

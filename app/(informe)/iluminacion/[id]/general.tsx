@@ -8,7 +8,12 @@ import {
 	type EmpresaType,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
+import {
+	router,
+	useFocusEffect,
+	useGlobalSearchParams,
+	useRouter,
+} from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { useCallback, useState } from "react"
 import {
@@ -17,8 +22,7 @@ import {
 } from "@/src/repositories/instrumento.repository"
 import { theme } from "@/constants/theme"
 import MiniCard from "@/components/MiniCard"
-import IluminacionSteps from "@/components/iluminacion-nuevo/IluminacionSteps"
-import IluminacionGeneral from "@/components/iluminacion-nuevo/IluminacionGeneral"
+import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 
 const USER_ID = "user-1"
 
@@ -52,8 +56,11 @@ export default function General() {
 
 	if (
 		informe === undefined ||
+		informe === null ||
 		empresas === undefined ||
-		instrumentos === undefined
+		empresas === null ||
+		instrumentos === undefined ||
+		instrumentos === null
 	) {
 		return (
 			<View
@@ -84,18 +91,23 @@ export default function General() {
 				onPress={() => router.push("/(iluminacion)/informes")}
 			/>
 
-			{!empresas || !instrumentos || !informe ? (
-				<View>
-					<IluminacionSteps />
-					<IluminacionGeneral />
-				</View>
-			) : (
+			<ScrollView
+				contentContainerStyle={{
+					paddingTop: 10,
+					paddingHorizontal: 30,
+					paddingBottom: 200,
+					gap: 50,
+				}}
+				style={{
+					flex: 1,
+				}}
+			>
 				<InformeContent
 					informe={informe}
 					empresas={empresas}
 					instrumentos={instrumentos}
 				/>
-			)}
+			</ScrollView>
 		</ViewWithLogo>
 	)
 }
@@ -116,26 +128,23 @@ function InformeContent({
 	if (!instrumento) return null
 
 	return (
-		<ScrollView>
-			<View style={{ padding: 30, gap: 40, paddingBottom: 200 }}>
-				<EmpresaData empresa={empresa} />
-				<InstrumentoData instrumento={instrumento} />
-				<GeneralData informe={informe} />
-			</View>
-			<Text style={{ color: "#222" }}>INFORME</Text>
-		</ScrollView>
+		<>
+			<InformeHeader informe={informe} />
+			<EmpresaData empresa={empresa} />
+			<InstrumentoData instrumento={instrumento} />
+			<GeneralData informe={informe} />
+		</>
 	)
 }
 
 function EmpresaData({ empresa }: { empresa: EmpresaType }) {
 	return (
-		<View style={{ gap: 20, alignItems: "center" }}>
+		<View style={{ gap: 4, alignItems: "center" }}>
 			<View
 				style={{
 					flexDirection: "row",
 					justifyContent: "space-between",
 					alignItems: "center",
-					gap: 6,
 					width: "100%",
 				}}
 			>
@@ -147,17 +156,8 @@ function EmpresaData({ empresa }: { empresa: EmpresaType }) {
 						fontSize: 18,
 					}}
 				>
-					EMPRESA
+					Empresa
 				</Text>
-				<Button
-					text="Cambiar"
-					variant="secondary"
-					size="xsmall"
-					onPress={() => {
-						// TODO
-					}}
-					style={{ opacity: 0.5 }}
-				/>
 			</View>
 			<MiniCard
 				title={empresa.razonSocial?.toUpperCase()}
@@ -176,13 +176,12 @@ function InstrumentoData({ instrumento }: { instrumento: InstrumentoType }) {
 		parseImages(instrumento.imagenesCalibracion)[0] ??
 		null
 	return (
-		<View style={{ gap: 20, alignItems: "center" }}>
+		<View style={{ gap: 4, alignItems: "center" }}>
 			<View
 				style={{
 					flexDirection: "row",
 					justifyContent: "space-between",
 					alignItems: "center",
-					gap: 6,
 					width: "100%",
 				}}
 			>
@@ -194,17 +193,8 @@ function InstrumentoData({ instrumento }: { instrumento: InstrumentoType }) {
 						fontSize: 18,
 					}}
 				>
-					INSTRUMENTO
+					Instrumento
 				</Text>
-				<Button
-					text="Cambiar"
-					variant="secondary"
-					size="xsmall"
-					onPress={() => {
-						//TODO
-					}}
-					style={{ opacity: 0.5 }}
-				/>
 			</View>
 			<MiniCard
 				title={instrumento.nombre}
@@ -247,15 +237,6 @@ function GeneralData({ informe }: { informe: InformeIluminacionType }) {
 						fontSize: 18,
 					}}
 				></Text>
-				<Button
-					text="Cambiar"
-					variant="secondary"
-					size="xsmall"
-					onPress={() => {
-						//TODO
-					}}
-					style={{ opacity: 0.5 }}
-				/>
 			</View>
 			{FIELDS.map(field => {
 				const value = informe[field.key]
@@ -316,4 +297,165 @@ function parseImages(value: string): string[] {
 	} catch {
 		return []
 	}
+}
+
+function InformeHeader({ informe }: { informe: InformeIluminacionType }) {
+	const titleStr = informe.finishedAt
+		? (informe.title.split(" - ")[1] ?? "sin titulo")
+		: (informe.title.split(" - ")[0] ?? "sin titulo")
+	const fontSize = titleStr.length > 10 ? 18 : 20
+	return (
+		<View
+			style={{
+				width: "100%",
+				alignSelf: "center",
+			}}
+		>
+			<View>
+				<Text
+					style={{
+						fontWeight: 600,
+						color: theme.orange,
+						fontSize,
+						textAlign: "center",
+					}}
+					numberOfLines={1}
+					ellipsizeMode="tail"
+				>
+					{titleStr.toUpperCase()}
+				</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						gap: 6,
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					<Text
+						style={{
+							color: "#ccc",
+						}}
+					>
+						ILUMINACION
+					</Text>
+					<Text
+						style={{
+							color: "#ccc",
+						}}
+					>
+						-
+					</Text>
+					<Text
+						style={{
+							color: "#ccc",
+						}}
+					>
+						{new Date(informe.createdAt).toLocaleDateString("es-AR")}
+					</Text>
+				</View>
+			</View>
+			<MenuInforme informe={informe} />
+		</View>
+	)
+}
+
+function MenuInforme({
+	informe,
+	onDeleted,
+}: {
+	informe: InformeIluminacionType
+	onDeleted?: () => void
+}) {
+	const [modalVisible, setModalVisible] = useState(false)
+	const [showMenu, setShowMenu] = useState(false)
+	const router = useRouter()
+
+	const handleDelete = async () => {
+		try {
+			await informeIluminacionRepository.delete(informe.id)
+			onDeleted?.()
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const confirmDelete = () => setModalVisible(true)
+	const modalTitle = `${informe.title.split(" - ")[1]} - ${new Date(informe.createdAt).toLocaleDateString("es-AR")}`
+
+	return (
+		<View
+			style={{
+				width: "100%",
+				opacity: 0.75,
+			}}
+		>
+			<View
+				style={{
+					alignSelf: "flex-end",
+					gap: 0,
+					position: "relative",
+				}}
+			>
+				<Button
+					variant="ghost"
+					iconRight="menu"
+					iconSize={34}
+					style={{ alignSelf: "flex-end", paddingVertical: 10 }}
+					onPress={() => setShowMenu(!showMenu)}
+				/>
+				<Text
+					style={{
+						fontSize: 12,
+						color: "#ccc",
+						position: "absolute",
+						bottom: 0,
+						left: 0,
+						transform: [{ translateX: "70%" }],
+					}}
+				>
+					menu
+				</Text>
+			</View>
+			{showMenu && (
+				<View
+					style={{
+						flexDirection: "row",
+						width: "100%",
+						gap: 8,
+					}}
+				>
+					<Button
+						variant="danger"
+						text="Eliminar"
+						iconLeft="trash"
+						iconSize={18}
+						size="small"
+						style={{ flex: 1, gap: 4 }}
+						onPress={confirmDelete}
+					/>
+					<Button
+						text="Editar"
+						iconLeft="pencil"
+						iconSize={18}
+						size="small"
+						style={{ flex: 1, gap: 4 }}
+						onPress={() => {
+							router.push({
+								pathname: "/(informe)/iluminacion/[id]/general-edit",
+								params: { id: informe.id },
+							})
+						}}
+					/>
+				</View>
+			)}
+			<ModalDeleteConfirm
+				visible={modalVisible}
+				title={`Eliminar ${modalTitle?.toUpperCase()}`}
+				message="¿Estás seguro de que querés eliminar los datos del informe? Esta acción no se puede deshacer."
+				onClose={() => setModalVisible(false)}
+				onConfirm={handleDelete}
+			/>
+		</View>
+	)
 }

@@ -83,10 +83,16 @@ function IluminacionConclusionForm({
 		validators: { onSubmit: iluminacionConclusionFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			const finishedAtDate = new Date().toISOString()
+			const finishedAtDateToLocale = new Date(
+				finishedAtDate
+			).toLocaleDateString("es-AR")
+			const titleStr = `${finishedAtDateToLocale} - ${informeIluminacion.title}`
 			try {
 				await informeIluminacionRepository.update(informeIluminacion.id, {
 					...value,
-					finishedAt: new Date().toISOString(),
+					finishedAt: finishedAtDate,
+					title: titleStr,
 					observacion: value.observacion,
 					conclusion: value.conclusion,
 					recomendacion: value.recomendacion,

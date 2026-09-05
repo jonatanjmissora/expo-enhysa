@@ -36,7 +36,7 @@ export default function PDF() {
 						paddingVertical: 80,
 					}}
 				>
-					ACA VAN LAS MEDICIONES {id}
+					ACA VA LA GENERACION DEL PDF
 				</Text>
 			</ScrollView>
 		</ViewWithLogo>

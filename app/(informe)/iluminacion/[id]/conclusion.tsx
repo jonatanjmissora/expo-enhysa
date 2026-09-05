@@ -6,7 +6,7 @@ import {
 	informeIluminacionRepository,
 	InformeIluminacionType,
 } from "@/src/repositories/informe-iluminacion.repository"
-import { useFocusEffect, useGlobalSearchParams } from "expo-router"
+import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 import { Text, ScrollView, View } from "react-native"
 
@@ -90,9 +90,10 @@ export default function ConclusionContainer() {
 					flex: 1,
 				}}
 			>
+				<InformeHeader informe={informe} />
 				<View style={{ gap: 40 }}>
 					{FIELDS.map(f => (
-						<View key={f.key} style={{ gap: 10, alignItems: "center" }}>
+						<View key={f.key} style={{ gap: 2, alignItems: "center" }}>
 							<View
 								style={{
 									flexDirection: "row",
@@ -112,15 +113,6 @@ export default function ConclusionContainer() {
 								>
 									{f.label}
 								</Text>
-								<Button
-									text="Cambiar"
-									variant="secondary"
-									size="xsmall"
-									onPress={() => {
-										// TODO
-									}}
-									style={{ opacity: 0.5 }}
-								/>
 							</View>
 							<TextArea value={informe[f.key]} onChangeText={() => {}} />
 						</View>
@@ -128,5 +120,131 @@ export default function ConclusionContainer() {
 				</View>
 			</ScrollView>
 		</ViewWithLogo>
+	)
+}
+
+function InformeHeader({ informe }: { informe: InformeIluminacionType }) {
+	const titleStr = informe.finishedAt
+		? (informe.title.split(" - ")[1] ?? "sin titulo")
+		: (informe.title.split(" - ")[0] ?? "sin titulo")
+	const fontSize = titleStr.length > 10 ? 18 : 20
+	return (
+		<View
+			style={{
+				width: "100%",
+				alignSelf: "center",
+				marginBottom: 30,
+			}}
+		>
+			<View>
+				<Text
+					style={{
+						fontWeight: 600,
+						color: theme.orange,
+						fontSize,
+						textAlign: "center",
+					}}
+					numberOfLines={1}
+					ellipsizeMode="tail"
+				>
+					{titleStr.toUpperCase()}
+				</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						gap: 6,
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					<Text
+						style={{
+							color: "#ccc",
+						}}
+					>
+						ILUMINACION
+					</Text>
+					<Text
+						style={{
+							color: "#ccc",
+						}}
+					>
+						-
+					</Text>
+					<Text
+						style={{
+							color: "#ccc",
+						}}
+					>
+						{new Date(informe.createdAt).toLocaleDateString("es-AR")}
+					</Text>
+				</View>
+			</View>
+			<MenuInforme informe={informe} />
+		</View>
+	)
+}
+
+function MenuInforme({ informe }: { informe: InformeIluminacionType }) {
+	const [showMenu, setShowMenu] = useState(false)
+
+	return (
+		<View
+			style={{
+				width: "100%",
+				opacity: 0.75,
+			}}
+		>
+			<View
+				style={{
+					alignSelf: "flex-end",
+					gap: 0,
+					position: "relative",
+				}}
+			>
+				<Button
+					variant="ghost"
+					iconRight="menu"
+					iconSize={34}
+					style={{ alignSelf: "flex-end", paddingVertical: 10 }}
+					onPress={() => setShowMenu(!showMenu)}
+				/>
+				<Text
+					style={{
+						fontSize: 12,
+						color: "#ccc",
+						position: "absolute",
+						bottom: 0,
+						left: 0,
+						transform: [{ translateX: "70%" }],
+					}}
+				>
+					menu
+				</Text>
+			</View>
+			{showMenu && (
+				<View
+					style={{
+						flexDirection: "row",
+						width: "100%",
+						gap: 8,
+					}}
+				>
+					<Button
+						text="Editar"
+						iconLeft="pencil"
+						iconSize={18}
+						size="small"
+						style={{ flex: 1, gap: 4 }}
+						onPress={() => {
+							router.push({
+								pathname: "/(informe)/iluminacion/[id]/general-edit",
+								params: { id: informe.id },
+							})
+						}}
+					/>
+				</View>
+			)}
+		</View>
 	)
 }
