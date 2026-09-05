@@ -237,8 +237,9 @@ function MenuInforme({ informe }: { informe: InformeIluminacionType }) {
 						size="small"
 						style={{ flex: 1, gap: 4 }}
 						onPress={() => {
+							setShowMenu(false)
 							router.push({
-								pathname: "/(informe)/iluminacion/[id]/general-edit",
+								pathname: "/(informe)/iluminacion/[id]/conclusion-edit",
 								params: { id: informe.id },
 							})
 						}}

@@ -2,7 +2,7 @@ import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
-import TextArea from "../TextArea"
+import TextArea from "../../TextArea"
 import { useCallback, useState } from "react"
 import {
 	defaultIluminacionConclusion,

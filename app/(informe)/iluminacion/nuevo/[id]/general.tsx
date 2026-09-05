@@ -1,6 +1,6 @@
 import Button from "@/components/Button"
-import IluminacionGeneral from "@/components/iluminacion-nuevo/IluminacionGeneral"
-import IluminacionSteps from "@/components/iluminacion-nuevo/IluminacionSteps"
+import IluminacionGeneral from "@/components/iluminacion/nuevo/IluminacionGeneral"
+import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { router } from "expo-router"
 import { View, Text } from "react-native"

@@ -1,5 +1,5 @@
-import IluminacionConclusion from "@/components/iluminacion-nuevo/IluminacionConclusion"
-import IluminacionSteps from "@/components/iluminacion-nuevo/IluminacionSteps"
+import IluminacionConclusion from "@/components/iluminacion/nuevo/IluminacionConclusion"
+import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { Text } from "react-native"
 

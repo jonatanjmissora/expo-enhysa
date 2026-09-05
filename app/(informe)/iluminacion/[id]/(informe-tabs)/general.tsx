@@ -360,13 +360,7 @@ function InformeHeader({ informe }: { informe: InformeIluminacionType }) {
 	)
 }
 
-function MenuInforme({
-	informe,
-	onDeleted,
-}: {
-	informe: InformeIluminacionType
-	onDeleted?: () => void
-}) {
+function MenuInforme({ informe }: { informe: InformeIluminacionType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()
@@ -374,7 +368,7 @@ function MenuInforme({
 	const handleDelete = async () => {
 		try {
 			await informeIluminacionRepository.delete(informe.id)
-			onDeleted?.()
+			router.push("/iluminacion/informes")
 		} catch (error) {
 			console.error(error)
 		}
@@ -441,6 +435,7 @@ function MenuInforme({
 						size="small"
 						style={{ flex: 1, gap: 4 }}
 						onPress={() => {
+							setShowMenu(false)
 							router.push({
 								pathname: "/(informe)/iluminacion/[id]/general-edit",
 								params: { id: informe.id },
@@ -453,7 +448,10 @@ function MenuInforme({
 				visible={modalVisible}
 				title={`Eliminar ${modalTitle?.toUpperCase()}`}
 				message="¿Estás seguro de que querés eliminar los datos del informe? Esta acción no se puede deshacer."
-				onClose={() => setModalVisible(false)}
+				onClose={() => {
+					setShowMenu(false)
+					setModalVisible(false)
+				}}
 				onConfirm={handleDelete}
 			/>
 		</View>
