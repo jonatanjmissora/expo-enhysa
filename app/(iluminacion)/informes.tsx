@@ -9,6 +9,18 @@ import { ScrollView, Text, View } from "react-native"
 export default function Informes() {
 	return (
 		<ViewWithLogo>
+			<Button
+				variant="ghost"
+				iconLeft="chevron-back"
+				text="Volver"
+				style={{
+					alignSelf: "flex-start",
+					paddingHorizontal: 20,
+					opacity: 0.85,
+					padding: 4,
+				}}
+				onPress={() => router.push("/")}
+			/>
 			<ScrollView
 				contentContainerStyle={{ justifyContent: "center" }}
 				style={{
@@ -22,7 +34,7 @@ export default function Informes() {
 							fontWeight: 600,
 							letterSpacing: 1.5,
 							color: "#ddd",
-							fontSize: 22,
+							fontSize: 24,
 							gap: 20,
 						}}
 					>
@@ -37,7 +49,7 @@ export default function Informes() {
 						onPress={() => {
 							const id = randomUUID()
 							router.push({
-								pathname: "/iluminacion/nuevo/[id]/general",
+								pathname: "/(informe)/iluminacion/nuevo/[id]/general",
 								params: { id },
 							})
 						}}

@@ -19,7 +19,9 @@ export default function InformeCard({
 
 	return (
 		<Pressable
-			onPress={() => router.push(`/iluminacion/${informe.id}/general`)}
+			onPress={() =>
+				router.push(`/(informe)/iluminacion/${informe.id}/general`)
+			}
 			style={{
 				position: "relative",
 				paddingTop: 20,

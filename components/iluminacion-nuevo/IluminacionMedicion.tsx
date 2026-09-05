@@ -27,7 +27,7 @@ export default function IluminacionMedicion() {
 					onPress={() => {
 						if (!id) return
 						router.push({
-							pathname: "/iluminacion/nuevo/[id]/conclusion",
+							pathname: "/(informe)/iluminacion/nuevo/[id]/conclusion",
 							params: { id },
 						})
 					}}
@@ -126,7 +126,7 @@ function Areas({
 					iconSize={10}
 					onPress={() =>
 						router.push({
-							pathname: "/iluminacion/[id]/area/nueva",
+							pathname: "/(informe)/iluminacion/[id]/area/nueva",
 							params: { id },
 						})
 					}
@@ -249,7 +249,7 @@ function Localizadas({
 					iconSize={10}
 					onPress={() =>
 						router.push({
-							pathname: "/iluminacion/[id]/localizada/nueva",
+							pathname: "/(informe)/iluminacion/[id]/localizada/nueva",
 							params: { id },
 						})
 					}

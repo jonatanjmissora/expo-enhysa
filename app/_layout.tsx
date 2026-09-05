@@ -21,14 +21,7 @@ export default function RootLayout() {
 					<Stack.Screen name="(inicio)" options={{ headerShown: false }} />
 					<Stack.Screen name="(iluminacion)" options={{ headerShown: false }} />
 					<Stack.Screen name="(perfil)" options={{ headerShown: false }} />
-					<Stack.Screen
-						name="iluminacion/[id]"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="iluminacion/nuevo/[id]"
-						options={{ headerShown: false }}
-					/>
+					<Stack.Screen name="(informe)" options={{ headerShown: false }} />
 					<Stack.Screen name="debug/db" options={{ title: "SQLite Debug" }} />
 				</Stack>
 			</SafeAreaProvider>

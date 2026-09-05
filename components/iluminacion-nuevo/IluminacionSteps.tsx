@@ -6,9 +6,9 @@ export default function IluminacionSteps() {
 	const pathname = usePathname()
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const step =
-		pathname === `/iluminacion/nuevo/${id}/general`
+		pathname === `/(informe)/iluminacion/nuevo/${id}/general`
 			? 1
-			: pathname === `/iluminacion/nuevo/${id}/medicion`
+			: pathname === `/(informe)/iluminacion/nuevo/${id}/medicion`
 				? 2
 				: 3
 	return (

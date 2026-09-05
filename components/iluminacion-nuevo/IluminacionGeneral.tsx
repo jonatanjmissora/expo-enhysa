@@ -178,7 +178,7 @@ function IluminacionGeneralForm({
 				})
 
 				router.push({
-					pathname: "/iluminacion/nuevo/[id]/medicion",
+					pathname: "/(informe)/iluminacion/nuevo/[id]/medicion",
 					params: { id: informeId },
 				})
 			} catch (e) {

@@ -48,7 +48,7 @@ export default function Recientes() {
 					onPress={() => {
 						const id = randomUUID()
 						router.push({
-							pathname: "/iluminacion/nuevo/[id]/general",
+							pathname: "/(informe)/iluminacion/nuevo/[id]/general",
 							params: { id },
 						})
 					}}
