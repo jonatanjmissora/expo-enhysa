@@ -17,7 +17,7 @@ export default function PDF() {
 					opacity: 0.85,
 					padding: 4,
 				}}
-				onPress={() => router.push("/")}
+				onPress={() => router.push(`/iluminacion/informes`)}
 			/>
 			<ScrollView
 				contentContainerStyle={{ justifyContent: "center" }}
@@ -36,7 +36,7 @@ export default function PDF() {
 						paddingVertical: 80,
 					}}
 				>
-					ACA VA LA GENERACION DEL PDF
+					PDF
 				</Text>
 			</ScrollView>
 		</ViewWithLogo>

@@ -13,10 +13,10 @@ export default function PerfilLayout() {
 			<Stack.Screen name="tecnico/editar" />
 			<Stack.Screen name="empresa/nuevo" />
 			<Stack.Screen name="empresa/editar" />
-			<Stack.Screen name="empresa/empresa" />
+			<Stack.Screen name="empresa/index" />
 			<Stack.Screen name="instrumento/nuevo" />
 			<Stack.Screen name="instrumento/editar" />
-			<Stack.Screen name="instrumento/instrumento" />
+			<Stack.Screen name="instrumento/index" />
 		</Stack>
 	)
 }

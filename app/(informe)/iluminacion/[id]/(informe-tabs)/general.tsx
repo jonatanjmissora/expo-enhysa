@@ -88,7 +88,7 @@ export default function General() {
 					opacity: 0.85,
 					padding: 4,
 				}}
-				onPress={() => router.push("/(iluminacion)/informes")}
+				onPress={() => router.push(`/iluminacion/informes`)}
 			/>
 
 			<ScrollView

@@ -11,6 +11,7 @@ export default function InformeLayout() {
 		>
 			<Stack.Screen name="iluminacion/[id]" />
 			<Stack.Screen name="iluminacion/nuevo/[id]" />
+			<Stack.Screen name="iluminacion/(iluminacion-tabs)" />
 		</Stack>
 	)
 }
