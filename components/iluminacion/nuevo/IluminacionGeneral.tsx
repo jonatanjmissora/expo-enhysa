@@ -409,7 +409,7 @@ function IluminacionGeneralForm({
 				<Button
 					variant="secondary"
 					text="Cancelar"
-					onPress={() => router.push("/(iluminacion)/informes")}
+					onPress={() => router.push("/iluminacion/informes")}
 					style={{ marginTop: 10, width: "90%", marginHorizontal: "auto" }}
 				/>
 			</View>

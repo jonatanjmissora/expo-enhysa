@@ -98,7 +98,7 @@ function IluminacionConclusionForm({
 					recomendacion: value.recomendacion,
 				})
 				router.push({
-					pathname: "/(iluminacion)/informes",
+					pathname: "/iluminacion/informes",
 				})
 			} catch (e) {
 				setError(

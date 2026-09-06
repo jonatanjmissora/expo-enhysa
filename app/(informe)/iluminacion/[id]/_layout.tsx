@@ -11,6 +11,7 @@ export default function IluminacionLayout() {
 		>
 			<Stack.Screen name="(informe-tabs)" />
 			<Stack.Screen name="area/nueva" />
+			<Stack.Screen name="localizada/nueva" />
 		</Stack>
 	)
 }

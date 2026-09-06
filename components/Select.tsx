@@ -4,6 +4,14 @@ import { Modal, Pressable, Text, View } from "react-native"
 
 type SelectItem = string | { id: string }
 
+type SelectedId<T extends SelectItem> = T extends string
+	? T
+	: T extends { id: infer I }
+		? I extends string
+			? I
+			: string
+		: string
+
 export default function Select<T extends SelectItem>({
 	data,
 	value,
@@ -13,7 +21,7 @@ export default function Select<T extends SelectItem>({
 }: {
 	data: readonly T[]
 	value: string
-	onChange: (id: string) => void
+	onChange: (id: SelectedId<T>) => void
 	placeholder?: string
 	renderItem?: (item: T) => string
 }) {

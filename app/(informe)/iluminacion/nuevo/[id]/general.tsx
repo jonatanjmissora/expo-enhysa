@@ -26,7 +26,7 @@ export default function NuevoGeneral() {
 						opacity: 0.85,
 						padding: 4,
 					}}
-					onPress={() => router.push("/(iluminacion)/informes")}
+					onPress={() => router.push("/iluminacion/informes")}
 				/>
 				<Text
 					style={{

@@ -104,7 +104,7 @@ function InformesListContent({
 				>
 					<Button
 						text="ver todos"
-						onPress={() => router.push("/(iluminacion)/informes")}
+						onPress={() => router.push("/iluminacion/informes")}
 						variant="ghost"
 						style={{
 							alignSelf: "flex-end",

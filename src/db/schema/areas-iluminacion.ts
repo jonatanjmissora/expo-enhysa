@@ -50,7 +50,7 @@ export type AreaIluminacionType = {
 	userId: string
 }
 
-export const areaIluminacionFormValidator = z.object({
+export const areaIluminacionFormPart1Validator = z.object({
 	nombre: z.string().min(1, "Ingresá el nombre del área"),
 	tipo: z.string().min(1, "Seleccioná el tipo de área"),
 	iluminacionTipo: z.enum(ILUMINACION_TIPO),
@@ -61,29 +61,39 @@ export const areaIluminacionFormValidator = z.object({
 	largo: z.number().min(0, "El largo no puede ser negativo"),
 	ancho: z.number().min(0, "El ancho no puede ser negativo"),
 	alto: z.number().min(0, "El alto no puede ser negativo"),
-	imagenes: z.array(z.string()),
+	imagenes: z.array(z.string()).max(4, "Máximo 4 fotos"),
+})
+
+export type AreaIluminacionFormPart1Type = z.infer<
+	typeof areaIluminacionFormPart1Validator
+>
+
+export const areaIluminacionFormPart2Validator = z.object({
 	puntos: z.array(z.number()),
 	timestamps: z.array(z.string()),
 })
 
-export type AreaIluminacionFormType = z.infer<
-	typeof areaIluminacionFormValidator
+export type AreaIluminacionFormPart2Type = z.infer<
+	typeof areaIluminacionFormPart2Validator
 >
 
-export const defaultAreaIluminacion: AreaIluminacionFormType = {
+export const defaultAreaIluminacionPart1: AreaIluminacionFormPart1Type = {
 	nombre: "",
 	tipo: "",
 	iluminacionTipo: "natural",
 	iluminacionFuente: "incandescente",
 	iluminacion: "general",
-	valorRequerido: "10",
+	valorRequerido: "100",
 	observaciones: "",
 	largo: 0,
 	ancho: 0,
 	alto: 0,
 	imagenes: [],
+}
+export type DefaultAreaIluminacionPart1Type = typeof defaultAreaIluminacionPart1
+
+export const defaultAreaIluminacionPart2: AreaIluminacionFormPart2Type = {
 	puntos: [],
 	timestamps: [],
 }
-
-export type DefaultAreaIluminacionType = typeof defaultAreaIluminacion
+export type DefaultAreaIluminacionPart2Type = typeof defaultAreaIluminacionPart2
