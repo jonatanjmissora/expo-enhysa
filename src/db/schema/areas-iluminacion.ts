@@ -58,9 +58,9 @@ export const areaIluminacionFormPart1Validator = z.object({
 	iluminacion: z.enum(ILUMINACION),
 	valorRequerido: z.enum(VALORES_REQUERIDOS),
 	observaciones: z.string(),
-	largo: z.number().min(0, "El largo no puede ser negativo"),
-	ancho: z.number().min(0, "El ancho no puede ser negativo"),
-	alto: z.number().min(0, "El alto no puede ser negativo"),
+	largo: z.number().positive("El largo debe ser mayor a 0"),
+	ancho: z.number().positive("El ancho debe ser mayor a 0"),
+	alto: z.number().positive("El alto debe ser mayor a 0"),
 	imagenes: z.array(z.string()).max(4, "Máximo 4 fotos"),
 })
 

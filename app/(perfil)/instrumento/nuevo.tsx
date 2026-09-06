@@ -86,6 +86,9 @@ function InstrumentoNuevoForm() {
 				)
 			}
 		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
+		},
 	})
 
 	return (

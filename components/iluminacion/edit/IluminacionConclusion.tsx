@@ -4,9 +4,7 @@ import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import TextArea from "../../TextArea"
 import { useCallback, useState } from "react"
-import {
-	iluminacionConclusionFormValidator,
-} from "@/src/db/schema/informe-iluminacion"
+import { iluminacionConclusionFormValidator } from "@/src/db/schema/informe-iluminacion"
 import {
 	informeIluminacionRepository,
 	InformeIluminacionType,
@@ -116,6 +114,9 @@ function IluminacionConclusionForm({
 					e instanceof Error ? e.message : "No se pudo actualizar el informe"
 				)
 			}
+		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
 		},
 	})
 

@@ -150,6 +150,9 @@ function IluminacionGeneralForm({
 				)
 			}
 		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
+		},
 	})
 	return (
 		<ScrollView contentContainerStyle={{ paddingBottom: 230 }}>

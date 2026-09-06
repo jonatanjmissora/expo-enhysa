@@ -114,12 +114,12 @@ function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 		},
 		validators: { onSubmit: empresaFormValidator },
 		onSubmit: async ({ value }) => {
+			setError(null)
 			if (!logo) {
 				setError("Seleccioná el logo de la empresa")
 				return
 			}
 
-			setError(null)
 			try {
 				await empresaRepository.update(empresa.id, {
 					...value,
@@ -132,6 +132,9 @@ function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 					e instanceof Error ? e.message : "No se pudo guardar la empresa"
 				)
 			}
+		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
 		},
 	})
 

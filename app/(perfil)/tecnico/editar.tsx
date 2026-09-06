@@ -117,6 +117,7 @@ function TecnicoEditForm({ tecnico }: { tecnico: Tecnico }) {
 		},
 		validators: { onSubmit: tecnicoFormValidator },
 		onSubmit: async ({ value }) => {
+			setError(null)
 			if (!matriculaImg) {
 				setError("Seleccioná la imagen de matrícula")
 				return
@@ -126,7 +127,6 @@ function TecnicoEditForm({ tecnico }: { tecnico: Tecnico }) {
 				return
 			}
 
-			setError(null)
 			try {
 				await tecnicoRepository.update(tecnico.id, {
 					...value,
@@ -142,6 +142,9 @@ function TecnicoEditForm({ tecnico }: { tecnico: Tecnico }) {
 					e instanceof Error ? e.message : "No se pudo guardar el técnico"
 				)
 			}
+		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
 		},
 	})
 

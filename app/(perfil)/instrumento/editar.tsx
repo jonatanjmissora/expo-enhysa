@@ -159,6 +159,9 @@ function InstrumentoEditForm({
 				)
 			}
 		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
+		},
 	})
 
 	return (

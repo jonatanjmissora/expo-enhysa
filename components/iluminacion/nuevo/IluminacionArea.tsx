@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, TextInput, Image } from "react-native"
+import {
+	View,
+	Text,
+	ScrollView,
+	TextInput,
+	Image,
+	Pressable,
+} from "react-native"
 import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 import {
@@ -18,7 +25,8 @@ import {
 	ILUMINACION,
 	ILUMINACION_FUENTE,
 	ILUMINACION_TIPO,
-	VALORES_REQUERIDOS,
+	VALORES_REQUERIDOS_OBJ,
+	type ValoresRequeridosType,
 } from "@/constants"
 import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
@@ -86,7 +94,7 @@ function IluminacionAreaForm({
 					userId: informeIluminacion.userId,
 				})
 				router.push({
-					pathname: "/iluminacion/[id]/medicion",
+					pathname: "/iluminacion/nuevo/[id]/medicion",
 					params: {
 						id: informeIluminacion.id,
 					},
@@ -94,6 +102,9 @@ function IluminacionAreaForm({
 			} catch (e) {
 				setError(e instanceof Error ? e.message : "No se pudo crear el area")
 			}
+		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
 		},
 	})
 	return (
@@ -192,7 +203,7 @@ function IluminacionAreaForm({
 					<Text style={{ color: "#cbd5e1", letterSpacing: 1.3, fontSize: 16 }}>
 						Iluminación
 					</Text>
-					<Ionicons name="bulb-outline" size={14} color="cyan" />
+					<Ionicons name="bulb-outline" size={14} color="#ccc" />
 				</View>
 
 				<form.Field name="iluminacionTipo">
@@ -274,29 +285,100 @@ function IluminacionAreaForm({
 				</form.Field>
 
 				<form.Field name="valorRequerido">
-					{field => (
-						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Valor requerido</Text>
-							<Select
-								data={VALORES_REQUERIDOS}
-								value={field.state.value}
-								onChange={field.handleChange}
-								placeholder="Seleccionar valor requerido"
-								renderItem={item => item}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</View>
-					)}
+					{field => {
+						const sugerencias = VALORES_REQUERIDOS_OBJ[field.state.value] ?? []
+						return (
+							<View style={{ gap: 2, position: "relative" }}>
+								<View
+									style={{
+										flexDirection: "row",
+										justifyContent: "space-between",
+										alignItems: "center",
+									}}
+								>
+									<Text style={{ color: "#cbd5e1" }}>Valor requerido</Text>
+									<Pressable onPress={() => {}}>
+										<Text
+											style={{
+												color: theme.orange,
+												textDecorationLine: "underline",
+											}}
+										>
+											ver tablas
+										</Text>
+									</Pressable>
+								</View>
+								<TextInput
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChangeText={val =>
+										field.handleChange(val as ValoresRequeridosType)
+									}
+									keyboardType="numeric"
+									selectTextOnFocus
+									placeholder="Ingresar valor requerido"
+									placeholderTextColor="#64748b"
+									style={{
+										backgroundColor: theme.inputBG,
+										color: "#e2e8f0",
+										padding: 12,
+										borderRadius: 6,
+										borderWidth: 1,
+										borderColor: theme.inputBorder,
+										textAlign: "right",
+									}}
+								/>
+								{sugerencias.length > 0 && (
+									<View
+										style={{
+											backgroundColor: theme.orangeAlpha,
+											borderWidth: 1,
+											borderColor: theme.inputBorder,
+											borderRadius: 6,
+											overflow: "hidden",
+										}}
+									>
+										{sugerencias.map(sug => (
+											<Pressable
+												key={sug}
+												onPress={() =>
+													field.handleChange(sug as ValoresRequeridosType)
+												}
+												style={({ pressed }) => ({
+													padding: 12,
+													borderBottomWidth: 1,
+													borderBottomColor: theme.inputBorder,
+													backgroundColor: pressed
+														? theme.orangeAlpha
+														: "transparent",
+												})}
+											>
+												<Text
+													style={{
+														color: "#e2e8f0",
+														textAlign: "right",
+													}}
+												>
+													{sug}
+												</Text>
+											</Pressable>
+										))}
+									</View>
+								)}
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</View>
+						)
+					}}
 				</form.Field>
 
 				<form.Field name="observaciones">
@@ -338,7 +420,7 @@ function IluminacionAreaForm({
 					<Text style={{ color: "#cbd5e1", letterSpacing: 1.3, fontSize: 16 }}>
 						Dimensiones
 					</Text>
-					<Ionicons name="stats-chart-outline" size={14} color="purple" />
+					<Ionicons name="stats-chart-outline" size={14} color="#ccc" />
 				</View>
 
 				<form.Field name="largo">

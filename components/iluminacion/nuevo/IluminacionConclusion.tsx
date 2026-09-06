@@ -106,6 +106,9 @@ function IluminacionConclusionForm({
 				)
 			}
 		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
+		},
 	})
 
 	return (

@@ -57,12 +57,12 @@ function EmpresaNuevoForm() {
 		defaultValues: defaultEmpresa,
 		validators: { onSubmit: empresaFormValidator },
 		onSubmit: async ({ value }) => {
+			setError(null)
 			if (!logo) {
 				setError("Seleccioná el logo de la empresa")
 				return
 			}
 
-			setError(null)
 			try {
 				await empresaRepository.create({
 					...value,
@@ -75,6 +75,9 @@ function EmpresaNuevoForm() {
 					e instanceof Error ? e.message : "No se pudo guardar la empresa"
 				)
 			}
+		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
 		},
 	})
 
