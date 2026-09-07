@@ -158,7 +158,23 @@ function AreasList({
 	return (
 		<View>
 			<Text style={{ color: "#ccc" }}>
-				{JSON.stringify(areasIluminacion, null, 2)}
+				{areasIluminacion.map(area => (
+					<AreaMiniCard key={area.id} areaIluminacion={area} />
+				))}
+			</Text>
+		</View>
+	)
+}
+
+function AreaMiniCard({
+	areaIluminacion,
+}: {
+	areaIluminacion: AreaIluminacionType
+}) {
+	return (
+		<View>
+			<Text style={{ color: "#ccc" }}>
+				{areaIluminacion.nombre} - {areaIluminacion.tipo}
 			</Text>
 		</View>
 	)

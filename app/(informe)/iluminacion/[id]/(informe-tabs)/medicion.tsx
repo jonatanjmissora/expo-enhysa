@@ -1,3 +1,4 @@
+import IluminacionMedicion from "@/components/iluminacion/nuevo/IluminacionMedicion"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { useGlobalSearchParams } from "expo-router"
 import { ScrollView, Text } from "react-native"
@@ -23,7 +24,7 @@ export default function Medicion() {
 						paddingVertical: 80,
 					}}
 				>
-					ACA VAN LAS MEDICIONES
+					<IluminacionMedicion />
 				</Text>
 			</ScrollView>
 		</ViewWithLogo>
