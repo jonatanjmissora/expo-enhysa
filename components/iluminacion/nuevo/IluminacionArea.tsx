@@ -31,6 +31,8 @@ import {
 import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import { randomUUID } from "expo-crypto"
+import Formula from "@/components/iluminacion/puntos/formula"
 
 export default function IluminacionArea() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
@@ -84,9 +86,11 @@ function IluminacionAreaForm({
 		validators: { onSubmit: areaIluminacionFormPart1Validator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			const areaId = randomUUID()
 			try {
 				await areaIluminacionRepository.create({
 					...value,
+					id: areaId,
 					reportId: informeIluminacion.id,
 					imagenes,
 					puntos: [],
@@ -94,9 +98,10 @@ function IluminacionAreaForm({
 					userId: informeIluminacion.userId,
 				})
 				router.push({
-					pathname: "/iluminacion/nuevo/[id]/medicion",
+					pathname: "/iluminacion/[id]/area/puntos-nuevos",
 					params: {
 						id: informeIluminacion.id,
+						areaId,
 					},
 				})
 			} catch (e) {
@@ -534,6 +539,20 @@ function IluminacionAreaForm({
 					)}
 				</form.Field>
 
+				<form.Subscribe
+					selector={state => ({
+						largo: Number(state.values.largo),
+						ancho: Number(state.values.ancho),
+						alto: Number(state.values.alto),
+					})}
+				>
+					{({ largo, ancho, alto }) => {
+						const dimensionesValidas = largo > 0 && ancho > 0 && alto > 0
+						if (!dimensionesValidas) return null
+						return <Formula largo={largo} ancho={ancho} alto={alto} />
+					}}
+				</form.Subscribe>
+
 				<View style={{ gap: 2 }}>
 					<Text style={{ color: "#cbd5e1" }}>
 						Imágenes del Area ({imagenes.length}/4)
@@ -595,6 +614,7 @@ function IluminacionAreaForm({
 					)}
 				</View>
 			</View>
+
 			<form.Subscribe selector={state => state.isSubmitting}>
 				{isSubmitting => (
 					<Button

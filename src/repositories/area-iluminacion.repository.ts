@@ -5,7 +5,9 @@ import {
 	type AreaIluminacionType,
 } from "../db/schema/areas-iluminacion"
 
-export type CreateAreaIluminacionInput = Omit<AreaIluminacionType, "id">
+export type CreateAreaIluminacionInput = Omit<AreaIluminacionType, "id"> & {
+	id?: string
+}
 
 type AreaIluminacionRow = {
 	id: string
@@ -103,7 +105,7 @@ export const areaIluminacionRepository = {
 
 		const db = await getDatabase()
 
-		const id = randomUUID()
+		const id = input.id ?? randomUUID()
 
 		await db.runAsync(
 			`

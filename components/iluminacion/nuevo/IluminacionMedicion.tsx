@@ -6,7 +6,8 @@ import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.r
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
-import { ScrollView, Text, View } from "react-native"
+import { Pressable, ScrollView, Text, View } from "react-native"
+import ImageViewer from "@/components/ImageViewer"
 
 const USER_ID = "user-1"
 
@@ -15,10 +16,15 @@ export default function IluminacionMedicion() {
 
 	return (
 		<ScrollView
-			style={{ flex: 1 }}
+			style={{ flex: 1, width: "90%", marginHorizontal: "auto" }}
 			contentContainerStyle={{ paddingBottom: 150 }}
 		>
-			<View style={{ width: "90%", marginHorizontal: "auto" }}>
+			<View
+				style={{
+					width: "100%",
+					marginHorizontal: "auto",
+				}}
+			>
 				<AreasContent id={id} />
 				<LocalizadasContent id={id} />
 
@@ -133,7 +139,7 @@ function Areas({
 				/>
 			</View>
 			{areasIluminacion.length > 0 ? (
-				<AreasList areasIluminacion={areasIluminacion} />
+				<AreasList id={id} areasIluminacion={areasIluminacion} />
 			) : (
 				<Text
 					style={{
@@ -151,32 +157,79 @@ function Areas({
 }
 
 function AreasList({
+	id,
 	areasIluminacion,
 }: {
+	id: string | null
 	areasIluminacion: AreaIluminacionType[]
 }) {
 	return (
-		<View>
-			<Text style={{ color: "#ccc" }}>
-				{areasIluminacion.map(area => (
-					<AreaMiniCard key={area.id} areaIluminacion={area} />
-				))}
-			</Text>
+		<View style={{ gap: 8 }}>
+			{areasIluminacion.map(area => (
+				<AreaMiniCard key={area.id} id={id} areaIluminacion={area} />
+			))}
 		</View>
 	)
 }
 
 function AreaMiniCard({
+	id,
 	areaIluminacion,
 }: {
+	id: string | null
 	areaIluminacion: AreaIluminacionType
 }) {
+	const medidos = areaIluminacion.puntos.filter(punto => punto > 0).length
+	const fontSize =
+		`${areaIluminacion.nombre} - ${areaIluminacion.tipo}`.length > 25 ? 14 : 18
 	return (
-		<View>
-			<Text style={{ color: "#ccc" }}>
-				{areaIluminacion.nombre} - {areaIluminacion.tipo}
-			</Text>
-		</View>
+		<Pressable
+			onPress={() => {
+				if (!id) return
+				router.push({
+					pathname: "/(informe)/iluminacion/[id]/area/puntos",
+					params: { id, areaId: areaIluminacion.id },
+				})
+			}}
+			style={({ pressed }) => ({
+				backgroundColor: pressed ? theme.grayPressed : theme.inputBG,
+				borderWidth: 1,
+				borderColor: theme.inputBorder,
+				borderRadius: 8,
+				padding: 14,
+				opacity: pressed ? 0.8 : 1,
+				position: "relative",
+			})}
+		>
+			<ImageViewer
+				imgSource={{ uri: areaIluminacion.imagenes[0] }}
+				style={{
+					height: fontSize === 14 ? "150%" : "160%",
+					aspectRatio: 4 / 3,
+					borderRadius: 4,
+					position: "absolute",
+					top: 0,
+					right: 0,
+				}}
+			/>
+			<View
+				style={{
+					flex: 1,
+					width: "70%",
+				}}
+			>
+				<Text style={{ color: theme.orange, fontWeight: "600", fontSize }}>
+					{areaIluminacion.nombre} - {areaIluminacion.tipo}
+				</Text>
+				<Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 2 }}>
+					{areaIluminacion.largo}m × {areaIluminacion.ancho}m ×{" "}
+					{areaIluminacion.alto}m
+					{areaIluminacion.puntos.length > 0
+						? ` · ${medidos}/${areaIluminacion.puntos.length} medidos`
+						: " · sin medir"}
+				</Text>
+			</View>
+		</Pressable>
 	)
 }
 

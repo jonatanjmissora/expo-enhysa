@@ -1,3 +1,4 @@
+export const EMPTY_TIMESTAMP = new Date("1970-01-01").toISOString()
 export const ESTADO = [
 	"despejado",
 	"seminublado",
@@ -211,3 +212,41 @@ export const PLANS = [
 ]
 
 export type PLANS_TYPE = (typeof PLANS)[number]
+
+export const getIndiceDeLocal = (
+	cantidadFilas: number,
+	cantidadColumnas: number,
+	cantidadAltura: number
+) => {
+	return (
+		(cantidadFilas * cantidadColumnas) /
+		(cantidadAltura * (cantidadFilas + cantidadColumnas))
+	)
+}
+
+export const getIndiceRedondeo = (indiceDeLocal: number) =>
+	Math.abs(indiceDeLocal % 1) > 0
+		? Math.trunc(indiceDeLocal) + 1
+		: Math.trunc(indiceDeLocal)
+
+export const getNumeroCeldas = (
+	cantidadFilas: number,
+	cantidadColumnas: number,
+	cantidadAltura: number
+) => {
+	const indiceRedondeo = getIndiceRedondeo(
+		getIndiceDeLocal(cantidadFilas, cantidadColumnas, cantidadAltura)
+	)
+	const indice = (indiceRedondeo + 2) ** 2
+	return indice
+}
+
+export const resetPuntos = (largo: number, ancho: number, alto: number) => {
+	const length = getNumeroCeldas(ancho, largo, alto)
+	return Array.from({ length: length }, () => 0)
+}
+
+export const resetTimestamps = (largo: number, ancho: number, alto: number) => {
+	const length = getNumeroCeldas(ancho, largo, alto)
+	return Array.from({ length: length }, () => EMPTY_TIMESTAMP)
+}
