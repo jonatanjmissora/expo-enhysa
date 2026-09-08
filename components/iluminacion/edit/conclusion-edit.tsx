@@ -1,15 +1,16 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
+import { router } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import TextArea from "../../TextArea"
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import { iluminacionConclusionFormValidator } from "@/src/db/schema/informe-iluminacion"
 import {
 	informeIluminacionRepository,
 	InformeIluminacionType,
 } from "@/src/repositories/informe-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
+import InformeHeaderContent from "@/components/InformeHeader"
 
 const FIELDS = [
 	{
@@ -29,46 +30,7 @@ const FIELDS = [
 	},
 ] as const
 
-export default function IluminacionConclusion() {
-	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [loading, setLoading] = useState<boolean>(true)
-	const [informeIluminacion, setInformeIluminacion] =
-		useState<InformeIluminacionType | null>(null)
-
-	const load = useCallback(async () => {
-		const informeIluminacionData = await informeIluminacionRepository.getById(
-			id ?? ""
-		)
-		setInformeIluminacion(informeIluminacionData ?? null)
-		setLoading(false)
-	}, [id])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading)
-		return (
-			<View style={{}}>
-				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}
-			</View>
-		)
-
-	if (!informeIluminacion)
-		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: "#ccc", textAlign: "center" }}>
-					No se encontro el informe {id}
-				</Text>
-			</View>
-		)
-
-	return <IluminacionConclusionForm informeIluminacion={informeIluminacion} />
-}
-
-function IluminacionConclusionForm({
+export default function IluminacionConclusionEditContent({
 	informeIluminacion,
 }: {
 	informeIluminacion: InformeIluminacionType
@@ -122,6 +84,9 @@ function IluminacionConclusionForm({
 
 	return (
 		<ScrollView contentContainerStyle={{ paddingBottom: 230 }}>
+			<View style={{ paddingVertical: 40 }}>
+				<InformeHeaderContent informe={informeIluminacion} />
+			</View>
 			<View style={{ gap: 20, padding: 20, paddingBottom: 30 }}>
 				{FIELDS.map(f => (
 					<form.Field key={f.key} name={f.key}>
@@ -179,7 +144,7 @@ function IluminacionConclusionForm({
 					<form.Subscribe selector={state => state.isSubmitting}>
 						{isSubmitting => (
 							<Button
-								text={isSubmitting ? "Guardando..." : "Finalizar"}
+								text={isSubmitting ? "Guardando..." : "Guardar"}
 								disabled={isSubmitting}
 								onPress={form.handleSubmit}
 								style={{

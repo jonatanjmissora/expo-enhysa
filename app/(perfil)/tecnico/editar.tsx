@@ -5,7 +5,7 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
-	Tecnico,
+	TecnicoType,
 	tecnicoRepository,
 } from "@/src/repositories/tecnico.repository"
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
@@ -27,7 +27,9 @@ const FIELDS = [
 
 export default function EditarTecnico() {
 	const { tecnicoId } = useLocalSearchParams<{ tecnicoId: string }>()
-	const [tecnico, setTecnico] = useState<Tecnico | null | undefined>(undefined)
+	const [tecnico, setTecnico] = useState<TecnicoType | null | undefined>(
+		undefined
+	)
 	useFocusEffect(
 		useCallback(() => {
 			async function loadTecnicoById() {
@@ -89,7 +91,7 @@ export default function EditarTecnico() {
 	)
 }
 
-function TecnicoEditForm({ tecnico }: { tecnico: Tecnico }) {
+function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 	const router = useRouter()
 
 	const [error, setError] = useState<string | null>(null)

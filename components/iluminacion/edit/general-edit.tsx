@@ -1,136 +1,34 @@
-import Button from "@/components/Button"
-import Select from "@/components/Select"
-import { ESTADO, HUMEDAD, TEMPERATURA } from "@/constants"
-import { theme } from "@/constants/theme"
-import {
-	type EmpresaType,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
-import {
-	type InstrumentoType,
-	instrumentoRepository,
-} from "@/src/repositories/instrumento.repository"
-import {
-	Tecnico,
-	tecnicoRepository,
-} from "@/src/repositories/tecnico.repository"
+import { ScrollView, Text, View } from "react-native"
+import { EmpresaType } from "@/src/repositories/empresa.repository"
 import {
 	informeIluminacionRepository,
 	InformeIluminacionType,
 } from "@/src/repositories/informe-iluminacion.repository"
+import { InstrumentoType } from "@/src/repositories/instrumento.repository"
+import { TecnicoType } from "@/src/repositories/tecnico.repository"
+import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
-import { ScrollView, Text, View } from "react-native"
 import { iluminacionGeneralFormValidator } from "@/src/db/schema/informe-iluminacion"
+import { router } from "expo-router"
+import { theme } from "@/constants/theme"
+import Select from "@/components/Select"
+import { ESTADO, HUMEDAD, TEMPERATURA } from "@/constants"
+import Button from "@/components/Button"
+import InformeHeaderContent from "@/components/InformeHeader"
 
-const USER_ID = "user-1"
-
-export default function IluminacionGeneral() {
-	const [loading, setLoading] = useState<boolean>(true)
-	const [tecnico, setTecnico] = useState<Tecnico | null | undefined>(undefined)
-	const [empresas, setEmpresas] = useState<EmpresaType[]>([])
-	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
-	const { id } = useLocalSearchParams<{ id: string }>()
-	const [informe, setInforme] = useState<
-		InformeIluminacionType | null | undefined
-	>(undefined)
-
-	const load = useCallback(async () => {
-		const [tecnicoData, empresasData, instrumentosData, informeData] =
-			await Promise.all([
-				tecnicoRepository.getByUserId(USER_ID),
-				empresaRepository.getAllByUserId(USER_ID),
-				instrumentoRepository.getAllByUserId(USER_ID),
-				informeIluminacionRepository.getById(id ?? ""),
-			])
-		setTecnico(tecnicoData ?? null)
-		setEmpresas(empresasData ?? [])
-		setInstrumentos(instrumentosData ?? [])
-		setInforme(informeData ?? null)
-		setLoading(false)
-	}, [id])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading) {
-		return (
-			<View style={{}}>
-				{/* <Text style={{ color: "#cbd5e1" }}>Cargando...</Text> */}
-			</View>
-		)
-	}
-
-	if (!tecnico) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes un técnico cargado</Text>
-				<Button
-					text="Crear técnico"
-					onPress={() => router.push("/tecnico/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	if (empresas.length === 0) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes empresas cargadas</Text>
-				<Button
-					text="Crear empresa"
-					onPress={() => router.push("/empresa/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	if (instrumentos.length === 0) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes instrumentos cargados</Text>
-				<Button
-					text="Crear instrumento"
-					onPress={() => router.push("/instrumento/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	if (!informe) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No se encontro el informe</Text>
-				<Button text="Volver" onPress={() => router.back()} />
-			</View>
-		)
-	}
-
-	return (
-		<IluminacionGeneralForm
-			tecnico={tecnico}
-			empresas={empresas}
-			instrumentos={instrumentos}
-			informe={informe}
-		/>
-	)
+type Props = {
+	tecnico: TecnicoType
+	empresas: EmpresaType[]
+	instrumentos: InstrumentoType[]
+	informe: InformeIluminacionType
 }
 
-function IluminacionGeneralForm({
+export default function IluminacionGeneralEditFormContent({
 	tecnico,
 	empresas,
 	instrumentos,
 	informe,
-}: {
-	tecnico: Tecnico
-	empresas: EmpresaType[]
-	instrumentos: InstrumentoType[]
-	informe: InformeIluminacionType
-}) {
+}: Props) {
 	const [error, setError] = useState<string | null>(null)
 
 	const form = useForm({
@@ -178,6 +76,9 @@ function IluminacionGeneralForm({
 	})
 	return (
 		<ScrollView contentContainerStyle={{ paddingBottom: 230 }}>
+			<View style={{ paddingVertical: 40 }}>
+				<InformeHeaderContent informe={informe} />
+			</View>
 			<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
 				<TecnicoContent tecnico={tecnico} />
 
@@ -436,7 +337,7 @@ function IluminacionGeneralForm({
 	)
 }
 
-function TecnicoContent({ tecnico }: { tecnico: Tecnico }) {
+function TecnicoContent({ tecnico }: { tecnico: TecnicoType }) {
 	return (
 		<View
 			style={{

@@ -5,7 +5,7 @@ import {
 	MIGRATE_TECNICOS_EMPRESA,
 } from "../db/schema/tecnicos"
 
-export type Tecnico = {
+export type TecnicoType = {
 	id: string
 	nombre: string
 	telefono: string
@@ -50,7 +50,7 @@ async function initializeTecnicosTable() {
 }
 
 export const tecnicoRepository = {
-	async create(input: CreateTecnicoInput): Promise<Tecnico> {
+	async create(input: CreateTecnicoInput): Promise<TecnicoType> {
 		await initializeTecnicosTable()
 
 		const db = await getDatabase()
@@ -87,7 +87,7 @@ export const tecnicoRepository = {
 			input.userId
 		)
 
-		const tecnico = await db.getFirstAsync<Tecnico>(
+		const tecnico = await db.getFirstAsync<TecnicoType>(
 			`
 				SELECT
 					id,
@@ -114,12 +114,12 @@ export const tecnicoRepository = {
 		return tecnico
 	},
 
-	async getById(id: string): Promise<Tecnico | null> {
+	async getById(id: string): Promise<TecnicoType | null> {
 		await initializeTecnicosTable()
 
 		const db = await getDatabase()
 
-		const tecnico = await db.getFirstAsync<Tecnico>(
+		const tecnico = await db.getFirstAsync<TecnicoType>(
 			`
 				SELECT
 					id,
@@ -142,12 +142,12 @@ export const tecnicoRepository = {
 		return tecnico ?? null
 	},
 
-	async getByUserId(userId: string): Promise<Tecnico | null> {
+	async getByUserId(userId: string): Promise<TecnicoType | null> {
 		await initializeTecnicosTable()
 
 		const db = await getDatabase()
 
-		const tecnico = await db.getFirstAsync<Tecnico>(
+		const tecnico = await db.getFirstAsync<TecnicoType>(
 			`
 				SELECT
 					id,
@@ -182,12 +182,12 @@ export const tecnicoRepository = {
 	async update(
 		id: string,
 		input: Partial<CreateTecnicoInput>
-	): Promise<Tecnico> {
+	): Promise<TecnicoType> {
 		await initializeTecnicosTable()
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<Tecnico>(
+		const existing = await db.getFirstAsync<TecnicoType>(
 			`SELECT * FROM tecnicos WHERE id = ? LIMIT 1`,
 			id
 		)

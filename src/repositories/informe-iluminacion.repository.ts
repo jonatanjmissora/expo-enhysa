@@ -207,6 +207,13 @@ export const informeIluminacionRepository = {
 
 		const db = await getDatabase()
 
-		await db.runAsync(`DELETE FROM informe_iluminacion WHERE id = ?`, id)
+		await db.withTransactionAsync(async () => {
+			await db.runAsync(`DELETE FROM areas_iluminacion WHERE reportId = ?`, id)
+			await db.runAsync(
+				`DELETE FROM localizadas_iluminacion WHERE reportId = ?`,
+				id
+			)
+			await db.runAsync(`DELETE FROM informe_iluminacion WHERE id = ?`, id)
+		})
 	},
 }

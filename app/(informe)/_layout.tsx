@@ -8,10 +8,6 @@ export default function InformeLayout() {
 				headerShown: false,
 				contentStyle: { backgroundColor: theme.safeAreaBG },
 			}}
-		>
-			<Stack.Screen name="iluminacion/[id]" />
-			<Stack.Screen name="iluminacion/nuevo/[id]" />
-			<Stack.Screen name="iluminacion/(iluminacion-tabs)" />
-		</Stack>
+		/>
 	)
 }

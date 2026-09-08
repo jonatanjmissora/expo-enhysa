@@ -1,11 +1,10 @@
 import Button from "@/components/Button"
-import IluminacionGeneral from "@/components/iluminacion/nuevo/IluminacionGeneral"
-import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
+import IluminacionAreaNuevoContent from "@/components/iluminacion/nuevo/area-nuevo"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { router } from "expo-router"
-import { View, Text } from "react-native"
+import { Text, View } from "react-native"
 
-export default function NuevoGeneral() {
+export default function AreaNueva() {
 	return (
 		<ViewWithLogo>
 			<View
@@ -26,7 +25,7 @@ export default function NuevoGeneral() {
 						opacity: 0.85,
 						padding: 4,
 					}}
-					onPress={() => router.push("/iluminacion/informes")}
+					onPress={() => router.back()}
 				/>
 				<Text
 					style={{
@@ -36,12 +35,10 @@ export default function NuevoGeneral() {
 						color: "#ccc",
 					}}
 				>
-					Informe Nuevo
+					Area Nueva
 				</Text>
 			</View>
-
-			<IluminacionSteps />
-			<IluminacionGeneral />
+			<IluminacionAreaNuevoContent />
 		</ViewWithLogo>
 	)
 }

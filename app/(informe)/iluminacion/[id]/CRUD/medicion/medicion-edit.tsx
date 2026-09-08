@@ -1,9 +1,9 @@
 import Button from "@/components/Button"
-import IluminacionConclusion from "@/components/iluminacion/edit/IluminacionConclusion"
+import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { router } from "expo-router"
 
-export default function ConclusionEdit() {
+export default function MedicionEdit() {
 	return (
 		<ViewWithLogo>
 			<Button
@@ -18,7 +18,13 @@ export default function ConclusionEdit() {
 				}}
 				onPress={() => router.back()}
 			/>
-			<IluminacionConclusion />
+			<IluminacionSteps />
+			{/* <IluminacionMedicionFormContent
+				tecnico={tecnico}
+				empresas={empresas}
+				instrumentos={instrumentos}
+				informe={informe}
+			/> */}
 		</ViewWithLogo>
 	)
 }

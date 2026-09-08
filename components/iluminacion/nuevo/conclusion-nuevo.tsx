@@ -1,9 +1,9 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
+import { router } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import TextArea from "../../TextArea"
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import {
 	defaultIluminacionConclusion,
 	iluminacionConclusionFormValidator,
@@ -32,46 +32,7 @@ const FIELDS = [
 	},
 ] as const
 
-export default function IluminacionConclusion() {
-	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [loading, setLoading] = useState<boolean>(true)
-	const [informeIluminacion, setInformeIluminacion] =
-		useState<InformeIluminacionType | null>(null)
-
-	const load = useCallback(async () => {
-		const informeIluminacionData = await informeIluminacionRepository.getById(
-			id ?? ""
-		)
-		setInformeIluminacion(informeIluminacionData ?? null)
-		setLoading(false)
-	}, [id])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading)
-		return (
-			<View style={{}}>
-				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}
-			</View>
-		)
-
-	if (!informeIluminacion)
-		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: "#ccc", textAlign: "center" }}>
-					No se encontro el informe {id}
-				</Text>
-			</View>
-		)
-
-	return <IluminacionConclusionForm informeIluminacion={informeIluminacion} />
-}
-
-function IluminacionConclusionForm({
+export default function IluminacionConclusionNuevoContent({
 	informeIluminacion,
 }: {
 	informeIluminacion: InformeIluminacionType

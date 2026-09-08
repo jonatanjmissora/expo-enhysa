@@ -1,7 +1,7 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import {
-	type Tecnico as TecnicoData,
+	type TecnicoType,
 	tecnicoRepository,
 } from "@/src/repositories/tecnico.repository"
 import { useFocusEffect, useRouter } from "expo-router"
@@ -23,7 +23,7 @@ const FIELDS = [
 ] as const
 
 export default function Tecnico() {
-	const [tecnico, setTecnico] = useState<TecnicoData | null | undefined>(
+	const [tecnico, setTecnico] = useState<TecnicoType | null | undefined>(
 		undefined
 	)
 
@@ -82,7 +82,7 @@ function TecnicoItem({
 	tecnico,
 	onDeleted,
 }: {
-	tecnico: TecnicoData
+	tecnico: TecnicoType
 	onDeleted: () => void
 }) {
 	return (
@@ -182,7 +182,7 @@ function MenuTecnico({
 	tecnico,
 	onDeleted,
 }: {
-	tecnico: TecnicoData
+	tecnico: TecnicoType
 	onDeleted?: () => void
 }) {
 	const [modalVisible, setModalVisible] = useState(false)

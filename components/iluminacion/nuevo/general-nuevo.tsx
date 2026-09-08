@@ -2,22 +2,13 @@ import Button from "@/components/Button"
 import Select from "@/components/Select"
 import { ESTADO, HUMEDAD, TEMPERATURA } from "@/constants"
 import { theme } from "@/constants/theme"
-import {
-	type EmpresaType,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
-import {
-	type InstrumentoType,
-	instrumentoRepository,
-} from "@/src/repositories/instrumento.repository"
-import {
-	Tecnico,
-	tecnicoRepository,
-} from "@/src/repositories/tecnico.repository"
+import { type EmpresaType } from "@/src/repositories/empresa.repository"
+import { type InstrumentoType } from "@/src/repositories/instrumento.repository"
+import { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { informeIluminacionRepository } from "@/src/repositories/informe-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
-import { router, useFocusEffect } from "expo-router"
-import { useCallback, useState } from "react"
+import { router } from "expo-router"
+import { useState } from "react"
 import { ScrollView, Text, View } from "react-native"
 import {
 	defaultIluminacionGeneral,
@@ -27,89 +18,12 @@ import { randomUUID } from "expo-crypto"
 
 const USER_ID = "user-1"
 
-export default function IluminacionGeneral() {
-	const [loading, setLoading] = useState<boolean>(true)
-	const [tecnico, setTecnico] = useState<Tecnico | null | undefined>(undefined)
-	const [empresas, setEmpresas] = useState<EmpresaType[]>([])
-	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
-
-	const load = useCallback(async () => {
-		const [tecnicoData, empresasData, instrumentosData] = await Promise.all([
-			tecnicoRepository.getByUserId(USER_ID),
-			empresaRepository.getAllByUserId(USER_ID),
-			instrumentoRepository.getAllByUserId(USER_ID),
-		])
-		setTecnico(tecnicoData ?? null)
-		setEmpresas(empresasData ?? [])
-		setInstrumentos(instrumentosData ?? [])
-		setLoading(false)
-	}, [])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading) {
-		return (
-			<View style={{}}>
-				{/* <Text style={{ color: "#cbd5e1" }}>Cargando...</Text> */}
-			</View>
-		)
-	}
-
-	if (!tecnico) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes un técnico cargado</Text>
-				<Button
-					text="Crear técnico"
-					onPress={() => router.push("/tecnico/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	if (empresas.length === 0) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes empresas cargadas</Text>
-				<Button
-					text="Crear empresa"
-					onPress={() => router.push("/empresa/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	if (instrumentos.length === 0) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes instrumentos cargados</Text>
-				<Button
-					text="Crear instrumento"
-					onPress={() => router.push("/instrumento/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	return (
-		<IluminacionGeneralForm
-			tecnico={tecnico}
-			empresas={empresas}
-			instrumentos={instrumentos}
-		/>
-	)
-}
-
-function IluminacionGeneralForm({
+export default function IluminacionGeneralFormContent({
 	tecnico,
 	empresas,
 	instrumentos,
 }: {
-	tecnico: Tecnico
+	tecnico: TecnicoType
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
 }) {
@@ -141,7 +55,7 @@ function IluminacionGeneralForm({
 				})
 
 				router.push({
-					pathname: "/(informe)/iluminacion/nuevo/[id]/medicion",
+					pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo",
 					params: { id: informeId },
 				})
 			} catch (e) {
@@ -420,7 +334,7 @@ function IluminacionGeneralForm({
 	)
 }
 
-function TecnicoContent({ tecnico }: { tecnico: Tecnico }) {
+function TecnicoContent({ tecnico }: { tecnico: TecnicoType }) {
 	return (
 		<View
 			style={{

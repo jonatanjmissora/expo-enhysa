@@ -34,7 +34,7 @@ import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.r
 import { randomUUID } from "expo-crypto"
 import Formula from "@/components/iluminacion/puntos/formula"
 
-export default function IluminacionArea() {
+export default function IluminacionAreaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [loading, setLoading] = useState<boolean>(true)
 	const [informeIluminacion, setInformeIluminacion] =
@@ -98,7 +98,8 @@ function IluminacionAreaForm({
 					userId: informeIluminacion.userId,
 				})
 				router.push({
-					pathname: "/iluminacion/[id]/area/puntos-nuevos",
+					pathname:
+						"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/puntos/puntos-nuevo",
 					params: {
 						id: informeIluminacion.id,
 						areaId,

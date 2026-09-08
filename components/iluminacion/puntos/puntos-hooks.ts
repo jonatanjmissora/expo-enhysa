@@ -175,7 +175,7 @@ export function useMedicionArea(area: AreaIluminacionType) {
 
 		const irAMedicion = () =>
 			router.push({
-				pathname: "/(informe)/iluminacion/nuevo/[id]/medicion",
+				pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo",
 				params: { id: area.reportId },
 			})
 
