@@ -1,3 +1,28 @@
+# sincronizar biome con el que viene de github
+
+      pnpm install
+
+      pnpm exec biome format --write .
+
+      pnpm lint
+
+# LINTER + FORMATTER
+
+      pnpm lint
+
+      pnpm lint -- --reporter=concise
+
+# LINTER SIN FORMATTER
+      pnpm lint -- --reporter=concise --formatter-enabled=false
+
+      pnpm lint --formatter-enabled=false
+
+# de un archivo concreto
+
+      pnpm exec biome check "app/(informe)/iluminacion/[id]/(informe-tabs)/_layout.tsx"
+
+
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

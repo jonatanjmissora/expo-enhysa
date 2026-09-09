@@ -9,7 +9,7 @@ import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.r
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
-import { View, Text, ScrollView } from "react-native"
+import { View, ScrollView } from "react-native"
 
 const USER_ID = "user-1"
 

@@ -26,9 +26,7 @@ export default function Index() {
 
 	return (
 		<ViewWithLogo>
-			<ScrollView
-				ref={scrollViewRef}
-			>
+			<ScrollView ref={scrollViewRef}>
 				<Hero positionsY={positionsY} />
 
 				<Landing positionsY={positionsY} scrollTo={scrollTo} />
