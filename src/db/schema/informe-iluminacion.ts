@@ -48,9 +48,9 @@ export type DefaultIluminacionGeneralType = typeof defaultIluminacionGeneral
 // 		INFORME ILUMINACION CONCLUSION
 
 export const iluminacionConclusionFormValidator = z.object({
-	observacion: z.string().min(1, "Escribe una observación"),
-	conclusion: z.string().min(1, "Escribe una conclusión"),
-	recomendacion: z.string().min(1, "Escribe una recomendación"),
+	observacion: z.string(),
+	conclusion: z.string(),
+	recomendacion: z.string(),
 })
 
 export type IluminacionConclusionFormType = z.infer<

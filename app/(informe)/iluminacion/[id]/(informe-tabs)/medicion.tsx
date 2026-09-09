@@ -88,7 +88,7 @@ export default function Medicion() {
 					justifyContent: "center",
 					paddingTop: 40,
 					paddingBottom: 200,
-					paddingHorizontal: 30,
+					paddingHorizontal: 5,
 				}}
 				style={{
 					flex: 1,

@@ -128,6 +128,18 @@ export default function IluminacionConclusionNuevoContent({
 						marginVertical: 40,
 					}}
 				>
+					<Text
+						style={{
+							color: "#888",
+							fontSize: 12,
+							textAlign: "center",
+							marginBottom: 20,
+						}}
+					>
+						Puede pulsar "Finalizar", pero el informe no estará concluido hasta
+						completar los 3 campos.
+					</Text>
+
 					<form.Subscribe selector={state => state.isSubmitting}>
 						{isSubmitting => (
 							<Button

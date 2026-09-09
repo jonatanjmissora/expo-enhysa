@@ -34,50 +34,10 @@ import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.r
 import { randomUUID } from "expo-crypto"
 import Formula from "@/components/iluminacion/puntos/formula"
 
+const USER_ID = "user-1"
+
 export default function IluminacionAreaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [loading, setLoading] = useState<boolean>(true)
-	const [informeIluminacion, setInformeIluminacion] =
-		useState<InformeIluminacionType | null>(null)
-
-	const load = useCallback(async () => {
-		const informeIluminacionData = await informeIluminacionRepository.getById(
-			id ?? ""
-		)
-		setInformeIluminacion(informeIluminacionData ?? null)
-		setLoading(false)
-	}, [id])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading)
-		return (
-			<View style={{}}>
-				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}
-			</View>
-		)
-
-	if (!informeIluminacion)
-		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: "#ccc", textAlign: "center" }}>
-					No se encontro el informe {id}
-				</Text>
-			</View>
-		)
-
-	return <IluminacionAreaForm informeIluminacion={informeIluminacion} />
-}
-
-function IluminacionAreaForm({
-	informeIluminacion,
-}: {
-	informeIluminacion: InformeIluminacionType
-}) {
 	const [error, setError] = useState<string | null>(null)
 	const [imagenes, setImagenes] = useState<string[]>([])
 
@@ -91,17 +51,17 @@ function IluminacionAreaForm({
 				await areaIluminacionRepository.create({
 					...value,
 					id: areaId,
-					reportId: informeIluminacion.id,
+					reportId: id,
 					imagenes,
 					puntos: [],
 					timestamps: [],
-					userId: informeIluminacion.userId,
+					userId: USER_ID,
 				})
 				router.push({
 					pathname:
 						"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/puntos/puntos-nuevo",
 					params: {
-						id: informeIluminacion.id,
+						id,
 						areaId,
 					},
 				})

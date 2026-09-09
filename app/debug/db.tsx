@@ -95,7 +95,26 @@ export default function DebugDB() {
 					style: "destructive",
 					onPress: async () => {
 						const db = await getDatabase()
-						await db.runAsync(`DELETE FROM "${tableName}" WHERE id = ?`, id)
+
+						if (tableName === "informe_iluminacion") {
+							await db.withTransactionAsync(async () => {
+								await db.runAsync(
+									`DELETE FROM areas_iluminacion WHERE reportId = ?`,
+									id
+								)
+								await db.runAsync(
+									`DELETE FROM localizadas_iluminacion WHERE reportId = ?`,
+									id
+								)
+								await db.runAsync(
+									`DELETE FROM informe_iluminacion WHERE id = ?`,
+									id
+								)
+							})
+						} else {
+							await db.runAsync(`DELETE FROM "${tableName}" WHERE id = ?`, id)
+						}
+
 						await loadTables()
 						if (selectedTable === tableName) {
 							const data = await db.getAllAsync<TableRow>(

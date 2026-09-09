@@ -55,7 +55,11 @@ export default function ConclusionContent({
 								{f.label}
 							</Text>
 						</View>
-						<TextArea value={informe[f.key]} onChangeText={() => {}} />
+						<TextArea
+							value={informe[f.key]}
+							onChangeText={() => {}}
+							placeholder={f.placeholder}
+						/>
 					</View>
 				))}
 			</View>
