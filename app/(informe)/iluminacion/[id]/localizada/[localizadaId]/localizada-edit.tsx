@@ -1,16 +1,15 @@
 import { View, Text } from "react-native"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import Button from "@/components/Button"
-import Localizada from "@/components/iluminacion/show/localizada"
-import { theme } from "@/constants/theme"
+import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
+import IluminacionShowLocalizadaEditContent from "@/components/iluminacion/show/localizada-edit"
+import { useCallback, useState } from "react"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
+import { theme } from "@/constants/theme"
 
-export default function LocalizadaIndex() {
+export default function LocalizadaEdit() {
 	const { localizadaId } = useGlobalSearchParams<{
-		id: string
 		localizadaId: string
 	}>()
 	const [localizadaIluminacion, setLocalizadaIluminacion] = useState<
@@ -18,7 +17,7 @@ export default function LocalizadaIndex() {
 	>(undefined)
 	useFocusEffect(
 		useCallback(() => {
-			async function loadInformeIluminacionById() {
+			async function loadLocalizadaIluminacionById() {
 				if (!localizadaId) return
 				try {
 					const data =
@@ -28,7 +27,7 @@ export default function LocalizadaIndex() {
 					console.error(error)
 				}
 			}
-			loadInformeIluminacionById()
+			loadLocalizadaIluminacionById()
 		}, [localizadaId])
 	)
 
@@ -57,9 +56,12 @@ export default function LocalizadaIndex() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>No existe el localizada</Text>
+				<Text style={{ color: "#94a3b8" }}>
+					No existe la localizada {localizadaId}
+				</Text>
 			</View>
 		)
+
 	return (
 		<ViewWithLogo>
 			<View
@@ -90,10 +92,12 @@ export default function LocalizadaIndex() {
 						color: "#ccc",
 					}}
 				>
-					Localizada
+					Localizada Editar
 				</Text>
 			</View>
-			<Localizada localizadaIluminacion={localizadaIluminacion} />
+			<IluminacionShowLocalizadaEditContent
+				localizadaIluminacion={localizadaIluminacion}
+			/>
 		</ViewWithLogo>
 	)
 }

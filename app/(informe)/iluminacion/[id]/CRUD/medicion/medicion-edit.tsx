@@ -19,12 +19,7 @@ export default function MedicionEdit() {
 				onPress={() => router.back()}
 			/>
 			<IluminacionSteps />
-			{/* <IluminacionMedicionFormContent
-				tecnico={tecnico}
-				empresas={empresas}
-				instrumentos={instrumentos}
-				informe={informe}
-			/> */}
+			Iluminacion medicion Edit
 		</ViewWithLogo>
 	)
 }

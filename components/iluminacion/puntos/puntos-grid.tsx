@@ -24,7 +24,7 @@ export type GrillaProps = {
 	inputValue: string
 	requerido: number
 	tieneRequerido: boolean
-	onGridLayout: (y: number) => void
+	onGridLayout?: (y: number) => void
 	onSeleccionar: (index: number) => void
 	onChangeInput: (value: string) => void
 	onConfirmar: () => void
@@ -105,7 +105,7 @@ export default function Grilla({
 	return (
 		<View
 			style={{ alignItems: "center", marginVertical: 10 }}
-			onLayout={event => onGridLayout(event.nativeEvent.layout.y)}
+			onLayout={event => onGridLayout?.(event.nativeEvent.layout.y)}
 		>
 			{anchoGrilla <= anchoDisponible ? (
 				cuerpoGrilla

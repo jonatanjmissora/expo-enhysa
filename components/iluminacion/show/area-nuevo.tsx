@@ -32,7 +32,7 @@ import Formula from "@/components/iluminacion/puntos/formula"
 
 const USER_ID = "user-1"
 
-export default function IluminacionAreaNuevoContent() {
+export default function IluminacionShowAreaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
 	const [imagenes, setImagenes] = useState<string[]>([])
@@ -55,7 +55,7 @@ export default function IluminacionAreaNuevoContent() {
 				})
 				router.push({
 					pathname:
-						"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/puntos/puntos-nuevo",
+						"/(informe)/iluminacion/[id]/area/[areaId]/puntos/puntos-nuevo",
 					params: {
 						id,
 						areaId,

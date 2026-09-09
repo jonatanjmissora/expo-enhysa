@@ -87,7 +87,7 @@ export default function Medicion() {
 				contentContainerStyle={{
 					justifyContent: "center",
 					paddingTop: 40,
-					paddingBottom: 200,
+					paddingBottom: 50,
 					paddingHorizontal: 5,
 				}}
 				style={{

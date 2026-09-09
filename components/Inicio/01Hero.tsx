@@ -127,7 +127,7 @@ function HeroIcons() {
 						}}
 					>
 						<Ionicons name={item.icon} size={24} color="black" />
-						<Text style={{ color: "#222", fontSize: 14 }}>{item.title}</Text>
+						<Text style={{ color: "#222", fontSize: 12 }}>{item.title}</Text>
 					</View>
 				</Pressable>
 			))}

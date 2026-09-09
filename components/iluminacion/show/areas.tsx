@@ -44,8 +44,7 @@ export default function AreasContent({
 					onPress={() => {
 						const areaId = randomUUID()
 						router.push({
-							pathname:
-								"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/area-nuevo",
+							pathname: "/(informe)/iluminacion/[id]/area/[areaId]/area-nuevo",
 							params: { id, areaId },
 						})
 					}}
@@ -99,7 +98,7 @@ function AreaMiniCard({
 		<Pressable
 			onPress={() => {
 				router.push({
-					pathname: "/(informe)/iluminacion/[id]/area/puntos",
+					pathname: "/(informe)/iluminacion/[id]/area/[areaId]",
 					params: { id, areaId: areaIluminacion.id },
 				})
 			}}
@@ -116,7 +115,7 @@ function AreaMiniCard({
 			<ImageViewer
 				imgSource={{ uri: areaIluminacion.imagenes[0] }}
 				style={{
-					height: fontSize === 14 ? "150%" : "160%",
+					height: fontSize === 14 ? "170%" : "160%",
 					aspectRatio: 4 / 3,
 					borderRadius: 4,
 					position: "absolute",
@@ -127,7 +126,7 @@ function AreaMiniCard({
 			<View
 				style={{
 					flex: 1,
-					width: "70%",
+					width: "80%",
 				}}
 			>
 				<Text style={{ color: theme.orange, fontWeight: "600", fontSize }}>

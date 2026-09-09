@@ -9,10 +9,6 @@ import {
 import { router, useGlobalSearchParams } from "expo-router"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
-import {
-	areaIluminacionFormPart1Validator,
-	defaultAreaIluminacionPart1,
-} from "@/src/db/schema/areas-iluminacion"
 import { theme } from "@/constants/theme"
 import Button from "@/components/Button"
 import Ionicons from "@expo/vector-icons/Ionicons"
@@ -26,43 +22,46 @@ import {
 } from "@/constants"
 import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
 import { randomUUID } from "expo-crypto"
-import Formula from "@/components/iluminacion/puntos/formula"
+import {
+	defaultLocalizadaIluminacion,
+	localizadaIluminacionFormValidator,
+} from "@/src/db/schema/localizadas-iluminacion"
+import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 
 const USER_ID = "user-1"
 
-export default function IluminacionAreaNuevoContent() {
+export default function IluminacionShowLocalizadaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
 	const [imagenes, setImagenes] = useState<string[]>([])
 
 	const form = useForm({
-		defaultValues: defaultAreaIluminacionPart1,
-		validators: { onSubmit: areaIluminacionFormPart1Validator },
+		defaultValues: defaultLocalizadaIluminacion,
+		validators: { onSubmit: localizadaIluminacionFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
-			const areaId = randomUUID()
+			const localizadaId = randomUUID()
 			try {
-				await areaIluminacionRepository.create({
+				await localizadaIluminacionRepository.create({
 					...value,
-					id: areaId,
+					id: localizadaId,
 					reportId: id,
 					imagenes,
-					puntos: [],
-					timestamps: [],
+					timestamps: [new Date().toISOString()],
 					userId: USER_ID,
 				})
 				router.push({
-					pathname:
-						"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/puntos/puntos-nuevo",
+					pathname: "/(informe)/iluminacion/[id]/medicion",
 					params: {
 						id,
-						areaId,
+						localizadaId,
 					},
 				})
 			} catch (e) {
-				setError(e instanceof Error ? e.message : "No se pudo crear el area")
+				setError(
+					e instanceof Error ? e.message : "No se pudo crear la localizada"
+				)
 			}
 		},
 		onSubmitInvalid: () => {
@@ -83,7 +82,7 @@ export default function IluminacionAreaNuevoContent() {
 				<form.Field name="nombre">
 					{field => (
 						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Nombre del Area</Text>
+							<Text style={{ color: "#cbd5e1" }}>Nombre Localizada</Text>
 							<TextInput
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -118,7 +117,7 @@ export default function IluminacionAreaNuevoContent() {
 				<form.Field name="tipo">
 					{field => (
 						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Tipo de Area</Text>
+							<Text style={{ color: "#cbd5e1" }}>Tipo Localizada</Text>
 							<TextInput
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -343,89 +342,10 @@ export default function IluminacionAreaNuevoContent() {
 					}}
 				</form.Field>
 
-				<form.Field name="observaciones">
+				<form.Field name="valor">
 					{field => (
 						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Observaciones</Text>
-							<TextArea
-								placeholder={"Observaciones"}
-								value={field.state.value}
-								onChangeText={field.handleChange}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</View>
-					)}
-				</form.Field>
-
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "flex-end",
-						alignItems: "center",
-						gap: 16,
-						borderBottomWidth: 1,
-						borderColor: "purple",
-						paddingBottom: 4,
-						marginTop: 40,
-					}}
-				>
-					<Text style={{ color: "#cbd5e1", letterSpacing: 1.3, fontSize: 16 }}>
-						Dimensiones
-					</Text>
-					<Ionicons name="stats-chart-outline" size={14} color="#ccc" />
-				</View>
-
-				<form.Field name="largo">
-					{field => (
-						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Largo (mts)</Text>
-							<TextInput
-								value={String(field.state.value)}
-								onBlur={field.handleBlur}
-								onChangeText={val => field.handleChange(Number(val) || 0)}
-								keyboardType="numeric"
-								selectTextOnFocus
-								placeholder="4 mts"
-								placeholderTextColor="#64748b"
-								style={{
-									backgroundColor: theme.inputBG,
-									color: "#e2e8f0",
-									padding: 12,
-									borderRadius: 6,
-									borderWidth: 1,
-									borderColor: theme.inputBorder,
-									textAlign: "right",
-								}}
-							/>
-							{!field.state.meta.isValid && (
-								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-									{field.state.meta.errors
-										.map(err =>
-											typeof err === "string"
-												? err
-												: (err?.message ?? String(err))
-										)
-										.join(",")}
-								</Text>
-							)}
-						</View>
-					)}
-				</form.Field>
-
-				<form.Field name="ancho">
-					{field => (
-						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Ancho (mts)</Text>
+							<Text style={{ color: "#cbd5e1" }}>Valor medido</Text>
 							<TextInput
 								value={String(field.state.value)}
 								onBlur={field.handleBlur}
@@ -459,27 +379,14 @@ export default function IluminacionAreaNuevoContent() {
 					)}
 				</form.Field>
 
-				<form.Field name="alto">
+				<form.Field name="observaciones">
 					{field => (
 						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Alto (mts)</Text>
-							<TextInput
-								value={String(field.state.value)}
-								onBlur={field.handleBlur}
-								onChangeText={val => field.handleChange(Number(val) || 0)}
-								keyboardType="numeric"
-								selectTextOnFocus
-								placeholder="2.5 mts"
-								placeholderTextColor="#64748b"
-								style={{
-									backgroundColor: theme.inputBG,
-									color: "#e2e8f0",
-									padding: 12,
-									borderRadius: 6,
-									borderWidth: 1,
-									borderColor: theme.inputBorder,
-									textAlign: "right",
-								}}
+							<Text style={{ color: "#cbd5e1" }}>Observaciones</Text>
+							<TextArea
+								placeholder={"Observaciones"}
+								value={field.state.value}
+								onChangeText={field.handleChange}
 							/>
 							{!field.state.meta.isValid && (
 								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
@@ -495,20 +402,6 @@ export default function IluminacionAreaNuevoContent() {
 						</View>
 					)}
 				</form.Field>
-
-				<form.Subscribe
-					selector={state => ({
-						largo: Number(state.values.largo),
-						ancho: Number(state.values.ancho),
-						alto: Number(state.values.alto),
-					})}
-				>
-					{({ largo, ancho, alto }) => {
-						const dimensionesValidas = largo > 0 && ancho > 0 && alto > 0
-						if (!dimensionesValidas) return null
-						return <Formula largo={largo} ancho={ancho} alto={alto} />
-					}}
-				</form.Subscribe>
 
 				<View style={{ gap: 2 }}>
 					<Text style={{ color: "#cbd5e1" }}>
@@ -576,7 +469,7 @@ export default function IluminacionAreaNuevoContent() {
 				{isSubmitting => (
 					<Button
 						onPress={form.handleSubmit}
-						text={isSubmitting ? "Guardando..." : "Siguiente"}
+						text={isSubmitting ? "Guardando..." : "Guardar"}
 						disabled={isSubmitting}
 						style={{ marginTop: 40, width: "90%", marginHorizontal: "auto" }}
 					/>

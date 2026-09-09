@@ -35,7 +35,7 @@ export function useCargarArea(areaId: string | undefined) {
 	return { area, loading, error, reload: load }
 }
 
-export function useMedicionArea(area: AreaIluminacionType) {
+export function useMedicionArea(area: AreaIluminacionType, show?: boolean) {
 	const { width } = useWindowDimensions()
 	const anchoDisponible = width - 32 // padding lateral 16 + 16
 
@@ -175,7 +175,9 @@ export function useMedicionArea(area: AreaIluminacionType) {
 
 		const irAMedicion = () =>
 			router.push({
-				pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo",
+				pathname: !show
+					? "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo"
+					: "/(informe)/iluminacion/[id]/medicion",
 				params: { id: area.reportId },
 			})
 

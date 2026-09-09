@@ -29,7 +29,7 @@ import {
 	TextoDimensiones,
 } from "@/components/iluminacion/puntos/puntos-info"
 
-export default function AreaPuntosNuevos() {
+export default function ShowAreaPuntosNuevos() {
 	const { areaId } = useLocalSearchParams<{
 		id?: string
 		areaId?: string
@@ -121,7 +121,8 @@ function PantallaAreaInexistente({ areaId }: { areaId?: string }) {
 }
 
 function MedicionArea({ area }: { area: AreaIluminacionType }) {
-	const m = useMedicionArea(area)
+	const show = true
+	const m = useMedicionArea(area, show)
 	const { scrollRef, onGridLayout } = useScrollCeldaVisible({
 		editing: m.editing,
 		divisiones: m.divisiones,
@@ -134,7 +135,7 @@ function MedicionArea({ area }: { area: AreaIluminacionType }) {
 			await areaIluminacionRepository.delete(area.id)
 			setDeleteVisible(false)
 			router.push({
-				pathname: "/(informe)/iluminacion/[id]/CRUD/medicion",
+				pathname: "/(informe)/iluminacion/[id]/medicion",
 				params: { id: area.reportId },
 			})
 		} catch (e) {

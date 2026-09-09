@@ -1,9 +1,483 @@
-import { View, Text } from "react-native"
+import {
+	View,
+	Text,
+	ScrollView,
+	TextInput,
+	Image,
+	Pressable,
+} from "react-native"
+import { router, useGlobalSearchParams } from "expo-router"
+import { useState } from "react"
+import { useForm } from "@tanstack/react-form"
+import { theme } from "@/constants/theme"
+import Button from "@/components/Button"
+import Ionicons from "@expo/vector-icons/Ionicons"
+import Select from "@/components/Select"
+import {
+	ILUMINACION,
+	ILUMINACION_FUENTE,
+	ILUMINACION_TIPO,
+	VALORES_REQUERIDOS_OBJ,
+	type ValoresRequeridosType,
+} from "@/constants"
+import TextArea from "@/components/TextArea"
+import ImagePicker from "@/components/ImagePicker"
+import { randomUUID } from "expo-crypto"
+import {
+	defaultLocalizadaIluminacion,
+	localizadaIluminacionFormValidator,
+} from "@/src/db/schema/localizadas-iluminacion"
+import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
+
+const USER_ID = "user-1"
 
 export default function IluminacionLocalizadaNuevoContent() {
+	const { id } = useGlobalSearchParams<{ id: string }>()
+	const [error, setError] = useState<string | null>(null)
+	const [imagenes, setImagenes] = useState<string[]>([])
+
+	const form = useForm({
+		defaultValues: defaultLocalizadaIluminacion,
+		validators: { onSubmit: localizadaIluminacionFormValidator },
+		onSubmit: async ({ value }) => {
+			setError(null)
+			const localizadaId = randomUUID()
+			try {
+				await localizadaIluminacionRepository.create({
+					...value,
+					id: localizadaId,
+					reportId: id,
+					imagenes,
+					timestamps: [new Date().toISOString()],
+					userId: USER_ID,
+				})
+				router.push({
+					pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo",
+					params: {
+						id,
+						localizadaId,
+					},
+				})
+			} catch (e) {
+				setError(
+					e instanceof Error ? e.message : "No se pudo crear la localizada"
+				)
+			}
+		},
+		onSubmitInvalid: () => {
+			setError("Error en uno de los campos")
+		},
+	})
 	return (
-		<View>
-			<Text>localizada-nuevo</Text>
-		</View>
+		<ScrollView contentContainerStyle={{ paddingBottom: 230 }}>
+			<View
+				style={{
+					gap: 16,
+					width: "80%",
+					marginHorizontal: "auto",
+					paddingTop: 40,
+					paddingBottom: 140,
+				}}
+			>
+				<form.Field name="nombre">
+					{field => (
+						<View style={{ gap: 2 }}>
+							<Text style={{ color: "#cbd5e1" }}>Nombre Localizada</Text>
+							<TextInput
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChangeText={field.handleChange}
+								placeholder="Nombre del Area"
+								placeholderTextColor="#64748b"
+								style={{
+									backgroundColor: theme.inputBG,
+									color: "#e2e8f0",
+									padding: 12,
+									borderRadius: 6,
+									borderWidth: 1,
+									borderColor: theme.inputBorder,
+									textAlign: "right",
+								}}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+
+				<form.Field name="tipo">
+					{field => (
+						<View style={{ gap: 2 }}>
+							<Text style={{ color: "#cbd5e1" }}>Tipo Localizada</Text>
+							<TextInput
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChangeText={field.handleChange}
+								placeholder="Tipo de Area"
+								placeholderTextColor="#64748b"
+								style={{
+									backgroundColor: theme.inputBG,
+									color: "#e2e8f0",
+									padding: 12,
+									borderRadius: 6,
+									borderWidth: 1,
+									borderColor: theme.inputBorder,
+									textAlign: "right",
+								}}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "flex-end",
+						alignItems: "center",
+						gap: 16,
+						borderBottomWidth: 1,
+						borderColor: "cyan",
+						paddingBottom: 4,
+						marginTop: 40,
+					}}
+				>
+					<Text style={{ color: "#cbd5e1", letterSpacing: 1.3, fontSize: 16 }}>
+						Iluminación
+					</Text>
+					<Ionicons name="bulb-outline" size={14} color="#ccc" />
+				</View>
+
+				<form.Field name="iluminacionTipo">
+					{field => (
+						<View style={{ gap: 2 }}>
+							<Text style={{ color: "#cbd5e1" }}>Tipo de iluminacion</Text>
+							<Select
+								data={ILUMINACION_TIPO}
+								value={field.state.value}
+								onChange={field.handleChange}
+								placeholder="Seleccionar tipo de iluminacion"
+								renderItem={item => item}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+
+				<form.Field name="iluminacionFuente">
+					{field => (
+						<View style={{ gap: 2 }}>
+							<Text style={{ color: "#cbd5e1" }}>Fuente de iluminacion</Text>
+							<Select
+								data={ILUMINACION_FUENTE}
+								value={field.state.value}
+								onChange={field.handleChange}
+								placeholder="Seleccionar fuente de iluminacion"
+								renderItem={item => item}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+
+				<form.Field name="iluminacion">
+					{field => (
+						<View style={{ gap: 2 }}>
+							<Text style={{ color: "#cbd5e1" }}>Iluminacion</Text>
+							<Select
+								data={ILUMINACION}
+								value={field.state.value}
+								onChange={field.handleChange}
+								placeholder="Seleccionar iluminacion"
+								renderItem={item => item}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+
+				<form.Field name="valorRequerido">
+					{field => {
+						const sugerencias = VALORES_REQUERIDOS_OBJ[field.state.value] ?? []
+						return (
+							<View style={{ gap: 2, position: "relative" }}>
+								<View
+									style={{
+										flexDirection: "row",
+										justifyContent: "space-between",
+										alignItems: "center",
+									}}
+								>
+									<Text style={{ color: "#cbd5e1" }}>Valor requerido</Text>
+									<Pressable onPress={() => {}}>
+										<Text
+											style={{
+												color: theme.orange,
+												textDecorationLine: "underline",
+											}}
+										>
+											ver tablas
+										</Text>
+									</Pressable>
+								</View>
+								<TextInput
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChangeText={val =>
+										field.handleChange(val as ValoresRequeridosType)
+									}
+									keyboardType="numeric"
+									selectTextOnFocus
+									placeholder="Ingresar valor requerido"
+									placeholderTextColor="#64748b"
+									style={{
+										backgroundColor: theme.inputBG,
+										color: "#e2e8f0",
+										padding: 12,
+										borderRadius: 6,
+										borderWidth: 1,
+										borderColor: theme.inputBorder,
+										textAlign: "right",
+									}}
+								/>
+								{sugerencias.length > 0 && (
+									<View
+										style={{
+											backgroundColor: theme.orangeAlpha,
+											borderWidth: 1,
+											borderColor: theme.inputBorder,
+											borderRadius: 6,
+											overflow: "hidden",
+										}}
+									>
+										{sugerencias.map(sug => (
+											<Pressable
+												key={sug}
+												onPress={() =>
+													field.handleChange(sug as ValoresRequeridosType)
+												}
+												style={({ pressed }) => ({
+													padding: 12,
+													borderBottomWidth: 1,
+													borderBottomColor: theme.inputBorder,
+													backgroundColor: pressed
+														? theme.orangeAlpha
+														: "transparent",
+												})}
+											>
+												<Text
+													style={{
+														color: "#e2e8f0",
+														textAlign: "right",
+													}}
+												>
+													{sug}
+												</Text>
+											</Pressable>
+										))}
+									</View>
+								)}
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</View>
+						)
+					}}
+				</form.Field>
+
+				<form.Field name="valor">
+					{field => (
+						<View style={{ gap: 2 }}>
+							<Text style={{ color: "#cbd5e1" }}>Valor medido</Text>
+							<TextInput
+								value={String(field.state.value)}
+								onBlur={field.handleBlur}
+								onChangeText={val => field.handleChange(Number(val) || 0)}
+								keyboardType="numeric"
+								selectTextOnFocus
+								placeholder="3 mts"
+								placeholderTextColor="#64748b"
+								style={{
+									backgroundColor: theme.inputBG,
+									color: "#e2e8f0",
+									padding: 12,
+									borderRadius: 6,
+									borderWidth: 1,
+									borderColor: theme.inputBorder,
+									textAlign: "right",
+								}}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+
+				<form.Field name="observaciones">
+					{field => (
+						<View style={{ gap: 2 }}>
+							<Text style={{ color: "#cbd5e1" }}>Observaciones</Text>
+							<TextArea
+								placeholder={"Observaciones"}
+								value={field.state.value}
+								onChangeText={field.handleChange}
+							/>
+							{!field.state.meta.isValid && (
+								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+									{field.state.meta.errors
+										.map(err =>
+											typeof err === "string"
+												? err
+												: (err?.message ?? String(err))
+										)
+										.join(",")}
+								</Text>
+							)}
+						</View>
+					)}
+				</form.Field>
+
+				<View style={{ gap: 2 }}>
+					<Text style={{ color: "#cbd5e1" }}>
+						Imágenes del Area ({imagenes.length}/4)
+					</Text>
+					{imagenes.map((img, i) => (
+						<View
+							key={i}
+							style={{
+								gap: 8,
+								backgroundColor: theme.inputBG,
+								borderWidth: 1,
+								borderColor: theme.inputBorder,
+								borderRadius: 6,
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<Button
+								iconLeft="trash"
+								variant="danger"
+								iconSize={18}
+								onPress={() =>
+									setImagenes(prev => prev.filter((_, idx) => idx !== i))
+								}
+								style={{
+									position: "absolute",
+									top: 0,
+									right: 0,
+									zIndex: 10,
+									padding: 10,
+									opacity: 0.75,
+								}}
+							/>
+							<Image
+								source={{ uri: img }}
+								style={{ width: 300, aspectRatio: 4 / 3 }}
+							/>
+						</View>
+					))}
+					{imagenes.length < 4 && (
+						<View
+							style={{
+								gap: 8,
+								backgroundColor: theme.inputBG,
+								borderWidth: 1,
+								borderColor: theme.inputBorder,
+								borderRadius: 6,
+							}}
+						>
+							<ImagePicker
+								image={null}
+								setImage={() => {}}
+								multiple
+								images={imagenes}
+								setImages={setImagenes}
+								max={4}
+							/>
+						</View>
+					)}
+				</View>
+			</View>
+
+			<form.Subscribe selector={state => state.isSubmitting}>
+				{isSubmitting => (
+					<Button
+						onPress={form.handleSubmit}
+						text={isSubmitting ? "Guardando..." : "Guardar"}
+						disabled={isSubmitting}
+						style={{ marginTop: 40, width: "90%", marginHorizontal: "auto" }}
+					/>
+				)}
+			</form.Subscribe>
+			{error && (
+				<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
+			)}
+		</ScrollView>
 	)
 }

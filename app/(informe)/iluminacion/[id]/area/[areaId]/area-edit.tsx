@@ -1,38 +1,36 @@
 import { View, Text } from "react-native"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import Button from "@/components/Button"
-import Localizada from "@/components/iluminacion/show/localizada"
-import { theme } from "@/constants/theme"
-import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
-import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
+import { theme } from "@/constants/theme"
+import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
+import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import IluminacionShowAreaEditContent from "@/components/iluminacion/show/area-edit"
 
-export default function LocalizadaIndex() {
-	const { localizadaId } = useGlobalSearchParams<{
-		id: string
-		localizadaId: string
+export default function AreaEdit() {
+	const { areaId } = useGlobalSearchParams<{
+		areaId: string
 	}>()
-	const [localizadaIluminacion, setLocalizadaIluminacion] = useState<
-		LocalizadaIluminacionType | null | undefined
+	const [areaIluminacion, setAreaIluminacion] = useState<
+		AreaIluminacionType | null | undefined
 	>(undefined)
 	useFocusEffect(
 		useCallback(() => {
-			async function loadInformeIluminacionById() {
-				if (!localizadaId) return
+			async function loadLocalizadaIluminacionById() {
+				if (!areaId) return
 				try {
-					const data =
-						await localizadaIluminacionRepository.getById(localizadaId)
-					setLocalizadaIluminacion(data)
+					const data = await areaIluminacionRepository.getById(areaId)
+					setAreaIluminacion(data)
 				} catch (error) {
 					console.error(error)
 				}
 			}
-			loadInformeIluminacionById()
-		}, [localizadaId])
+			loadLocalizadaIluminacionById()
+		}, [areaId])
 	)
 
-	if (localizadaIluminacion === undefined) {
+	if (areaIluminacion === undefined) {
 		return (
 			<View
 				style={{
@@ -47,7 +45,7 @@ export default function LocalizadaIndex() {
 		)
 	}
 
-	if (!localizadaIluminacion)
+	if (!areaIluminacion)
 		return (
 			<View
 				style={{
@@ -57,9 +55,10 @@ export default function LocalizadaIndex() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>No existe el localizada</Text>
+				<Text style={{ color: "#94a3b8" }}>No existe el area {areaId}</Text>
 			</View>
 		)
+
 	return (
 		<ViewWithLogo>
 			<View
@@ -90,10 +89,10 @@ export default function LocalizadaIndex() {
 						color: "#ccc",
 					}}
 				>
-					Localizada
+					Area Editar
 				</Text>
 			</View>
-			<Localizada localizadaIluminacion={localizadaIluminacion} />
+			<IluminacionShowAreaEditContent areaIluminacion={areaIluminacion} />
 		</ViewWithLogo>
 	)
 }

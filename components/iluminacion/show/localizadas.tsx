@@ -1,9 +1,10 @@
 import { theme } from "@/constants/theme"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { router } from "expo-router"
-import { Text, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 import Button from "@/components/Button"
 import { randomUUID } from "expo-crypto"
+import ImageViewer from "@/components/ImageViewer"
 
 export default function LocalizadasContent({
 	localizadasIluminacion,
@@ -54,7 +55,7 @@ function Localizadas({
 						const localizedId = randomUUID()
 						router.push({
 							pathname:
-								"/(informe)/iluminacion/[id]/CRUD/medicion/localizada/[localizadaId]/localizada-nuevo",
+								"/(informe)/iluminacion/[id]/localizada/[localizadaId]/localizada-nuevo",
 							params: { id, localizedId },
 						})
 					}}
@@ -89,11 +90,72 @@ function LocalizadasList({
 	id: string
 }) {
 	return (
-		<View>
-			<Text style={{ color: "#ccc" }}>ID: {id} </Text>
-			<Text style={{ color: "#ccc" }}>
-				{JSON.stringify(localizadasIluminacion, null, 2)}
-			</Text>
+		<View style={{ gap: 8 }}>
+			{localizadasIluminacion.map(localizada => (
+				<LocalizadaMiniCard
+					key={localizada.id}
+					localizadaIluminacion={localizada}
+					id={id}
+				/>
+			))}
 		</View>
+	)
+}
+
+function LocalizadaMiniCard({
+	localizadaIluminacion,
+	id,
+}: {
+	localizadaIluminacion: LocalizadaIluminacionType
+	id: string
+}) {
+	const fontSize =
+		`${localizadaIluminacion.nombre} - ${localizadaIluminacion.tipo}`.length >
+		25
+			? 14
+			: 18
+	return (
+		<Pressable
+			onPress={() => {
+				router.push({
+					pathname: "/(informe)/iluminacion/[id]/localizada/[localizadaId]",
+					params: { id, localizadaId: localizadaIluminacion.id },
+				})
+			}}
+			style={({ pressed }) => ({
+				backgroundColor: pressed ? theme.grayPressed : theme.inputBG,
+				borderWidth: 1,
+				borderColor: theme.inputBorder,
+				borderRadius: 8,
+				padding: 14,
+				opacity: pressed ? 0.8 : 1,
+				position: "relative",
+			})}
+		>
+			<ImageViewer
+				imgSource={{ uri: localizadaIluminacion.imagenes[0] }}
+				style={{
+					height: fontSize === 14 ? "170%" : "160%",
+					aspectRatio: 4 / 3,
+					borderRadius: 4,
+					position: "absolute",
+					top: 0,
+					right: 0,
+				}}
+			/>
+			<View
+				style={{
+					flex: 1,
+					width: "80%",
+				}}
+			>
+				<Text style={{ color: theme.orange, fontWeight: "600", fontSize }}>
+					{localizadaIluminacion.nombre}
+				</Text>
+				<Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 2 }}>
+					VALOR : {localizadaIluminacion.valor} lux
+				</Text>
+			</View>
+		</Pressable>
 	)
 }

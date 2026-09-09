@@ -81,7 +81,7 @@ async function initializeLocalizadasIluminacionTable() {
 
 export const localizadaIluminacionRepository = {
 	async create(
-		input: CreateLocalizadaIluminacionInput
+		input: LocalizadaIluminacionType
 	): Promise<LocalizadaIluminacionType> {
 		await initializeLocalizadasIluminacionTable()
 

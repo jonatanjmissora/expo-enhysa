@@ -6,13 +6,9 @@ import {
 	Image,
 	Pressable,
 } from "react-native"
-import { router, useGlobalSearchParams } from "expo-router"
+import { router } from "expo-router"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
-import {
-	areaIluminacionFormPart1Validator,
-	defaultAreaIluminacionPart1,
-} from "@/src/db/schema/areas-iluminacion"
 import { theme } from "@/constants/theme"
 import Button from "@/components/Button"
 import Ionicons from "@expo/vector-icons/Ionicons"
@@ -26,43 +22,60 @@ import {
 } from "@/constants"
 import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
+import {
+	areaIluminacionFormPart1Validator,
+	AreaIluminacionType,
+} from "@/src/db/schema/areas-iluminacion"
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
-import { randomUUID } from "expo-crypto"
-import Formula from "@/components/iluminacion/puntos/formula"
+import Formula from "../puntos/formula"
 
 const USER_ID = "user-1"
 
-export default function IluminacionAreaNuevoContent() {
-	const { id } = useGlobalSearchParams<{ id: string }>()
+export default function IluminacionShowAreaEditContent({
+	areaIluminacion,
+}: {
+	areaIluminacion: AreaIluminacionType
+}) {
 	const [error, setError] = useState<string | null>(null)
-	const [imagenes, setImagenes] = useState<string[]>([])
+	const [imagenes, setImagenes] = useState<string[]>(
+		areaIluminacion.imagenes ?? []
+	)
 
 	const form = useForm({
-		defaultValues: defaultAreaIluminacionPart1,
+		defaultValues: {
+			nombre: areaIluminacion.nombre,
+			tipo: areaIluminacion.tipo,
+			iluminacionTipo: areaIluminacion.iluminacionTipo,
+			iluminacionFuente: areaIluminacion.iluminacionFuente,
+			iluminacion: areaIluminacion.iluminacion,
+			valorRequerido: areaIluminacion.valorRequerido,
+			observaciones: areaIluminacion.observaciones,
+			largo: areaIluminacion.largo,
+			ancho: areaIluminacion.ancho,
+			alto: areaIluminacion.alto,
+			imagenes: areaIluminacion.imagenes,
+		},
 		validators: { onSubmit: areaIluminacionFormPart1Validator },
 		onSubmit: async ({ value }) => {
 			setError(null)
-			const areaId = randomUUID()
 			try {
-				await areaIluminacionRepository.create({
+				await areaIluminacionRepository.update(areaIluminacion.id, {
 					...value,
-					id: areaId,
-					reportId: id,
 					imagenes,
-					puntos: [],
-					timestamps: [],
 					userId: USER_ID,
 				})
 				router.push({
 					pathname:
-						"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/puntos/puntos-nuevo",
+						"/(informe)/iluminacion/[id]/area/[areaId]/puntos/puntos-edit",
 					params: {
-						id,
-						areaId,
+						id: areaIluminacion.reportId,
+						areaId: areaIluminacion.id,
 					},
 				})
 			} catch (e) {
-				setError(e instanceof Error ? e.message : "No se pudo crear el area")
+				setError(
+					e instanceof Error ? e.message : "No se pudo crear la localizada"
+				)
 			}
 		},
 		onSubmitInvalid: () => {
