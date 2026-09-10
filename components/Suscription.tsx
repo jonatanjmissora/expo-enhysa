@@ -59,7 +59,7 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 							style={{ color: theme.orange, textDecorationLine: "underline" }}
 							onPress={() =>
 								router.push({
-									pathname: "/teoria/politicas-de-privacidad",
+									pathname: "/herramientas/politicas-de-privacidad",
 									params: { from: from ?? "suscripcion" },
 								})
 							}
@@ -73,7 +73,7 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 							style={{ color: theme.orange, textDecorationLine: "underline" }}
 							onPress={() =>
 								router.push({
-									pathname: "/teoria/terminos-de-uso",
+									pathname: "/herramientas/terminos-de-uso",
 									params: { from: from ?? "suscripcion" },
 								})
 							}

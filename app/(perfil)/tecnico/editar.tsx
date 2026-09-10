@@ -209,7 +209,11 @@ function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 						borderRadius: 6,
 					}}
 				>
-					<ImagePicker image={matriculaImg} setImage={setMatriculaImg} />
+					<ImagePicker
+						image={matriculaImg}
+						setImage={setMatriculaImg}
+						allowsEditing={false}
+					/>
 				</View>
 			</View>
 

@@ -9,6 +9,8 @@ export default function ImagePicker({
 	images,
 	setImages,
 	max,
+	allowsEditing = true,
+	aspect = [4, 3],
 }: {
 	image: string | null
 	setImage: (value: string | null) => void
@@ -16,6 +18,8 @@ export default function ImagePicker({
 	images?: string[]
 	setImages?: (value: string[]) => void
 	max?: number
+	allowsEditing?: boolean
+	aspect?: [number, number]
 }) {
 	const remaining = multiple && images && max ? max - images.length : undefined
 
@@ -35,7 +39,9 @@ export default function ImagePicker({
 			mediaTypes: ["images"],
 			...(multiple
 				? { allowsMultipleSelection: true }
-				: { allowsEditing: true, aspect: [4, 3] }),
+				: allowsEditing
+					? { allowsEditing: true, aspect }
+					: { allowsEditing: false }),
 			quality: 1,
 		})
 
@@ -62,11 +68,13 @@ export default function ImagePicker({
 			return
 		}
 
-		const result = await ExpoImagePicker.launchCameraAsync({
-			allowsEditing: true,
-			aspect: [4, 3],
-			quality: 1,
-		})
+		const result = await ExpoImagePicker.launchCameraAsync(
+			multiple
+				? { quality: 1 }
+				: allowsEditing
+					? { allowsEditing: true, aspect, quality: 1 }
+					: { allowsEditing: false, quality: 1 }
+		)
 
 		if (!result.canceled) {
 			if (multiple && setImages && images) {
@@ -90,7 +98,7 @@ export default function ImagePicker({
 				{remaining !== undefined && remaining <= 0 ? null : (
 					<View
 						style={{
-							flex: 1,
+							alignSelf: "stretch",
 							justifyContent: "center",
 							alignItems: "center",
 							flexDirection: "row",
@@ -157,13 +165,14 @@ export default function ImagePicker({
 					/>
 					<Image
 						source={{ uri: image }}
-						style={{ width: 300, aspectRatio: 4 / 3 }}
+						resizeMode="contain"
+						style={{ width: 300, height: 240 }}
 					/>
 				</View>
 			) : (
 				<View
 					style={{
-						flex: 1,
+						alignSelf: "stretch",
 						justifyContent: "center",
 						alignItems: "center",
 						flexDirection: "row",

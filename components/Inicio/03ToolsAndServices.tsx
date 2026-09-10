@@ -4,6 +4,7 @@ import CotizacionImage from "../../assets/images/cotizacion.webp"
 import EquiposImage from "../../assets/images/equipos.webp"
 import Button from "../Button"
 import { theme } from "@/constants/theme"
+import { router } from "expo-router"
 
 export default function ToolsAndServices({
 	scrollTo,
@@ -74,7 +75,7 @@ export default function ToolsAndServices({
 						variant="primary"
 						size={"small"}
 						text="Generar"
-						onPress={() => scrollTo("hero")}
+						onPress={() => router.push("/herramientas/presupuesto")}
 						style={{ minWidth: 150 }}
 					/>
 				</View>

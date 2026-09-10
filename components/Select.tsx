@@ -103,7 +103,7 @@ export default function Select<T extends SelectItem>({
 								<Pressable
 									key={id}
 									onPress={() => {
-										onChange(id)
+										onChange(id as SelectedId<T>)
 										setVisible(false)
 									}}
 									style={{

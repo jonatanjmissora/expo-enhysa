@@ -1,6 +1,10 @@
 import { useRef, useState } from "react"
 import { captureRef } from "react-native-view-shot"
-import { Gesture, GestureDetector } from "react-native-gesture-handler"
+import {
+	Gesture,
+	GestureDetector,
+	GestureHandlerRootView,
+} from "react-native-gesture-handler"
 import { useSharedValue } from "react-native-reanimated"
 import { LinearGradient } from "expo-linear-gradient"
 import { Modal, Pressable, Text, View } from "react-native"
@@ -38,27 +42,23 @@ export default function FirmaBox({ image, setImage }: SignaturePadProps) {
 				animationType="fade"
 				onDismiss={() => setShowFirmaBox(false)}
 			>
-				<LinearGradient
-					colors={[theme.headerBG, theme.tabBG]}
-					style={{
-						flex: 1,
-						position: "absolute",
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						zIndex: -1,
-						alignItems: "center",
-						justifyContent: "center",
-						padding: 16,
-					}}
-				>
-					<FirmaBoxContent
-						image={image}
-						setImage={setImage}
-						setShowFirmaBox={setShowFirmaBox}
-					/>
-				</LinearGradient>
+				<GestureHandlerRootView style={{ flex: 1 }}>
+					<LinearGradient
+						colors={[theme.headerBG, theme.tabBG]}
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+							padding: 16,
+						}}
+					>
+						<FirmaBoxContent
+							image={image}
+							setImage={setImage}
+							setShowFirmaBox={setShowFirmaBox}
+						/>
+					</LinearGradient>
+				</GestureHandlerRootView>
 			</Modal>
 		</View>
 	)
@@ -78,10 +78,11 @@ function FirmaBoxContent({
 	const gesture = Gesture.Pan()
 		.onBegin(e => {
 			currentPath.value = [{ x: e.x, y: e.y }]
+			setPaths(prev => [...prev, { x: e.x, y: e.y }])
 		})
 		.onUpdate(e => {
 			currentPath.value = [...currentPath.value, { x: e.x, y: e.y }]
-			setPaths([...paths, { x: e.x, y: e.y }])
+			setPaths(prev => [...prev, { x: e.x, y: e.y }])
 		})
 		.onEnd(() => {
 			currentPath.value = []
@@ -95,14 +96,20 @@ function FirmaBoxContent({
 
 	const save = async () => {
 		try {
-			const uri = await captureRef(viewRef, {
+			const tmpUri = await captureRef(viewRef, {
 				format: "png",
 				quality: 1,
 			})
 
-			const file = new File(Paths.document, `signature-${Date.now()}.png`)
-			await file.write(uri)
-			setImage(file.uri)
+			try {
+				const file = new File(Paths.document, `signature-${Date.now()}.png`)
+				if (file.exists) file.delete()
+				await new File(tmpUri).copy(file)
+				setImage(file.uri)
+			} catch {
+				setImage(tmpUri)
+			}
+
 			setShowFirmaBox(false)
 		} catch (e) {
 			console.error("Error saving signature:", e)

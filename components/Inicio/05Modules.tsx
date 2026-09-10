@@ -117,7 +117,7 @@ export default function Modules({
 							key={item.title}
 							onPress={() =>
 								router.push({
-									pathname: "/teoria",
+									pathname: "/herramientas",
 									params: { t: item.t, from: "landing" },
 								})
 							}
