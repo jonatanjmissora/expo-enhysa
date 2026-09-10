@@ -9,14 +9,8 @@ import {
 } from "@/src/repositories/instrumento.repository"
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
 import { useCallback, useState } from "react"
-import {
-	Image,
-	Pressable,
-	ScrollView,
-	Text,
-	TextInput,
-	View,
-} from "react-native"
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
+import ImageViewer from "@/components/ImageViewer"
 import { useForm } from "@tanstack/react-form"
 import { instrumentoFormValidator } from "@/src/db/schema/instrumentos"
 import DateTimePicker from "@react-native-community/datetimepicker"
@@ -225,10 +219,11 @@ function InstrumentoEditForm({
 								value={field.state.value}
 								mode="date"
 								display="default"
-								onChange={(_, date) => {
+								onValueChange={(_, date) => {
 									setShowDatePicker(false)
 									if (date) field.handleChange(date)
 								}}
+								onDismiss={() => setShowDatePicker(false)}
 							/>
 						)}
 						{!field.state.meta.isValid && (
@@ -281,8 +276,8 @@ function InstrumentoEditForm({
 								opacity: 0.75,
 							}}
 						/>
-						<Image
-							source={{ uri: img }}
+						<ImageViewer
+							imgSource={{ uri: img }}
 							style={{ width: 300, aspectRatio: 4 / 3 }}
 						/>
 					</View>
@@ -342,8 +337,8 @@ function InstrumentoEditForm({
 								opacity: 0.75,
 							}}
 						/>
-						<Image
-							source={{ uri: img }}
+						<ImageViewer
+							imgSource={{ uri: img }}
 							style={{ width: 300, aspectRatio: 4 / 3 }}
 						/>
 					</View>

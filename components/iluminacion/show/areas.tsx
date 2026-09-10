@@ -44,7 +44,8 @@ export default function AreasContent({
 					onPress={() => {
 						const areaId = randomUUID()
 						router.push({
-							pathname: "/(informe)/iluminacion/[id]/area/[areaId]/area-nuevo",
+							pathname:
+								"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/area-nuevo",
 							params: { id, areaId },
 						})
 					}}
@@ -114,6 +115,7 @@ function AreaMiniCard({
 		>
 			<ImageViewer
 				imgSource={{ uri: areaIluminacion.imagenes[0] }}
+				contentFit="cover"
 				style={{
 					height: fontSize === 14 ? "170%" : "160%",
 					aspectRatio: 4 / 3,

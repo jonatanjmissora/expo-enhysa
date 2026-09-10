@@ -71,6 +71,7 @@ export default function InformeCard({
 				>
 					<ImageViewer
 						imgSource={{ uri: empresa.logo }}
+						contentFit="cover"
 						style={{
 							width: "80%",
 							aspectRatio: 4 / 3,

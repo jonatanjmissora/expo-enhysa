@@ -12,7 +12,12 @@ import { iluminacionGeneralFormValidator } from "@/src/db/schema/informe-ilumina
 import { router } from "expo-router"
 import { theme } from "@/constants/theme"
 import Select from "@/components/Select"
-import { ESTADO, HUMEDAD, TEMPERATURA } from "@/constants"
+import {
+	ESTADO,
+	HUMEDAD,
+	TEMPERATURA,
+	updateInformeIluminacionTitle,
+} from "@/constants"
 import Button from "@/components/Button"
 import InformeHeaderContent from "@/components/InformeHeader"
 
@@ -55,12 +60,21 @@ export default function IluminacionGeneralEditFormContent({
 					return
 				}
 
+				let titleStr = informe.title
+				if (informe.empresaId !== value.empresaId || informe.finishedAt) {
+					const empresa = empresas.find(e => e.id === value.empresaId)
+					titleStr = !empresa
+						? ""
+						: updateInformeIluminacionTitle(informe, empresa)
+				}
+
 				await informeIluminacionRepository.update(informe.id, {
 					empresaId: value.empresaId,
 					instrumentoId: value.instrumentoId,
 					estado: value.estado,
 					humedad: value.humedad,
 					temperatura: value.temperatura,
+					title: titleStr,
 				})
 
 				router.back()

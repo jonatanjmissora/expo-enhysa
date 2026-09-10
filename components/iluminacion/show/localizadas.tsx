@@ -55,7 +55,7 @@ function Localizadas({
 						const localizedId = randomUUID()
 						router.push({
 							pathname:
-								"/(informe)/iluminacion/[id]/localizada/[localizadaId]/localizada-nuevo",
+								"/(informe)/iluminacion/[id]/CRUD/medicion/localizada/[localizadaId]/localizada-nuevo",
 							params: { id, localizedId },
 						})
 					}}
@@ -134,6 +134,7 @@ function LocalizadaMiniCard({
 		>
 			<ImageViewer
 				imgSource={{ uri: localizadaIluminacion.imagenes[0] }}
+				contentFit="cover"
 				style={{
 					height: fontSize === 14 ? "170%" : "160%",
 					aspectRatio: 4 / 3,

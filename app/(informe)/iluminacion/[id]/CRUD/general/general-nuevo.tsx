@@ -46,77 +46,7 @@ export default function IluminacionGeneralNuevo() {
 		}, [load])
 	)
 
-	if (loading) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					gap: 20,
-				}}
-			>
-				{/* <Text style={{ color: "#cbd5e1" }}>Cargando...</Text> */}
-			</View>
-		)
-	}
-
-	if (!tecnico) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					gap: 20,
-				}}
-			>
-				<Text style={{ color: "#cbd5e1" }}>No tenes un técnico cargado</Text>
-				<Button
-					text="Crear técnico"
-					onPress={() => router.push("/tecnico/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	if (empresas.length === 0) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					gap: 20,
-				}}
-			>
-				<Text style={{ color: "#cbd5e1" }}>No tenes empresas cargadas</Text>
-				<Button
-					text="Crear empresa"
-					onPress={() => router.push("/empresa/nuevo")}
-				/>
-			</View>
-		)
-	}
-
-	if (instrumentos.length === 0) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					gap: 20,
-				}}
-			>
-				<Text style={{ color: "#cbd5e1" }}>No tenes instrumentos cargados</Text>
-				<Button
-					text="Crear instrumento"
-					onPress={() => router.push("/instrumento/nuevo")}
-				/>
-			</View>
-		)
-	}
+	if (loading) return <Loading />
 
 	return (
 		<ViewWithLogo>
@@ -132,12 +62,100 @@ export default function IluminacionGeneralNuevo() {
 				}}
 				onPress={() => router.back()}
 			/>
-			<IluminacionSteps />
-			<IluminacionGeneralFormContent
-				tecnico={tecnico}
-				empresas={empresas}
-				instrumentos={instrumentos}
-			/>
+			{!tecnico ? (
+				<NoTecnico />
+			) : empresas.length === 0 ? (
+				<EmpresasEmpty />
+			) : instrumentos.length === 0 ? (
+				<InstrumentosEmpty />
+			) : (
+				<>
+					<IluminacionSteps />
+					<IluminacionGeneralFormContent
+						tecnico={tecnico}
+						empresas={empresas}
+						instrumentos={instrumentos}
+					/>
+				</>
+			)}
 		</ViewWithLogo>
+	)
+}
+
+function InstrumentosEmpty() {
+	return (
+		<View
+			style={{
+				flex: 1,
+				alignItems: "center",
+				justifyContent: "center",
+				gap: 20,
+			}}
+		>
+			<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
+				No tenes instrumentos cargados
+			</Text>
+			<Button
+				text="Crear instrumento"
+				onPress={() => router.push("/instrumento/nuevo")}
+			/>
+		</View>
+	)
+}
+
+function EmpresasEmpty() {
+	return (
+		<View
+			style={{
+				flex: 1,
+				alignItems: "center",
+				justifyContent: "center",
+				gap: 20,
+			}}
+		>
+			<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
+				No tenes empresas cargadas
+			</Text>
+			<Button
+				text="Crear empresa"
+				onPress={() => router.push("/empresa/nuevo")}
+			/>
+		</View>
+	)
+}
+
+function NoTecnico() {
+	return (
+		<View
+			style={{
+				flex: 1,
+				alignItems: "center",
+				justifyContent: "center",
+				gap: 20,
+			}}
+		>
+			<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
+				No tenes un técnico cargado
+			</Text>
+			<Button
+				text="Crear técnico"
+				onPress={() => router.push("/tecnico/nuevo")}
+			/>
+		</View>
+	)
+}
+
+function Loading() {
+	return (
+		<View
+			style={{
+				flex: 1,
+				alignItems: "center",
+				justifyContent: "center",
+				gap: 20,
+			}}
+		>
+			{/* <Text style={{ color: "#cbd5e1" }}>Cargando...</Text> */}
+		</View>
 	)
 }

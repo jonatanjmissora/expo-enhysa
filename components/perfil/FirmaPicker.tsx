@@ -1,5 +1,6 @@
 import Button from "@/components/Button"
-import { Alert, Image, View } from "react-native"
+import { Alert, View } from "react-native"
+import ImageViewer from "@/components/ImageViewer"
 import * as ExpoImagePicker from "expo-image-picker"
 import FirmaBox from "./FirmaBox"
 
@@ -45,7 +46,7 @@ export default function FirmaPicker({
 			}}
 		>
 			{image ? (
-				<View style={{ position: "relative" }}>
+				<View style={{ position: "relative", backgroundColor: "#aaa" }}>
 					<Button
 						iconLeft="trash"
 						variant="danger"
@@ -60,8 +61,8 @@ export default function FirmaPicker({
 							opacity: 0.75,
 						}}
 					/>
-					<Image
-						source={{ uri: image }}
+					<ImageViewer
+						imgSource={{ uri: image }}
 						style={{ width: 300, aspectRatio: 4 / 3 }}
 					/>
 				</View>

@@ -1,13 +1,7 @@
 import { useRef, useState } from "react"
 import { captureRef } from "react-native-view-shot"
-import {
-	Gesture,
-	GestureDetector,
-	GestureHandlerRootView,
-} from "react-native-gesture-handler"
-import { useSharedValue } from "react-native-reanimated"
 import { LinearGradient } from "expo-linear-gradient"
-import { Modal, Pressable, Text, View } from "react-native"
+import { Modal, PanResponder, Pressable, Text, View } from "react-native"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import { File, Paths } from "expo-file-system"
@@ -42,23 +36,21 @@ export default function FirmaBox({ image, setImage }: SignaturePadProps) {
 				animationType="fade"
 				onDismiss={() => setShowFirmaBox(false)}
 			>
-				<GestureHandlerRootView style={{ flex: 1 }}>
-					<LinearGradient
-						colors={[theme.headerBG, theme.tabBG]}
-						style={{
-							flex: 1,
-							alignItems: "center",
-							justifyContent: "center",
-							padding: 16,
-						}}
-					>
-						<FirmaBoxContent
-							image={image}
-							setImage={setImage}
-							setShowFirmaBox={setShowFirmaBox}
-						/>
-					</LinearGradient>
-				</GestureHandlerRootView>
+				<LinearGradient
+					colors={[theme.headerBG, theme.tabBG]}
+					style={{
+						flex: 1,
+						alignItems: "center",
+						justifyContent: "center",
+						padding: 16,
+					}}
+				>
+					<FirmaBoxContent
+						image={image}
+						setImage={setImage}
+						setShowFirmaBox={setShowFirmaBox}
+					/>
+				</LinearGradient>
 			</Modal>
 		</View>
 	)
@@ -73,24 +65,24 @@ function FirmaBoxContent({
 }: SignaturePadProps & { setShowFirmaBox: (value: boolean) => void }) {
 	const viewRef = useRef<View>(null)
 	const [paths, setPaths] = useState<Point[]>([])
-	const currentPath = useSharedValue<Point[]>([])
 
-	const gesture = Gesture.Pan()
-		.onBegin(e => {
-			currentPath.value = [{ x: e.x, y: e.y }]
-			setPaths(prev => [...prev, { x: e.x, y: e.y }])
+	const panResponder = useRef(
+		PanResponder.create({
+			onStartShouldSetPanResponder: () => true,
+			onMoveShouldSetPanResponder: () => true,
+			onPanResponderGrant: e => {
+				const { locationX, locationY } = e.nativeEvent
+				setPaths(prev => [...prev, { x: locationX, y: locationY }])
+			},
+			onPanResponderMove: e => {
+				const { locationX, locationY } = e.nativeEvent
+				setPaths(prev => [...prev, { x: locationX, y: locationY }])
+			},
 		})
-		.onUpdate(e => {
-			currentPath.value = [...currentPath.value, { x: e.x, y: e.y }]
-			setPaths(prev => [...prev, { x: e.x, y: e.y }])
-		})
-		.onEnd(() => {
-			currentPath.value = []
-		})
+	).current
 
 	const clear = () => {
 		setPaths([])
-		currentPath.value = []
 		setImage(null)
 	}
 
@@ -143,42 +135,67 @@ function FirmaBoxContent({
 					position: "relative",
 				}}
 			>
-				<GestureDetector gesture={gesture}>
-					<View ref={viewRef} style={{ flex: 1, position: "relative" }}>
-						{paths.map((point, i) => (
+				<View
+					ref={viewRef}
+					{...panResponder.panHandlers}
+					style={{ flex: 1, position: "relative" }}
+				>
+					{paths.map((point, i) => {
+						if (i === 0) return null
+						const prev = paths[i - 1]
+						const dx = point.x - prev.x
+						const dy = point.y - prev.y
+						const length = Math.sqrt(dx * dx + dy * dy)
+						if (length === 0) return null
+						const angle = Math.atan2(dy, dx) * (180 / Math.PI)
+						const midX = (prev.x + point.x) / 2
+						const midY = (prev.y + point.y) / 2
+						return (
 							<View
 								key={i}
 								style={{
 									position: "absolute",
-									left: point.x - 1.5,
-									top: point.y - 1.5,
-									width: 3,
+									left: midX - length / 2,
+									top: midY - 1.5,
+									width: length,
 									height: 3,
 									borderRadius: 1.5,
 									backgroundColor: "#000000",
+									transform: [{ rotate: `${angle}deg` }],
 								}}
 							/>
-						))}
-						{!image && paths.length === 0 && (
-							<View
-								pointerEvents="none"
-								style={{
-									position: "absolute",
-									top: 0,
-									left: 0,
-									right: 0,
-									bottom: 0,
-									alignItems: "center",
-									justifyContent: "center",
-								}}
-							>
-								<Text style={{ color: "#94a3b8", fontSize: 16 }}>
-									Firmá aquí
-								</Text>
-							</View>
-						)}
-					</View>
-				</GestureDetector>
+						)
+					})}
+					{paths.length === 1 && (
+						<View
+							style={{
+								position: "absolute",
+								left: paths[0].x - 1.5,
+								top: paths[0].y - 1.5,
+								width: 3,
+								height: 3,
+								borderRadius: 1.5,
+								backgroundColor: "#000000",
+							}}
+						/>
+					)}
+					{!image && paths.length === 0 && (
+						<View
+							pointerEvents="none"
+							style={{
+								position: "absolute",
+								top: 0,
+								left: 0,
+								right: 0,
+								bottom: 0,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Text style={{ color: "#94a3b8", fontSize: 16 }}>Firmá aquí</Text>
+						</View>
+					)}
+				</View>
 			</View>
 
 			<View style={{ flexDirection: "row", gap: 12 }}>

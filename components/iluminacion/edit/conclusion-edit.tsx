@@ -56,16 +56,20 @@ export default function IluminacionConclusionEditContent({
 				return
 			}
 
+			const titleStr = !informeIluminacion.finishedAt
+				? informeIluminacion.title
+				: informeIluminacion.title.split(" - ").slice(1).join(" - ")
+
 			const finishedAtDate = new Date().toISOString()
 			const finishedAtDateToLocale = new Date(
 				finishedAtDate
 			).toLocaleDateString("es-AR")
-			const titleStr = `${finishedAtDateToLocale} - ${informeIluminacion.title}`
+
 			try {
 				await informeIluminacionRepository.update(informeIluminacion.id, {
 					...value,
 					finishedAt: finishedAtDate,
-					title: titleStr,
+					title: `${finishedAtDateToLocale} - ${titleStr}`,
 					observacion: value.observacion,
 					conclusion: value.conclusion,
 					recomendacion: value.recomendacion,

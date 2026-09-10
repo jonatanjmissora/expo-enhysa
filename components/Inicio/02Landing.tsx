@@ -1,7 +1,7 @@
-import { Image } from "expo-image"
 import { useFocusEffect } from "expo-router"
 import { useState } from "react"
 import { Text, useWindowDimensions, View } from "react-native"
+import ImageViewer from "@/components/ImageViewer"
 
 import Animation1 from "../../assets/images/animation1.webp"
 import Animation2 from "../../assets/images/animation2.webp"
@@ -181,8 +181,8 @@ function PhoneMockup() {
 				alignSelf: "center",
 			}}
 		>
-			<Image
-				source={images[current]}
+			<ImageViewer
+				imgSource={images[current]}
 				style={{ width: "100%", height: "100%" }}
 				contentFit="contain"
 			/>

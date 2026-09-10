@@ -1,11 +1,5 @@
-import {
-	View,
-	Text,
-	ScrollView,
-	TextInput,
-	Image,
-	Pressable,
-} from "react-native"
+import { View, Text, ScrollView, TextInput, Pressable } from "react-native"
+import ImageViewer from "@/components/ImageViewer"
 import { router, useGlobalSearchParams } from "expo-router"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
@@ -543,8 +537,8 @@ export default function IluminacionAreaNuevoContent() {
 									opacity: 0.75,
 								}}
 							/>
-							<Image
-								source={{ uri: img }}
+							<ImageViewer
+								imgSource={{ uri: img }}
 								style={{ width: 300, aspectRatio: 4 / 3 }}
 							/>
 						</View>

@@ -61,10 +61,10 @@ export default function Tecnico() {
 					flex: 1,
 					alignItems: "center",
 					justifyContent: "center",
-					gap: 12,
+					gap: 22,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>
+				<Text style={{ color: "#94a3b8", fontSize: 18, fontStyle: "italic" }}>
 					Aún no tenés un técnico cargado.
 				</Text>
 				<Button
@@ -153,10 +153,19 @@ function TecnicoItem({
 					Firma Digital
 				</Text>
 				{tecnico?.firmaImg ? (
-					<ImageViewer
-						imgSource={{ uri: tecnico?.firmaImg }}
-						style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
-					/>
+					<View
+						style={{
+							backgroundColor: "#eee",
+							width: 200,
+							aspectRatio: 4 / 3,
+							borderRadius: 4,
+						}}
+					>
+						<ImageViewer
+							imgSource={{ uri: tecnico?.firmaImg }}
+							style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
+						/>
+					</View>
 				) : (
 					<PictureNotFound />
 				)}

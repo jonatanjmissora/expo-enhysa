@@ -48,11 +48,11 @@ export default function Empresas() {
 					flex: 1,
 					alignItems: "center",
 					justifyContent: "center",
-					gap: 12,
 					padding: 16,
+					gap: 22,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>
+				<Text style={{ color: "#94a3b8", fontSize: 18, fontStyle: "italic" }}>
 					Aún no tenés empresas cargadas.
 				</Text>
 				<Button

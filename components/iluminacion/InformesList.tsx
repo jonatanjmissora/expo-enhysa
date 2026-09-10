@@ -61,7 +61,7 @@ export default function InformesList({ qnt }: { qnt: number }) {
 					marginVertical: 40,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>
+				<Text style={{ color: "#94a3b8", fontSize: 18, fontStyle: "italic" }}>
 					Aún no tenés informes cargados.
 				</Text>
 			</View>

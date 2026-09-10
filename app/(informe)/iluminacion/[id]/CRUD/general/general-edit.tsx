@@ -67,7 +67,9 @@ export default function IluminacionGeneralEditContent() {
 	if (!tecnico) {
 		return (
 			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes un técnico cargado</Text>
+				<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
+					No tenes un técnico cargado
+				</Text>
 				<Button
 					text="Crear técnico"
 					onPress={() => router.push("/tecnico/nuevo")}
@@ -79,7 +81,9 @@ export default function IluminacionGeneralEditContent() {
 	if (empresas.length === 0) {
 		return (
 			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes empresas cargadas</Text>
+				<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
+					No tenes empresas cargadas
+				</Text>
 				<Button
 					text="Crear empresa"
 					onPress={() => router.push("/empresa/nuevo")}
@@ -91,7 +95,9 @@ export default function IluminacionGeneralEditContent() {
 	if (instrumentos.length === 0) {
 		return (
 			<View style={{}}>
-				<Text style={{ color: "#cbd5e1" }}>No tenes instrumentos cargados</Text>
+				<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
+					No tenes instrumentos cargados
+				</Text>
 				<Button
 					text="Crear instrumento"
 					onPress={() => router.push("/instrumento/nuevo")}

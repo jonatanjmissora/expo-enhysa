@@ -1,4 +1,5 @@
-import { Alert, Image, View } from "react-native"
+import { Alert, View } from "react-native"
+import ImageViewer from "@/components/ImageViewer"
 import * as ExpoImagePicker from "expo-image-picker"
 import Button from "./Button"
 
@@ -10,7 +11,7 @@ export default function ImagePicker({
 	setImages,
 	max,
 	allowsEditing = true,
-	aspect = [4, 3],
+	aspect,
 }: {
 	image: string | null
 	setImage: (value: string | null) => void
@@ -37,18 +38,15 @@ export default function ImagePicker({
 
 		const result = await ExpoImagePicker.launchImageLibraryAsync({
 			mediaTypes: ["images"],
-			...(multiple
-				? { allowsMultipleSelection: true }
-				: allowsEditing
-					? { allowsEditing: true, aspect }
-					: { allowsEditing: false }),
+			...(allowsEditing
+				? { allowsEditing: true, ...(aspect ? { aspect } : {}) }
+				: { allowsEditing: false }),
 			quality: 1,
 		})
 
 		if (!result.canceled) {
 			if (multiple && setImages && images) {
-				const newUris = result.assets.map(a => a.uri)
-				const combined = [...images, ...newUris].slice(0, max ?? 4)
+				const combined = [...images, result.assets[0].uri].slice(0, max ?? 4)
 				setImages(combined)
 			} else {
 				setImage(result.assets[0].uri)
@@ -69,11 +67,13 @@ export default function ImagePicker({
 		}
 
 		const result = await ExpoImagePicker.launchCameraAsync(
-			multiple
-				? { quality: 1 }
-				: allowsEditing
-					? { allowsEditing: true, aspect, quality: 1 }
-					: { allowsEditing: false, quality: 1 }
+			allowsEditing
+				? {
+						allowsEditing: true,
+						...(aspect ? { aspect } : {}),
+						quality: 1,
+					}
+				: { allowsEditing: false, quality: 1 }
 		)
 
 		if (!result.canceled) {
@@ -163,9 +163,9 @@ export default function ImagePicker({
 							opacity: 0.75,
 						}}
 					/>
-					<Image
-						source={{ uri: image }}
-						resizeMode="contain"
+					<ImageViewer
+						imgSource={{ uri: image }}
+						contentFit="contain"
 						style={{ width: 300, height: 240 }}
 					/>
 				</View>
