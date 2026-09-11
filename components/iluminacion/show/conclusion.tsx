@@ -1,5 +1,5 @@
 import { router } from "expo-router"
-import { InformeIluminacionType } from "@/src/repositories/informe-iluminacion.repository"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { Text, View } from "react-native"
 import Button from "@/components/Button"
 import TextArea from "@/components/TextArea"
@@ -27,7 +27,7 @@ const FIELDS = [
 export default function ConclusionContent({
 	informe,
 }: {
-	informe: InformeIluminacionType
+	informe: InformesIluminacionType
 }) {
 	return (
 		<>
@@ -67,7 +67,7 @@ export default function ConclusionContent({
 	)
 }
 
-function InformeHeader({ informe }: { informe: InformeIluminacionType }) {
+function InformeHeader({ informe }: { informe: InformesIluminacionType }) {
 	return (
 		<View
 			style={{
@@ -82,7 +82,7 @@ function InformeHeader({ informe }: { informe: InformeIluminacionType }) {
 	)
 }
 
-function MenuInforme({ informe }: { informe: InformeIluminacionType }) {
+function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 	const [showMenu, setShowMenu] = useState(false)
 
 	return (

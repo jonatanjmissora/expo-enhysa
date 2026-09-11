@@ -3,9 +3,9 @@ import PDFContent from "@/components/iluminacion/show/pdf"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 import { ScrollView, View, Text } from "react-native"
@@ -13,14 +13,14 @@ import { ScrollView, View, Text } from "react-native"
 export default function PDF() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [informe, setInforme] = useState<
-		InformeIluminacionType | null | undefined
+		InformesIluminacionType | null | undefined
 	>(undefined)
 	useFocusEffect(
 		useCallback(() => {
 			async function loadInformeIluminacionById() {
 				if (!id) return
 				try {
-					const data = await informeIluminacionRepository.getById(id)
+					const data = await informesIluminacionRepository.getById(id)
 					setInforme(data)
 				} catch (error) {
 					console.error(error)

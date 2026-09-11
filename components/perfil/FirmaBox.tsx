@@ -1,10 +1,20 @@
 import { useRef, useState } from "react"
 import { captureRef } from "react-native-view-shot"
 import { LinearGradient } from "expo-linear-gradient"
-import { Modal, PanResponder, Pressable, Text, View } from "react-native"
+import {
+	Modal,
+	PanResponder,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native"
+import Svg, { Polyline } from "react-native-svg"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import { File, Paths } from "expo-file-system"
+
+type Point = { x: number; y: number }
 
 type SignaturePadProps = {
 	image: string | null
@@ -56,39 +66,56 @@ export default function FirmaBox({ image, setImage }: SignaturePadProps) {
 	)
 }
 
-type Point = { x: number; y: number }
-
 function FirmaBoxContent({
 	image,
 	setImage,
 	setShowFirmaBox,
 }: SignaturePadProps & { setShowFirmaBox: (value: boolean) => void }) {
-	const viewRef = useRef<View>(null)
-	const [paths, setPaths] = useState<Point[]>([])
+	const boardRef = useRef<View>(null)
+	const offset = useRef({ x: 0, y: 0 })
+	const [strokes, setStrokes] = useState<Point[][]>([])
+
+	const handleLayout = () => {
+		boardRef.current?.measureInWindow((x, y) => {
+			offset.current = { x, y }
+		})
+	}
 
 	const panResponder = useRef(
 		PanResponder.create({
 			onStartShouldSetPanResponder: () => true,
 			onMoveShouldSetPanResponder: () => true,
-			onPanResponderGrant: e => {
-				const { locationX, locationY } = e.nativeEvent
-				setPaths(prev => [...prev, { x: locationX, y: locationY }])
+			onPanResponderTerminationRequest: () => false,
+			onPanResponderGrant: (_e, gestureState) => {
+				const point = {
+					x: gestureState.x0 - offset.current.x,
+					y: gestureState.y0 - offset.current.y,
+				}
+				setStrokes(prev => [...prev, [point]])
 			},
-			onPanResponderMove: e => {
-				const { locationX, locationY } = e.nativeEvent
-				setPaths(prev => [...prev, { x: locationX, y: locationY }])
+			onPanResponderMove: (_e, gestureState) => {
+				const point = {
+					x: gestureState.moveX - offset.current.x,
+					y: gestureState.moveY - offset.current.y,
+				}
+				setStrokes(prev => {
+					if (prev.length === 0) return prev
+					const last = prev[prev.length - 1]
+					const updated = [...last, point]
+					return [...prev.slice(0, -1), updated]
+				})
 			},
 		})
 	).current
 
 	const clear = () => {
-		setPaths([])
+		setStrokes([])
 		setImage(null)
 	}
 
 	const save = async () => {
 		try {
-			const tmpUri = await captureRef(viewRef, {
+			const tmpUri = await captureRef(boardRef, {
 				format: "png",
 				quality: 1,
 			})
@@ -125,6 +152,9 @@ function FirmaBoxContent({
 			</Pressable>
 
 			<View
+				ref={boardRef}
+				onLayout={handleLayout}
+				{...panResponder.panHandlers}
 				style={{
 					height: 200,
 					borderWidth: 1,
@@ -132,70 +162,37 @@ function FirmaBoxContent({
 					borderRadius: 12,
 					backgroundColor: "#ffffff",
 					overflow: "hidden",
-					position: "relative",
 				}}
 			>
-				<View
-					ref={viewRef}
-					{...panResponder.panHandlers}
-					style={{ flex: 1, position: "relative" }}
-				>
-					{paths.map((point, i) => {
-						if (i === 0) return null
-						const prev = paths[i - 1]
-						const dx = point.x - prev.x
-						const dy = point.y - prev.y
-						const length = Math.sqrt(dx * dx + dy * dy)
-						if (length === 0) return null
-						const angle = Math.atan2(dy, dx) * (180 / Math.PI)
-						const midX = (prev.x + point.x) / 2
-						const midY = (prev.y + point.y) / 2
-						return (
-							<View
-								key={i}
-								style={{
-									position: "absolute",
-									left: midX - length / 2,
-									top: midY - 1.5,
-									width: length,
-									height: 3,
-									borderRadius: 1.5,
-									backgroundColor: "#000000",
-									transform: [{ rotate: `${angle}deg` }],
-								}}
-							/>
-						)
-					})}
-					{paths.length === 1 && (
-						<View
-							style={{
-								position: "absolute",
-								left: paths[0].x - 1.5,
-								top: paths[0].y - 1.5,
-								width: 3,
-								height: 3,
-								borderRadius: 1.5,
-								backgroundColor: "#000000",
-							}}
+				<Svg style={StyleSheet.absoluteFill} pointerEvents="none">
+					{strokes.map((stroke, i) => (
+						<Polyline
+							key={i}
+							points={stroke.map(p => `${p.x},${p.y}`).join(" ")}
+							fill="none"
+							stroke="#000000"
+							strokeWidth={3}
+							strokeLinecap="round"
+							strokeLinejoin="round"
 						/>
-					)}
-					{!image && paths.length === 0 && (
-						<View
-							pointerEvents="none"
-							style={{
-								position: "absolute",
-								top: 0,
-								left: 0,
-								right: 0,
-								bottom: 0,
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							<Text style={{ color: "#94a3b8", fontSize: 16 }}>Firmá aquí</Text>
-						</View>
-					)}
-				</View>
+					))}
+				</Svg>
+				{!image && strokes.length === 0 && (
+					<View
+						pointerEvents="none"
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 0,
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<Text style={{ color: "#94a3b8", fontSize: 16 }}>Firmá aquí</Text>
+					</View>
+				)}
 			</View>
 
 			<View style={{ flexDirection: "row", gap: 12 }}>

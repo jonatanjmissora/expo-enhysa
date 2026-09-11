@@ -1,3 +1,7 @@
+# FIX LINTER + FORMATTER
+
+      pnpm lint -- --write .
+
 # sincronizar biome con el que viene de github
 
       pnpm install

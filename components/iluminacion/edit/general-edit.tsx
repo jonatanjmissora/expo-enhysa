@@ -1,14 +1,14 @@
 import { ScrollView, Text, View } from "react-native"
 import { EmpresaType } from "@/src/repositories/empresa.repository"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
-import { iluminacionGeneralFormValidator } from "@/src/db/schema/informe-iluminacion"
+import { iluminacionGeneralFormValidator } from "@/src/db/schema/informes-iluminacion"
 import { router } from "expo-router"
 import { theme } from "@/constants/theme"
 import Select from "@/components/Select"
@@ -25,7 +25,7 @@ type Props = {
 	tecnico: TecnicoType
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
-	informe: InformeIluminacionType
+	informe: InformesIluminacionType
 }
 
 export default function IluminacionGeneralEditFormContent({
@@ -68,7 +68,7 @@ export default function IluminacionGeneralEditFormContent({
 						: updateInformeIluminacionTitle(informe, empresa)
 				}
 
-				await informeIluminacionRepository.update(informe.id, {
+				await informesIluminacionRepository.update(informe.id, {
 					empresaId: value.empresaId,
 					instrumentoId: value.instrumentoId,
 					estado: value.estado,

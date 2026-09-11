@@ -7,11 +7,11 @@ import { useState } from "react"
 import {
 	defaultIluminacionConclusion,
 	iluminacionConclusionFormValidator,
-} from "@/src/db/schema/informe-iluminacion"
+} from "@/src/db/schema/informes-iluminacion"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
 
 const FIELDS = [
@@ -35,7 +35,7 @@ const FIELDS = [
 export default function IluminacionConclusionNuevoContent({
 	informeIluminacion,
 }: {
-	informeIluminacion: InformeIluminacionType
+	informeIluminacion: InformesIluminacionType
 }) {
 	const [error, setError] = useState<string | null>(null)
 
@@ -44,13 +44,24 @@ export default function IluminacionConclusionNuevoContent({
 		validators: { onSubmit: iluminacionConclusionFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+
+			if (
+				value.observacion === "" ||
+				value.conclusion === "" ||
+				value.recomendacion === ""
+			) {
+				return router.push({
+					pathname: "/iluminacion/informes",
+				})
+			}
+
 			const finishedAtDate = new Date().toISOString()
 			const finishedAtDateToLocale = new Date(
 				finishedAtDate
 			).toLocaleDateString("es-AR")
 			const titleStr = `${finishedAtDateToLocale} - ${informeIluminacion.title}`
 			try {
-				await informeIluminacionRepository.update(informeIluminacion.id, {
+				await informesIluminacionRepository.update(informeIluminacion.id, {
 					...value,
 					finishedAt: finishedAtDate,
 					title: titleStr,
@@ -131,7 +142,7 @@ export default function IluminacionConclusionNuevoContent({
 					<Text
 						style={{
 							color: "#888",
-							fontSize: 12,
+							fontSize: 16,
 							textAlign: "center",
 							marginBottom: 20,
 						}}

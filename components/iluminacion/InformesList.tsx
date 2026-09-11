@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react"
 import { View, Text } from "react-native"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { router, useFocusEffect } from "expo-router"
 import { theme } from "@/constants/theme"
 import {
@@ -17,13 +17,13 @@ const USER_ID = "user-1"
 
 export default function InformesList({ qnt }: { qnt: number }) {
 	const [informes, setInformes] = useState<
-		InformeIluminacionType[] | null | undefined
+		InformesIluminacionType[] | null | undefined
 	>(undefined)
 	const [empresas, setEmpresas] = useState<EmpresaType[] | null | undefined>([])
 
 	const load = useCallback(async () => {
 		const [informesData, empresasData] = await Promise.all([
-			informeIluminacionRepository.getAllByUserId(USER_ID),
+			informesIluminacionRepository.getAllByUserId(USER_ID),
 			empresaRepository.getAllByUserId(USER_ID),
 		])
 		setEmpresas(empresasData ?? [])
@@ -77,7 +77,7 @@ function InformesListContent({
 	empresas,
 	qnt,
 }: {
-	informe: InformeIluminacionType[]
+	informe: InformesIluminacionType[]
 	empresas: EmpresaType[] | null
 	qnt: number
 }) {

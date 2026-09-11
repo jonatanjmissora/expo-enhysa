@@ -2,9 +2,9 @@ import Button from "@/components/Button"
 import IluminacionConclusionEditContent from "@/components/iluminacion/edit/conclusion-edit"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 import { View, Text } from "react-native"
@@ -13,10 +13,10 @@ export default function ConclusionEdit() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [loading, setLoading] = useState<boolean>(true)
 	const [informeIluminacion, setInformeIluminacion] =
-		useState<InformeIluminacionType | null>(null)
+		useState<InformesIluminacionType | null>(null)
 
 	const load = useCallback(async () => {
-		const informeIluminacionData = await informeIluminacionRepository.getById(
+		const informeIluminacionData = await informesIluminacionRepository.getById(
 			id ?? ""
 		)
 		setInformeIluminacion(informeIluminacionData ?? null)

@@ -1,10 +1,61 @@
-import { Tabs } from "expo-router"
-
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { theme } from "@/constants/theme"
+// import { NativeTabs } from "expo-router/unstable-native-tabs"
+import { Tabs } from "expo-router"
 
-export default function TabLayout() {
+// const TABS = [
+// 	{
+// 		name: "index",
+// 		icon: "home-outline",
+// 		label: "Inicio",
+// 	},
+// 	{
+// 		name: "perfil",
+// 		icon: "person-outline",
+// 		label: "Perfil",
+// 	},
+// 	{
+// 		name: "suscripcion",
+// 		icon: "shield-outline",
+// 		label: "Suscripción",
+// 	},
+// ] as const
+
+export default function InicioLayout() {
 	return (
+		// <NativeTabs
+		// 	disableIndicator
+		// 	rippleColor="transparent"
+		// 	iconColor={{ default: "#ccc", selected: theme.orange }}
+		// 	labelStyle={{
+		// 		default: { color: "#ccc" },
+		// 		selected: { color: theme.orange },
+		// 	}}
+
+		// >
+		// 	{TABS.map(tab => (
+		// 		<NativeTabs.Trigger key={tab.name} name={tab.name}
+		// 		>
+		// 			<NativeTabs.Trigger.Icon
+		// 				src={{
+		// 					default: (
+		// 						<NativeTabs.Trigger.VectorIcon
+		// 							family={Ionicons}
+		// 							name={tab.icon}
+		// 						/>
+		// 					),
+		// 					selected: (
+		// 						<NativeTabs.Trigger.VectorIcon
+		// 							family={Ionicons}
+		// 							name={tab.icon}
+		// 						/>
+		// 					),
+		// 				}}
+		// 			/>
+		// 			<NativeTabs.Trigger.Label>{tab.label}</NativeTabs.Trigger.Label>
+		// 		</NativeTabs.Trigger>
+		// 	))}
+		// </NativeTabs>
 		<Tabs
 			screenOptions={{
 				headerShown: false,

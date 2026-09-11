@@ -8,7 +8,6 @@ import Button from "@/components/Button"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import Select from "@/components/Select"
 import {
-	ILUMINACION,
 	ILUMINACION_FUENTE,
 	ILUMINACION_TIPO,
 	VALORES_REQUERIDOS_OBJ,
@@ -41,6 +40,7 @@ export default function IluminacionLocalizadaNuevoContent() {
 					...value,
 					id: localizadaId,
 					reportId: id,
+					iluminacion: "localizada",
 					imagenes,
 					timestamps: [new Date().toISOString()],
 					userId: USER_ID,
@@ -217,12 +217,21 @@ export default function IluminacionLocalizadaNuevoContent() {
 					{field => (
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Iluminacion</Text>
-							<Select
-								data={ILUMINACION}
+							<TextInput
 								value={field.state.value}
-								onChange={field.handleChange}
-								placeholder="Seleccionar iluminacion"
-								renderItem={item => item}
+								onBlur={field.handleBlur}
+								placeholder="localizada"
+								placeholderTextColor="#64748b"
+								editable={false}
+								style={{
+									backgroundColor: theme.inputBG,
+									color: "#e2e8f0",
+									padding: 12,
+									borderRadius: 6,
+									borderWidth: 1,
+									borderColor: theme.inputBorder,
+									textAlign: "right",
+								}}
 							/>
 							{!field.state.meta.isValid && (
 								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>

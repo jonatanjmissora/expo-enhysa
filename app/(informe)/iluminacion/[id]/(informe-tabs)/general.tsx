@@ -1,9 +1,9 @@
 import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import {
-	InformeIluminacionType,
-	informeIluminacionRepository,
-} from "@/src/repositories/informe-iluminacion.repository"
+	InformesIluminacionType,
+	informesIluminacionRepository,
+} from "@/src/repositories/informes-iluminacion.repository"
 import {
 	type EmpresaType,
 	empresaRepository,
@@ -23,7 +23,7 @@ const USER_ID = "user-1"
 export default function General() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [informe, setInforme] = useState<
-		InformeIluminacionType | null | undefined
+		InformesIluminacionType | null | undefined
 	>(undefined)
 	const [empresas, setEmpresas] = useState<EmpresaType[] | null | undefined>([])
 	const [instrumentos, setInstrumentos] = useState<
@@ -33,7 +33,7 @@ export default function General() {
 	const load = useCallback(async () => {
 		if (!id) return
 		const [informeData, empresasData, instrumentosData] = await Promise.all([
-			informeIluminacionRepository.getById(id),
+			informesIluminacionRepository.getById(id),
 			empresaRepository.getAllByUserId(USER_ID),
 			instrumentoRepository.getAllByUserId(USER_ID),
 		])

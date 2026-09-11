@@ -1,11 +1,11 @@
-import { InformeIluminacionType } from "@/src/repositories/informe-iluminacion.repository"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { Text, View } from "react-native"
 import { theme } from "@/constants/theme"
 
 export default function InformeHeaderContent({
 	informe,
 }: {
-	informe: InformeIluminacionType
+	informe: InformesIluminacionType
 }) {
 	const titleStr = informe.finishedAt
 		? (informe.title.split(" - ")[1] ?? "sin titulo")

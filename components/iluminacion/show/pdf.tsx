@@ -1,11 +1,11 @@
 import InformeHeaderContent from "@/components/InformeHeader"
 import { View, Text } from "react-native"
-import type { InformeIluminacionType } from "@/src/repositories/informe-iluminacion.repository"
+import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 
 export default function PDFContent({
 	informe,
 }: {
-	informe: InformeIluminacionType
+	informe: InformesIluminacionType
 }) {
 	return (
 		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

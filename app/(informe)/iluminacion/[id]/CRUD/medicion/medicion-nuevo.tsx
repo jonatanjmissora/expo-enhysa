@@ -50,18 +50,6 @@ export default function MedicionNuevo() {
 
 	return (
 		<ViewWithLogo>
-			<Button
-				variant="ghost"
-				iconLeft="chevron-back"
-				text="Volver"
-				style={{
-					alignSelf: "flex-start",
-					paddingHorizontal: 20,
-					opacity: 0.85,
-					padding: 4,
-				}}
-				onPress={() => router.back()}
-			/>
 			<IluminacionSteps />
 			<MedicionContent areas={areas} localizadas={localizadas} id={id} />
 		</ViewWithLogo>

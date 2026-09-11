@@ -5,7 +5,10 @@ import {
 	type AreaIluminacionType,
 } from "../db/schema/areas-iluminacion"
 
-export type CreateAreaIluminacionInput = Omit<AreaIluminacionType, "id"> & {
+export type CreateAreaIluminacionInput = Omit<
+	AreaIluminacionType,
+	"id" | "updatedAt"
+> & {
 	id?: string
 }
 
@@ -26,6 +29,7 @@ type AreaIluminacionRow = {
 	puntos: string
 	timestamps: string
 	userId: string
+	updatedAt: string
 }
 
 const SELECT_COLUMNS = `
@@ -44,7 +48,8 @@ const SELECT_COLUMNS = `
 	imagenes,
 	puntos,
 	timestamps,
-	userId
+	userId,
+	updatedAt
 `
 
 function parseStringArray(value: string): string[] {
@@ -89,6 +94,7 @@ function mapRow(row: AreaIluminacionRow): AreaIluminacionType {
 		puntos: parseNumberArray(row.puntos),
 		timestamps: parseStringArray(row.timestamps),
 		userId: row.userId,
+		updatedAt: row.updatedAt,
 	}
 }
 
@@ -106,6 +112,7 @@ export const areaIluminacionRepository = {
 		const db = await getDatabase()
 
 		const id = input.id ?? randomUUID()
+		const updatedAt = new Date().toISOString()
 
 		await db.runAsync(
 			`
@@ -125,9 +132,10 @@ export const areaIluminacionRepository = {
 					imagenes,
 					puntos,
 					timestamps,
-					userId
+					userId,
+					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.reportId,
@@ -144,7 +152,8 @@ export const areaIluminacionRepository = {
 			JSON.stringify(input.imagenes),
 			JSON.stringify(input.puntos),
 			JSON.stringify(input.timestamps),
-			input.userId
+			input.userId,
+			updatedAt
 		)
 
 		const area = await db.getFirstAsync<AreaIluminacionRow>(
@@ -208,6 +217,7 @@ export const areaIluminacionRepository = {
 		const area: AreaIluminacionType = {
 			...mapRow(existing),
 			...input,
+			updatedAt: new Date().toISOString(),
 		}
 
 		await db.runAsync(
@@ -227,7 +237,8 @@ export const areaIluminacionRepository = {
 					imagenes = ?,
 					puntos = ?,
 					timestamps = ?,
-					userId = ?
+					userId = ?,
+					updatedAt = ?
 				WHERE id = ?
 			`,
 			area.reportId,
@@ -245,6 +256,7 @@ export const areaIluminacionRepository = {
 			JSON.stringify(area.puntos),
 			JSON.stringify(area.timestamps),
 			area.userId,
+			area.updatedAt,
 			id
 		)
 

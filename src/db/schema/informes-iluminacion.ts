@@ -1,7 +1,7 @@
 import { z } from "zod"
 
-export const CREATE_INFORME_ILUMINACION_TABLE = `
-	CREATE TABLE IF NOT EXISTS informe_iluminacion (
+export const CREATE_INFORMES_ILUMINACION_TABLE = `
+	CREATE TABLE IF NOT EXISTS informes_iluminacion (
 		empresaId TEXT NOT NULL,
 		instrumentoId TEXT NOT NULL,
 		estado TEXT NOT NULL,
@@ -17,7 +17,8 @@ export const CREATE_INFORME_ILUMINACION_TABLE = `
 		userId TEXT NOT NULL,
 		finishedAt TEXT,
 		creditConsumed BOOLEAN NOT NULL DEFAULT false,
-		creditConsumedAt TEXT
+		creditConsumedAt TEXT,
+		updatedAt TEXT NOT NULL DEFAULT ''
 	);
 `
 

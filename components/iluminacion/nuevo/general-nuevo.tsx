@@ -5,7 +5,7 @@ import { theme } from "@/constants/theme"
 import { type EmpresaType } from "@/src/repositories/empresa.repository"
 import { type InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { TecnicoType } from "@/src/repositories/tecnico.repository"
-import { informeIluminacionRepository } from "@/src/repositories/informe-iluminacion.repository"
+import { informesIluminacionRepository } from "@/src/repositories/informes-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
 import { router } from "expo-router"
 import { useState } from "react"
@@ -13,7 +13,7 @@ import { ScrollView, Text, View } from "react-native"
 import {
 	defaultIluminacionGeneral,
 	iluminacionGeneralFormValidator,
-} from "@/src/db/schema/informe-iluminacion"
+} from "@/src/db/schema/informes-iluminacion"
 import { randomUUID } from "expo-crypto"
 
 const USER_ID = "user-1"
@@ -39,7 +39,7 @@ export default function IluminacionGeneralFormContent({
 				? `${empresa?.razonSocial} - ${empresa?.cuit} - iluminacion`
 				: ""
 			try {
-				await informeIluminacionRepository.create({
+				await informesIluminacionRepository.create({
 					...value,
 					id: informeId,
 					tecnicoId: tecnico?.id ?? "",

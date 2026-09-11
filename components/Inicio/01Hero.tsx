@@ -87,6 +87,7 @@ function HeroImageContainer() {
 			></LinearGradient>
 			<ImageViewer
 				imgSource={HeroImage}
+				contentFit="cover"
 				style={{
 					width,
 					height: "100%",

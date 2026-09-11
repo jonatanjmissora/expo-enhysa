@@ -27,7 +27,8 @@ export const CREATE_AREAS_ILUMINACION_TABLE = `
 		imagenes TEXT NOT NULL DEFAULT '[]',
 		puntos TEXT NOT NULL DEFAULT '[]',
 		timestamps TEXT NOT NULL DEFAULT '[]',
-		userId TEXT NOT NULL
+		userId TEXT NOT NULL,
+		updatedAt TEXT NOT NULL DEFAULT ''
 	);
 `
 
@@ -48,6 +49,7 @@ export type AreaIluminacionType = {
 	puntos: number[]
 	timestamps: string[]
 	userId: string
+	updatedAt: string
 }
 
 export const areaIluminacionFormPart1Validator = z.object({

@@ -19,6 +19,7 @@ const NAV_ITEMS = [
 	{ id: "3", label: "Mi Perfil", to: "/perfil" },
 	{ id: "4", label: "Suscripción", to: "/suscripcion" },
 	{ id: "5", label: "Base de datos", to: "/debug/db" },
+	{ id: "6", label: "Preguntas frecuentes", to: "/faq" },
 ]
 
 const CONTACTOS = [

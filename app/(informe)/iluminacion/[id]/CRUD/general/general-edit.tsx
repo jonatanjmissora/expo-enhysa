@@ -6,9 +6,9 @@ import {
 	EmpresaType,
 } from "@/src/repositories/empresa.repository"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import {
 	instrumentoRepository,
 	InstrumentoType,
@@ -32,7 +32,7 @@ export default function IluminacionGeneralEditContent() {
 	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const [informe, setInforme] = useState<
-		InformeIluminacionType | null | undefined
+		InformesIluminacionType | null | undefined
 	>(undefined)
 
 	const load = useCallback(async () => {
@@ -41,7 +41,7 @@ export default function IluminacionGeneralEditContent() {
 				tecnicoRepository.getByUserId(USER_ID),
 				empresaRepository.getAllByUserId(USER_ID),
 				instrumentoRepository.getAllByUserId(USER_ID),
-				informeIluminacionRepository.getById(id ?? ""),
+				informesIluminacionRepository.getById(id ?? ""),
 			])
 		setTecnico(tecnicoData ?? null)
 		setEmpresas(empresasData ?? [])

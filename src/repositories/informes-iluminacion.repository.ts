@@ -1,8 +1,8 @@
 import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
-import { CREATE_INFORME_ILUMINACION_TABLE } from "../db/schema/informe-iluminacion"
+import { CREATE_INFORMES_ILUMINACION_TABLE } from "../db/schema/informes-iluminacion"
 
-export type InformeIluminacionType = {
+export type InformesIluminacionType = {
 	empresaId: string
 	instrumentoId: string
 	estado: string
@@ -19,11 +19,12 @@ export type InformeIluminacionType = {
 	finishedAt: string
 	creditConsumed: boolean
 	creditConsumedAt: string
+	updatedAt: string
 }
 
-export type CreateInformeIluminacionInput = Omit<
-	InformeIluminacionType,
-	"id"
+export type CreateInformesIluminacionInput = Omit<
+	InformesIluminacionType,
+	"id" | "updatedAt"
 > & {
 	id?: string
 }
@@ -44,27 +45,29 @@ const SELECT_COLUMNS = `
 	userId,
 	finishedAt,
 	creditConsumed,
-	creditConsumedAt
+	creditConsumedAt,
+	updatedAt
 `
 
-async function initializeInformeIluminacionTable() {
+async function initializeInformesIluminacionTable() {
 	const db = await getDatabase()
-	await db.execAsync(CREATE_INFORME_ILUMINACION_TABLE)
+	await db.execAsync(CREATE_INFORMES_ILUMINACION_TABLE)
 }
 
-export const informeIluminacionRepository = {
+export const informesIluminacionRepository = {
 	async create(
-		input: CreateInformeIluminacionInput
-	): Promise<InformeIluminacionType> {
-		await initializeInformeIluminacionTable()
+		input: CreateInformesIluminacionInput
+	): Promise<InformesIluminacionType> {
+		await initializeInformesIluminacionTable()
 
 		const db = await getDatabase()
 
 		const id = input.id ?? randomUUID()
+		const updatedAt = new Date().toISOString()
 
 		await db.runAsync(
 			`
-				INSERT INTO informe_iluminacion (
+				INSERT INTO informes_iluminacion (
 					id,
 					title,
 					tecnicoId,
@@ -80,9 +83,10 @@ export const informeIluminacionRepository = {
 					userId,
 					finishedAt,
 					creditConsumed,
-					creditConsumedAt
+					creditConsumedAt,
+					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.title,
@@ -99,11 +103,12 @@ export const informeIluminacionRepository = {
 			input.userId,
 			input.finishedAt ?? null,
 			input.creditConsumed ?? 0,
-			input.creditConsumedAt ?? null
+			input.creditConsumedAt ?? null,
+			updatedAt
 		)
 
-		const informe = await db.getFirstAsync<InformeIluminacionType>(
-			`SELECT ${SELECT_COLUMNS} FROM informe_iluminacion WHERE id = ?`,
+		const informe = await db.getFirstAsync<InformesIluminacionType>(
+			`SELECT ${SELECT_COLUMNS} FROM informes_iluminacion WHERE id = ?`,
 			id
 		)
 
@@ -114,26 +119,26 @@ export const informeIluminacionRepository = {
 		return informe
 	},
 
-	async getById(id: string): Promise<InformeIluminacionType | null> {
-		await initializeInformeIluminacionTable()
+	async getById(id: string): Promise<InformesIluminacionType | null> {
+		await initializeInformesIluminacionTable()
 
 		const db = await getDatabase()
 
-		const informe = await db.getFirstAsync<InformeIluminacionType>(
-			`SELECT ${SELECT_COLUMNS} FROM informe_iluminacion WHERE id = ?`,
+		const informe = await db.getFirstAsync<InformesIluminacionType>(
+			`SELECT ${SELECT_COLUMNS} FROM informes_iluminacion WHERE id = ?`,
 			id
 		)
 
 		return informe ?? null
 	},
 
-	async getAllByUserId(userId: string): Promise<InformeIluminacionType[]> {
-		await initializeInformeIluminacionTable()
+	async getAllByUserId(userId: string): Promise<InformesIluminacionType[]> {
+		await initializeInformesIluminacionTable()
 
 		const db = await getDatabase()
 
-		const informes = await db.getAllAsync<InformeIluminacionType>(
-			`SELECT ${SELECT_COLUMNS} FROM informe_iluminacion WHERE userId = ?`,
+		const informes = await db.getAllAsync<InformesIluminacionType>(
+			`SELECT ${SELECT_COLUMNS} FROM informes_iluminacion WHERE userId = ?`,
 			userId
 		)
 
@@ -142,14 +147,14 @@ export const informeIluminacionRepository = {
 
 	async update(
 		id: string,
-		input: Partial<CreateInformeIluminacionInput>
-	): Promise<InformeIluminacionType> {
-		await initializeInformeIluminacionTable()
+		input: Partial<CreateInformesIluminacionInput>
+	): Promise<InformesIluminacionType> {
+		await initializeInformesIluminacionTable()
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<InformeIluminacionType>(
-			`SELECT * FROM informe_iluminacion WHERE id = ? LIMIT 1`,
+		const existing = await db.getFirstAsync<InformesIluminacionType>(
+			`SELECT * FROM informes_iluminacion WHERE id = ? LIMIT 1`,
 			id
 		)
 		if (!existing) {
@@ -159,11 +164,12 @@ export const informeIluminacionRepository = {
 		const informe = {
 			...existing,
 			...input,
+			updatedAt: new Date().toISOString(),
 		}
 
 		await db.runAsync(
 			`
-				UPDATE informe_iluminacion SET
+				UPDATE informes_iluminacion SET
 					title = ?,
 					tecnicoId = ?,
 					empresaId = ?,
@@ -178,7 +184,8 @@ export const informeIluminacionRepository = {
 					userId = ?,
 					finishedAt = ?,
 					creditConsumed = ?,
-					creditConsumedAt = ?
+					creditConsumedAt = ?,
+					updatedAt = ?
 				WHERE id = ?
 			`,
 			informe.title,
@@ -196,6 +203,7 @@ export const informeIluminacionRepository = {
 			informe.finishedAt ?? null,
 			informe.creditConsumed,
 			informe.creditConsumedAt ?? null,
+			informe.updatedAt,
 			id
 		)
 
@@ -203,7 +211,7 @@ export const informeIluminacionRepository = {
 	},
 
 	async delete(id: string): Promise<void> {
-		await initializeInformeIluminacionTable()
+		await initializeInformesIluminacionTable()
 
 		const db = await getDatabase()
 
@@ -213,7 +221,7 @@ export const informeIluminacionRepository = {
 				`DELETE FROM localizadas_iluminacion WHERE reportId = ?`,
 				id
 			)
-			await db.runAsync(`DELETE FROM informe_iluminacion WHERE id = ?`, id)
+			await db.runAsync(`DELETE FROM informes_iluminacion WHERE id = ?`, id)
 		})
 	},
 }

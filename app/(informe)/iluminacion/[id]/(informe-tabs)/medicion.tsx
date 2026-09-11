@@ -10,9 +10,9 @@ import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.r
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 import Button from "@/components/Button"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { theme } from "@/constants/theme"
 
 const USER_ID = "user-1"
@@ -23,7 +23,7 @@ export default function Medicion() {
 	const [localizadas, setLocalizadas] = useState<LocalizadaIluminacionType[]>(
 		[]
 	)
-	const [informe, setInforme] = useState<InformeIluminacionType | null>(null)
+	const [informe, setInforme] = useState<InformesIluminacionType | null>(null)
 	const load = useCallback(async () => {
 		const [areasData, localizadasData, informeData] = await Promise.all([
 			areaIluminacionRepository.getAllByReportIdAndUserId(id ?? "", USER_ID),
@@ -31,7 +31,7 @@ export default function Medicion() {
 				id ?? "",
 				USER_ID
 			),
-			informeIluminacionRepository.getById(id ?? ""),
+			informesIluminacionRepository.getById(id ?? ""),
 		])
 		setAreas(areasData ?? [])
 		setLocalizadas(localizadasData ?? [])

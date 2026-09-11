@@ -1,5 +1,5 @@
 import { EmpresaType } from "@/src/repositories/empresa.repository"
-import { InformeIluminacionType } from "@/src/repositories/informe-iluminacion.repository"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 
 export const EMPTY_TIMESTAMP = new Date("1970-01-01").toISOString()
 export const ESTADO = [
@@ -255,7 +255,7 @@ export const resetTimestamps = (largo: number, ancho: number, alto: number) => {
 }
 
 export const updateInformeIluminacionTitle = (
-	informe: InformeIluminacionType,
+	informe: InformesIluminacionType,
 	empresa: EmpresaType
 ) => {
 	const finishedAtDate = new Date().toISOString()

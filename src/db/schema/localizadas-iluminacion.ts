@@ -24,7 +24,8 @@ export const CREATE_LOCALIZADAS_ILUMINACION_TABLE = `
 		imagenes TEXT NOT NULL DEFAULT '[]',
 		valor INTEGER NOT NULL,
 		timestamps TEXT NOT NULL DEFAULT '[]',
-		userId TEXT NOT NULL
+		userId TEXT NOT NULL,
+		updatedAt TEXT NOT NULL DEFAULT ''
 	);
 `
 
@@ -42,6 +43,7 @@ export type LocalizadaIluminacionType = {
 	valor: number
 	timestamps: string[]
 	userId: string
+	updatedAt: string
 }
 
 export const localizadaIluminacionFormValidator = z.object({
@@ -66,7 +68,7 @@ export const defaultLocalizadaIluminacion: LocalizadaIluminacionFormType = {
 	tipo: "",
 	iluminacionTipo: "natural",
 	iluminacionFuente: "incandescente",
-	iluminacion: "general",
+	iluminacion: "localizada",
 	valorRequerido: "10",
 	observaciones: "",
 	imagenes: [],

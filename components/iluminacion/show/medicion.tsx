@@ -2,7 +2,7 @@ import { useGlobalSearchParams } from "expo-router"
 import { ScrollView, View } from "react-native"
 import AreasContent from "./areas"
 import LocalizadasContent from "./localizadas"
-import { InformeIluminacionType } from "@/src/repositories/informe-iluminacion.repository"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import InformeHeaderContent from "@/components/InformeHeader"
@@ -14,7 +14,7 @@ export default function MedicionContent({
 }: {
 	areas: AreaIluminacionType[]
 	localizadas: LocalizadaIluminacionType[]
-	informe: InformeIluminacionType
+	informe: InformesIluminacionType
 }) {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 

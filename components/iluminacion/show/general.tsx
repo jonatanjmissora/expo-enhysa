@@ -1,8 +1,8 @@
 import { EmpresaType } from "@/src/repositories/empresa.repository"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { Text, View } from "react-native"
 import { theme } from "@/constants/theme"
@@ -18,7 +18,7 @@ export default function GeneralContent({
 	empresas,
 	instrumentos,
 }: {
-	informe: InformeIluminacionType
+	informe: InformesIluminacionType
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
 }) {
@@ -110,7 +110,7 @@ function InstrumentoData({ instrumento }: { instrumento: InstrumentoType }) {
 	)
 }
 
-function GeneralData({ informe }: { informe: InformeIluminacionType }) {
+function GeneralData({ informe }: { informe: InformesIluminacionType }) {
 	const FIELDS = [
 		{ key: "estado", label: "Clima" },
 		{ key: "humedad", label: "Humedad" },
@@ -200,7 +200,7 @@ function parseImages(value: string): string[] {
 	}
 }
 
-function InformeHeader({ informe }: { informe: InformeIluminacionType }) {
+function InformeHeader({ informe }: { informe: InformesIluminacionType }) {
 	return (
 		<View
 			style={{
@@ -214,14 +214,14 @@ function InformeHeader({ informe }: { informe: InformeIluminacionType }) {
 	)
 }
 
-function MenuInforme({ informe }: { informe: InformeIluminacionType }) {
+function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()
 
 	const handleDelete = async () => {
 		try {
-			await informeIluminacionRepository.delete(informe.id)
+			await informesIluminacionRepository.delete(informe.id)
 			router.push("/iluminacion/informes")
 		} catch (error) {
 			console.error(error)

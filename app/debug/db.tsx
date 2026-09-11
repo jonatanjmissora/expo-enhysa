@@ -2,7 +2,7 @@ import { getDatabase } from "@/src/db/client"
 import { CREATE_TECNICOS_TABLE } from "@/src/db/schema/tecnicos"
 import { CREATE_EMPRESAS_TABLE } from "@/src/db/schema/empresas"
 import { CREATE_INSTRUMENTOS_TABLE } from "@/src/db/schema/instrumentos"
-import { CREATE_INFORME_ILUMINACION_TABLE } from "@/src/db/schema/informe-iluminacion"
+import { CREATE_INFORMES_ILUMINACION_TABLE } from "@/src/db/schema/informes-iluminacion"
 import { CREATE_AREAS_ILUMINACION_TABLE } from "@/src/db/schema/areas-iluminacion"
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "@/src/db/schema/localizadas-iluminacion"
 import { useFocusEffect } from "expo-router"
@@ -27,7 +27,7 @@ const TABLE_NAMES = [
 	"tecnicos",
 	"empresas",
 	"instrumentos",
-	"informe_iluminacion",
+	"informes_iluminacion",
 	"areas_iluminacion",
 	"localizadas_iluminacion",
 ]
@@ -36,7 +36,7 @@ const TABLE_SCHEMAS: Record<string, string> = {
 	tecnicos: CREATE_TECNICOS_TABLE,
 	empresas: CREATE_EMPRESAS_TABLE,
 	instrumentos: CREATE_INSTRUMENTOS_TABLE,
-	informe_iluminacion: CREATE_INFORME_ILUMINACION_TABLE,
+	informes_iluminacion: CREATE_INFORMES_ILUMINACION_TABLE,
 	areas_iluminacion: CREATE_AREAS_ILUMINACION_TABLE,
 	localizadas_iluminacion: CREATE_LOCALIZADAS_ILUMINACION_TABLE,
 }
@@ -96,7 +96,7 @@ export default function DebugDB() {
 					onPress: async () => {
 						const db = await getDatabase()
 
-						if (tableName === "informe_iluminacion") {
+						if (tableName === "informes_iluminacion") {
 							await db.withTransactionAsync(async () => {
 								await db.runAsync(
 									`DELETE FROM areas_iluminacion WHERE reportId = ?`,
@@ -107,7 +107,7 @@ export default function DebugDB() {
 									id
 								)
 								await db.runAsync(
-									`DELETE FROM informe_iluminacion WHERE id = ?`,
+									`DELETE FROM informes_iluminacion WHERE id = ?`,
 									id
 								)
 							})

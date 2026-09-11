@@ -1,6 +1,5 @@
 import { theme } from "@/constants/theme"
 import { Stack } from "expo-router"
-import { GestureHandlerRootView } from "react-native-gesture-handler"
 import {
 	SafeAreaProvider,
 	initialWindowMetrics,
@@ -8,23 +7,21 @@ import {
 
 export default function RootLayout() {
 	return (
-		<GestureHandlerRootView style={{ flex: 1 }}>
-			<SafeAreaProvider
-				initialMetrics={initialWindowMetrics}
-				style={{ backgroundColor: theme.safeAreaBG }}
+		<SafeAreaProvider
+			initialMetrics={initialWindowMetrics}
+			style={{ backgroundColor: theme.safeAreaBG }}
+		>
+			<Stack
+				screenOptions={{
+					contentStyle: { backgroundColor: theme.safeAreaBG },
+				}}
 			>
-				<Stack
-					screenOptions={{
-						contentStyle: { backgroundColor: theme.safeAreaBG },
-					}}
-				>
-					<Stack.Screen name="(inicio)" options={{ headerShown: false }} />
-					<Stack.Screen name="(perfil)" options={{ headerShown: false }} />
-					<Stack.Screen name="(informe)" options={{ headerShown: false }} />
-					<Stack.Screen name="herramientas" options={{ headerShown: false }} />
-					<Stack.Screen name="debug/db" options={{ title: "SQLite Debug" }} />
-				</Stack>
-			</SafeAreaProvider>
-		</GestureHandlerRootView>
+				<Stack.Screen name="(inicio)" options={{ headerShown: false }} />
+				<Stack.Screen name="(perfil)" options={{ headerShown: false }} />
+				<Stack.Screen name="(informe)" options={{ headerShown: false }} />
+				<Stack.Screen name="herramientas" options={{ headerShown: false }} />
+				<Stack.Screen name="debug/db" options={{ title: "SQLite Debug" }} />
+			</Stack>
+		</SafeAreaProvider>
 	)
 }

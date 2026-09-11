@@ -4,11 +4,11 @@ import { router } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import TextArea from "../../TextArea"
 import { useState } from "react"
-import { iluminacionConclusionFormValidator } from "@/src/db/schema/informe-iluminacion"
+import { iluminacionConclusionFormValidator } from "@/src/db/schema/informes-iluminacion"
 import {
-	informeIluminacionRepository,
-	InformeIluminacionType,
-} from "@/src/repositories/informe-iluminacion.repository"
+	informesIluminacionRepository,
+	InformesIluminacionType,
+} from "@/src/repositories/informes-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
 import InformeHeaderContent from "@/components/InformeHeader"
 
@@ -33,7 +33,7 @@ const FIELDS = [
 export default function IluminacionConclusionEditContent({
 	informeIluminacion,
 }: {
-	informeIluminacion: InformeIluminacionType
+	informeIluminacion: InformesIluminacionType
 }) {
 	const [error, setError] = useState<string | null>(null)
 
@@ -66,7 +66,7 @@ export default function IluminacionConclusionEditContent({
 			).toLocaleDateString("es-AR")
 
 			try {
-				await informeIluminacionRepository.update(informeIluminacion.id, {
+				await informesIluminacionRepository.update(informeIluminacion.id, {
 					...value,
 					finishedAt: finishedAtDate,
 					title: `${finishedAtDateToLocale} - ${titleStr}`,

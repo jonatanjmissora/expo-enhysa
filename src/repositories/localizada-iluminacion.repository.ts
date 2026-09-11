@@ -7,8 +7,10 @@ import {
 
 export type CreateLocalizadaIluminacionInput = Omit<
 	LocalizadaIluminacionType,
-	"id"
->
+	"id" | "updatedAt"
+> & {
+	id?: string
+}
 
 type LocalizadaIluminacionRow = {
 	id: string
@@ -24,6 +26,7 @@ type LocalizadaIluminacionRow = {
 	valor: number
 	timestamps: string
 	userId: string
+	updatedAt: string
 }
 
 const SELECT_COLUMNS = `
@@ -39,7 +42,8 @@ const SELECT_COLUMNS = `
 	imagenes,
 	valor,
 	timestamps,
-	userId
+	userId,
+	updatedAt
 `
 
 function parseStringArray(value: string): string[] {
@@ -71,6 +75,7 @@ function mapRow(row: LocalizadaIluminacionRow): LocalizadaIluminacionType {
 		valor: row.valor,
 		timestamps: parseStringArray(row.timestamps),
 		userId: row.userId,
+		updatedAt: row.updatedAt,
 	}
 }
 
@@ -81,13 +86,14 @@ async function initializeLocalizadasIluminacionTable() {
 
 export const localizadaIluminacionRepository = {
 	async create(
-		input: LocalizadaIluminacionType
+		input: CreateLocalizadaIluminacionInput
 	): Promise<LocalizadaIluminacionType> {
 		await initializeLocalizadasIluminacionTable()
 
 		const db = await getDatabase()
 
-		const id = randomUUID()
+		const id = input.id ?? randomUUID()
+		const updatedAt = new Date().toISOString()
 
 		await db.runAsync(
 			`
@@ -104,9 +110,10 @@ export const localizadaIluminacionRepository = {
 					imagenes,
 					valor,
 					timestamps,
-					userId
+					userId,
+					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.reportId,
@@ -120,7 +127,8 @@ export const localizadaIluminacionRepository = {
 			JSON.stringify(input.imagenes),
 			input.valor,
 			JSON.stringify(input.timestamps),
-			input.userId
+			input.userId,
+			updatedAt
 		)
 
 		const localizada = await db.getFirstAsync<LocalizadaIluminacionRow>(
@@ -184,6 +192,7 @@ export const localizadaIluminacionRepository = {
 		const localizada: LocalizadaIluminacionType = {
 			...mapRow(existing),
 			...input,
+			updatedAt: new Date().toISOString(),
 		}
 
 		await db.runAsync(
@@ -200,7 +209,8 @@ export const localizadaIluminacionRepository = {
 					imagenes = ?,
 					valor = ?,
 					timestamps = ?,
-					userId = ?
+					userId = ?,
+					updatedAt = ?
 				WHERE id = ?
 			`,
 			localizada.reportId,
@@ -215,6 +225,7 @@ export const localizadaIluminacionRepository = {
 			localizada.valor,
 			JSON.stringify(localizada.timestamps),
 			localizada.userId,
+			localizada.updatedAt,
 			id
 		)
 

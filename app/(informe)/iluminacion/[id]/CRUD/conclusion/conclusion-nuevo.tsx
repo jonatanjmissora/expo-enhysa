@@ -4,17 +4,17 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { Text, View } from "react-native"
 import { useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
-import { InformeIluminacionType } from "@/src/repositories/informe-iluminacion.repository"
-import { informeIluminacionRepository } from "@/src/repositories/informe-iluminacion.repository"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
+import { informesIluminacionRepository } from "@/src/repositories/informes-iluminacion.repository"
 
 export default function ConclusionNuevo() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [loading, setLoading] = useState<boolean>(true)
 	const [informeIluminacion, setInformeIluminacion] =
-		useState<InformeIluminacionType | null>(null)
+		useState<InformesIluminacionType | null>(null)
 
 	const load = useCallback(async () => {
-		const informeIluminacionData = await informeIluminacionRepository.getById(
+		const informeIluminacionData = await informesIluminacionRepository.getById(
 			id ?? ""
 		)
 		setInformeIluminacion(informeIluminacionData ?? null)
