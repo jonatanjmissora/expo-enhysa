@@ -20,6 +20,7 @@ import {
 	LocalizadaIluminacionType,
 } from "@/src/db/schema/localizadas-iluminacion"
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
+import { hasChanges } from "@/src/utils/hasChanges"
 
 const USER_ID = "user-1"
 
@@ -33,22 +34,33 @@ export default function IluminacionShowLocalizadaEditContent({
 		localizadaIluminacion.imagenes ?? []
 	)
 
+	const defaultValues = {
+		nombre: localizadaIluminacion.nombre,
+		tipo: localizadaIluminacion.tipo,
+		iluminacionTipo: localizadaIluminacion.iluminacionTipo,
+		iluminacionFuente: localizadaIluminacion.iluminacionFuente,
+		iluminacion: localizadaIluminacion.iluminacion,
+		valorRequerido: localizadaIluminacion.valorRequerido,
+		observaciones: localizadaIluminacion.observaciones,
+		imagenes: localizadaIluminacion.imagenes,
+		valor: localizadaIluminacion.valor,
+		timestamps: localizadaIluminacion.timestamps,
+	}
+
 	const form = useForm({
-		defaultValues: {
-			nombre: localizadaIluminacion.nombre,
-			tipo: localizadaIluminacion.tipo,
-			iluminacionTipo: localizadaIluminacion.iluminacionTipo,
-			iluminacionFuente: localizadaIluminacion.iluminacionFuente,
-			iluminacion: localizadaIluminacion.iluminacion,
-			valorRequerido: localizadaIluminacion.valorRequerido,
-			observaciones: localizadaIluminacion.observaciones,
-			imagenes: localizadaIluminacion.imagenes,
-			valor: localizadaIluminacion.valor,
-			timestamps: localizadaIluminacion.timestamps,
-		},
+		defaultValues,
 		validators: { onSubmit: localizadaIluminacionFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			if (!hasChanges({ ...value, imagenes }, defaultValues)) {
+				router.push({
+					pathname: "/(informe)/iluminacion/[id]/medicion",
+					params: {
+						id: localizadaIluminacion.reportId,
+					},
+				})
+				return
+			}
 			try {
 				await localizadaIluminacionRepository.update(localizadaIluminacion.id, {
 					...value,

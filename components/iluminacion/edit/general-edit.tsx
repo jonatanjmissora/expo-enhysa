@@ -20,6 +20,7 @@ import {
 } from "@/constants"
 import Button from "@/components/Button"
 import InformeHeaderContent from "@/components/InformeHeader"
+import { hasChanges } from "@/src/utils/hasChanges"
 
 type Props = {
 	tecnico: TecnicoType
@@ -36,30 +37,24 @@ export default function IluminacionGeneralEditFormContent({
 }: Props) {
 	const [error, setError] = useState<string | null>(null)
 
+	const defaultValues = {
+		empresaId: informe.empresaId,
+		instrumentoId: informe.instrumentoId,
+		estado: informe.estado,
+		humedad: informe.humedad,
+		temperatura: informe.temperatura,
+	}
+
 	const form = useForm({
-		defaultValues: {
-			empresaId: informe.empresaId,
-			instrumentoId: informe.instrumentoId,
-			estado: informe.estado,
-			humedad: informe.humedad,
-			temperatura: informe.temperatura,
-		},
+		defaultValues,
 		validators: { onSubmit: iluminacionGeneralFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			if (!hasChanges(value, defaultValues)) {
+				return router.back()
+			}
+
 			try {
-				const sinCambios =
-					value.empresaId === informe.empresaId &&
-					value.instrumentoId === informe.instrumentoId &&
-					value.estado === informe.estado &&
-					value.humedad === informe.humedad &&
-					value.temperatura === informe.temperatura
-
-				if (sinCambios) {
-					router.back()
-					return
-				}
-
 				let titleStr = informe.title
 				if (informe.empresaId !== value.empresaId || informe.finishedAt) {
 					const empresa = empresas.find(e => e.id === value.empresaId)

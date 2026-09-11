@@ -11,6 +11,7 @@ import {
 } from "@/src/repositories/informes-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
 import InformeHeaderContent from "@/components/InformeHeader"
+import { updateTitle } from "@/src/utils/updateInformeIluminacionTitle"
 
 const FIELDS = [
 	{
@@ -52,24 +53,14 @@ export default function IluminacionConclusionEditContent({
 				value.recomendacion === informeIluminacion.recomendacion
 
 			if (sinCambios) {
-				router.back()
-				return
+				return router.back()
 			}
-
-			const titleStr = !informeIluminacion.finishedAt
-				? informeIluminacion.title
-				: informeIluminacion.title.split(" - ").slice(1).join(" - ")
-
-			const finishedAtDate = new Date().toISOString()
-			const finishedAtDateToLocale = new Date(
-				finishedAtDate
-			).toLocaleDateString("es-AR")
 
 			try {
 				await informesIluminacionRepository.update(informeIluminacion.id, {
 					...value,
-					finishedAt: finishedAtDate,
-					title: `${finishedAtDateToLocale} - ${titleStr}`,
+					finishedAt: new Date().toISOString(),
+					title: updateTitle(informeIluminacion, informeIluminacion.empresaId),
 					observacion: value.observacion,
 					conclusion: value.conclusion,
 					recomendacion: value.recomendacion,

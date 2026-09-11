@@ -12,6 +12,7 @@ import { useCallback, useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
 import { useForm } from "@tanstack/react-form"
 import { empresaFormValidator } from "@/src/db/schema/empresas"
+import { hasChanges } from "@/src/utils/hasChanges"
 
 const USER_ID = "user-1"
 
@@ -101,17 +102,19 @@ function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 	const [error, setError] = useState<string | null>(null)
 	const [logo, setLogo] = useState<string | null>(empresa?.logo ?? null)
 
+	const defaultValues = {
+		cuit: empresa?.cuit ?? "",
+		razonSocial: empresa?.razonSocial ?? "",
+		direccion: empresa?.direccion ?? "",
+		localidad: empresa?.localidad ?? "",
+		provincia: empresa?.provincia ?? "",
+		codigoPostal: empresa?.codigoPostal ?? "",
+		horarios: empresa?.horarios ?? "",
+		logo: empresa?.logo ?? "",
+	}
+
 	const form = useForm({
-		defaultValues: {
-			cuit: empresa?.cuit ?? "",
-			razonSocial: empresa?.razonSocial ?? "",
-			direccion: empresa?.direccion ?? "",
-			localidad: empresa?.localidad ?? "",
-			provincia: empresa?.provincia ?? "",
-			codigoPostal: empresa?.codigoPostal ?? "",
-			horarios: empresa?.horarios ?? "",
-			logo: empresa?.logo ?? "",
-		},
+		defaultValues,
 		validators: { onSubmit: empresaFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
@@ -119,7 +122,10 @@ function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 				setError("Seleccioná el logo de la empresa")
 				return
 			}
-
+			if (!hasChanges({ ...value, logo }, defaultValues)) {
+				router.dismissTo("/(inicio)/perfil?header=empresa")
+				return
+			}
 			try {
 				await empresaRepository.update(empresa.id, {
 					...value,

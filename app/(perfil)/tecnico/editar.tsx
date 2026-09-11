@@ -13,6 +13,7 @@ import { useCallback, useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
 import { useForm } from "@tanstack/react-form"
 import { tecnicoFormValidator } from "@/src/db/schema/tecnicos"
+import { hasChanges } from "@/src/utils/hasChanges"
 
 const USER_ID = "user-1"
 
@@ -105,18 +106,20 @@ function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 		tecnico?.empresaLogo ?? null
 	)
 
+	const defaultValues = {
+		nombre: tecnico?.nombre ?? "",
+		dni: tecnico?.dni != null ? String(tecnico.dni) : "",
+		telefono: tecnico?.telefono ?? "",
+		localidad: tecnico?.localidad ?? "",
+		cargo: tecnico?.cargo ?? "",
+		matricula: tecnico?.matricula ?? "",
+		matriculaImg: tecnico?.matriculaImg ?? "",
+		firmaImg: tecnico?.firmaImg ?? "",
+		empresaLogo: tecnico?.empresaLogo ?? "",
+	}
+
 	const form = useForm({
-		defaultValues: {
-			nombre: tecnico?.nombre ?? "",
-			dni: tecnico?.dni != null ? String(tecnico.dni) : "",
-			telefono: tecnico?.telefono ?? "",
-			localidad: tecnico?.localidad ?? "",
-			cargo: tecnico?.cargo ?? "",
-			matricula: tecnico?.matricula ?? "",
-			matriculaImg: tecnico?.matriculaImg ?? "",
-			firmaImg: tecnico?.firmaImg ?? "",
-			empresaLogo: tecnico?.empresaLogo ?? "",
-		},
+		defaultValues,
 		validators: { onSubmit: tecnicoFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
@@ -126,6 +129,16 @@ function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 			}
 			if (!firmaImg) {
 				setError("Firmá la firma digital")
+				return
+			}
+
+			if (
+				!hasChanges(
+					{ ...value, matriculaImg, firmaImg, empresaLogo },
+					defaultValues
+				)
+			) {
+				router.dismissTo("/(inicio)/perfil")
 				return
 			}
 

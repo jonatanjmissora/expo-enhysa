@@ -21,6 +21,7 @@ import {
 	AreaIluminacionType,
 } from "@/src/db/schema/areas-iluminacion"
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import { hasChanges } from "@/src/utils/hasChanges"
 import Formula from "../puntos/formula"
 
 const USER_ID = "user-1"
@@ -35,23 +36,36 @@ export default function IluminacionShowAreaEditContent({
 		areaIluminacion.imagenes ?? []
 	)
 
+	const defaultValues = {
+		nombre: areaIluminacion.nombre,
+		tipo: areaIluminacion.tipo,
+		iluminacionTipo: areaIluminacion.iluminacionTipo,
+		iluminacionFuente: areaIluminacion.iluminacionFuente,
+		iluminacion: areaIluminacion.iluminacion,
+		valorRequerido: areaIluminacion.valorRequerido,
+		observaciones: areaIluminacion.observaciones,
+		largo: areaIluminacion.largo,
+		ancho: areaIluminacion.ancho,
+		alto: areaIluminacion.alto,
+		imagenes: areaIluminacion.imagenes,
+	}
+
 	const form = useForm({
-		defaultValues: {
-			nombre: areaIluminacion.nombre,
-			tipo: areaIluminacion.tipo,
-			iluminacionTipo: areaIluminacion.iluminacionTipo,
-			iluminacionFuente: areaIluminacion.iluminacionFuente,
-			iluminacion: areaIluminacion.iluminacion,
-			valorRequerido: areaIluminacion.valorRequerido,
-			observaciones: areaIluminacion.observaciones,
-			largo: areaIluminacion.largo,
-			ancho: areaIluminacion.ancho,
-			alto: areaIluminacion.alto,
-			imagenes: areaIluminacion.imagenes,
-		},
+		defaultValues,
 		validators: { onSubmit: areaIluminacionFormPart1Validator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			if (!hasChanges({ ...value, imagenes }, defaultValues)) {
+				router.push({
+					pathname:
+						"/(informe)/iluminacion/[id]/area/[areaId]/puntos/puntos-edit",
+					params: {
+						id: areaIluminacion.reportId,
+						areaId: areaIluminacion.id,
+					},
+				})
+				return
+			}
 			try {
 				await areaIluminacionRepository.update(areaIluminacion.id, {
 					...value,

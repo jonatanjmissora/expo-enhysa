@@ -13,6 +13,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
 import { useForm } from "@tanstack/react-form"
 import { instrumentoFormValidator } from "@/src/db/schema/instrumentos"
+import { hasChanges } from "@/src/utils/hasChanges"
 import DateTimePicker from "@react-native-community/datetimepicker"
 
 const USER_ID = "user-1"
@@ -120,21 +121,29 @@ function InstrumentoEditForm({
 		}
 	})
 
+	const defaultValues = {
+		nombre: instrumento?.nombre ?? "",
+		marca: instrumento?.marca ?? "",
+		modelo: instrumento?.modelo ?? "",
+		serie: instrumento?.serie ?? "",
+		fechaCalibracion: instrumento?.fechaCalibracion
+			? new Date(instrumento.fechaCalibracion)
+			: new Date(),
+		imagenesCalibracion: imagenesCalibracion,
+		imagenes: imagenes,
+	}
+
 	const form = useForm({
-		defaultValues: {
-			nombre: instrumento?.nombre ?? "",
-			marca: instrumento?.marca ?? "",
-			modelo: instrumento?.modelo ?? "",
-			serie: instrumento?.serie ?? "",
-			fechaCalibracion: instrumento?.fechaCalibracion
-				? new Date(instrumento.fechaCalibracion)
-				: new Date(),
-			imagenesCalibracion: imagenesCalibracion,
-			imagenes: imagenes,
-		},
+		defaultValues,
 		validators: { onSubmit: instrumentoFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			if (
+				!hasChanges({ ...value, imagenesCalibracion, imagenes }, defaultValues)
+			) {
+				router.dismissTo("/(inicio)/perfil?header=instrumento")
+				return
+			}
 			try {
 				await instrumentoRepository.update(instrumento.id, {
 					nombre: value.nombre,
