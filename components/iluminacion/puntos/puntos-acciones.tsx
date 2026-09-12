@@ -7,7 +7,6 @@ export default function AccionesFinalizar({
 	saving,
 	autosaving,
 	error,
-	onCancelar,
 	onFinalizar,
 }: {
 	medidos: number
@@ -15,7 +14,6 @@ export default function AccionesFinalizar({
 	saving: boolean
 	autosaving: boolean
 	error: string | null
-	onCancelar: () => void
 	onFinalizar: () => void
 }) {
 	return (
@@ -28,12 +26,6 @@ export default function AccionesFinalizar({
 				marginHorizontal: "auto",
 			}}
 		>
-			<Button
-				variant="secondary"
-				text="Cancelar"
-				style={{ width: "100%", maxWidth: 400 }}
-				onPress={onCancelar}
-			/>
 			<Button
 				text={
 					saving

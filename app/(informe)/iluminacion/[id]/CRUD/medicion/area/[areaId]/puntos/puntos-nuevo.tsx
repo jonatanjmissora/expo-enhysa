@@ -121,7 +121,8 @@ function PantallaAreaInexistente({ areaId }: { areaId?: string }) {
 }
 
 function MedicionArea({ area }: { area: AreaIluminacionType }) {
-	const m = useMedicionArea(area)
+	const show = false
+	const m = useMedicionArea(area, show)
 	const { scrollRef, onGridLayout } = useScrollCeldaVisible({
 		editing: m.editing,
 		divisiones: m.divisiones,
@@ -202,7 +203,6 @@ function MedicionArea({ area }: { area: AreaIluminacionType }) {
 					saving={m.saving}
 					autosaving={m.autosaving}
 					error={m.error}
-					onCancelar={() => setDeleteVisible(true)}
 					onFinalizar={m.handleFinalizar}
 				/>
 			</ScrollView>

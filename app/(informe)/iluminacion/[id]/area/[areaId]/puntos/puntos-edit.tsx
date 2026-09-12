@@ -203,7 +203,6 @@ function MedicionArea({ area }: { area: AreaIluminacionType }) {
 					saving={m.saving}
 					autosaving={m.autosaving}
 					error={m.error}
-					onCancelar={() => setDeleteVisible(true)}
 					onFinalizar={m.handleFinalizar}
 				/>
 			</ScrollView>

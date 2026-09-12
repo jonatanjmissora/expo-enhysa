@@ -173,13 +173,13 @@ export function useMedicionArea(area: AreaIluminacionType, show?: boolean) {
 			JSON.stringify(puntos) === JSON.stringify(area.puntos) &&
 			JSON.stringify(timestamps) === JSON.stringify(area.timestamps)
 
-		const irAMedicion = () =>
-			router.push({
-				pathname: !show
-					? "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo"
-					: "/(informe)/iluminacion/[id]/medicion",
-				params: { id: area.reportId },
-			})
+		const irAMedicion = () => console.log("SHOW", show)
+		router.push({
+			pathname: !show
+				? "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo"
+				: "/(informe)/iluminacion/[id]/medicion",
+			params: { id: area.reportId },
+		})
 
 		if (sinCambios) {
 			irAMedicion()

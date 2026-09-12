@@ -52,6 +52,10 @@ export default function IluminacionShowLocalizadaEditContent({
 		validators: { onSubmit: localizadaIluminacionFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			if (value.valor < 1) {
+				setError("El valor medido debe ser mayor a 0")
+				return
+			}
 			if (!hasChanges({ ...value, imagenes }, defaultValues)) {
 				router.push({
 					pathname: "/(informe)/iluminacion/[id]/medicion",

@@ -59,6 +59,8 @@ export default function ConclusionContent({
 							value={informe[f.key]}
 							onChangeText={() => {}}
 							placeholder={f.placeholder}
+							editable={false}
+							pointerEvents="none"
 						/>
 					</View>
 				))}

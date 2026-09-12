@@ -151,7 +151,7 @@ function LocalizadaMiniCard({
 				}}
 			>
 				<Text style={{ color: theme.orange, fontWeight: "600", fontSize }}>
-					{localizadaIluminacion.nombre}
+					{localizadaIluminacion.nombre} - {localizadaIluminacion.tipo}
 				</Text>
 				<Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 2 }}>
 					VALOR : {localizadaIluminacion.valor} lux
