@@ -31,13 +31,12 @@ export default function Index() {
 
 - reanimated ?
 
+- graficos para el show/medicion/area?
+
 
 INICIO:		
 	- iconos
 	- alquiler
-
-PERFIL:
-	- firma
 
 SUSCRIPCION:
 	- mercadopago
@@ -45,45 +44,3 @@ SUSCRIPCION:
 INFORMES:
 	- mi primer informe
 	- preguntas frecuentes
-
-
-TEST
-====
-
-INFORME / SHOW:
-	- editar general
-		- siguiente
-		- volver
-		- title
-	- editar conclusion
-		- siguiente
-		- volver
-		- title
-	- crear area
-		- siguiente
-		- volver
-		- title
-	- editar area
-		- siguiente
-		- volver
-		- title
-	- crear localizada
-		- siguiente
-		- volver
-		- title
-	- editar localizada
-		- siguiente
-		- volver
-		- title
-
-	- eliminar informe
-	- eliminar area
-	- eliminar localizada
-	
-		
-	
-	los cualquier edit, si no cambio nada, no hace update
-
-	en algun update del informe => update del titulo
-		- general
-		- conclusion

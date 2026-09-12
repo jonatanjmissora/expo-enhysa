@@ -173,7 +173,6 @@ export function useMedicionArea(area: AreaIluminacionType, show?: boolean) {
 			JSON.stringify(puntos) === JSON.stringify(area.puntos) &&
 			JSON.stringify(timestamps) === JSON.stringify(area.timestamps)
 
-		const irAMedicion = () => console.log("SHOW", show)
 		router.push({
 			pathname: !show
 				? "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo"
@@ -182,14 +181,12 @@ export function useMedicionArea(area: AreaIluminacionType, show?: boolean) {
 		})
 
 		if (sinCambios) {
-			irAMedicion()
 			return
 		}
 
 		setSaving(true)
 		try {
 			await persist(puntos, timestamps)
-			irAMedicion()
 		} catch (e) {
 			console.log("Error", e)
 			setError(

@@ -1,11 +1,11 @@
 import { useGlobalSearchParams } from "expo-router"
 import { ScrollView, View } from "react-native"
-import AreasContent from "./areas"
-import LocalizadasContent from "./localizadas"
+import LocalizadasShowContent from "./localizadas"
 import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import InformeHeaderContent from "@/components/InformeHeader"
+import AreasShowContent from "./areas"
 
 export default function MedicionContent({
 	areas,
@@ -31,8 +31,11 @@ export default function MedicionContent({
 						marginHorizontal: "auto",
 					}}
 				>
-					<AreasContent areasIluminacion={areas} id={id} />
-					<LocalizadasContent localizadasIluminacion={localizadas} id={id} />
+					<AreasShowContent areasIluminacion={areas} id={id} />
+					<LocalizadasShowContent
+						localizadasIluminacion={localizadas}
+						id={id}
+					/>
 				</View>
 			</ScrollView>
 		</>

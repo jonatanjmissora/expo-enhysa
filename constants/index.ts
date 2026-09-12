@@ -1,6 +1,3 @@
-import { EmpresaType } from "@/src/repositories/empresa.repository"
-import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
-
 export const EMPTY_TIMESTAMP = new Date("1970-01-01").toISOString()
 export const ESTADO = [
 	"despejado",
@@ -252,17 +249,4 @@ export const resetPuntos = (largo: number, ancho: number, alto: number) => {
 export const resetTimestamps = (largo: number, ancho: number, alto: number) => {
 	const length = getNumeroCeldas(ancho, largo, alto)
 	return Array.from({ length: length }, () => EMPTY_TIMESTAMP)
-}
-
-export const updateInformeIluminacionTitle = (
-	informe: InformesIluminacionType,
-	empresa: EmpresaType
-) => {
-	const finishedAtDate = new Date().toISOString()
-	const finishedAtDateToLocale = new Date(finishedAtDate).toLocaleDateString(
-		"es-AR"
-	)
-	return informe.finishedAt
-		? `${finishedAtDateToLocale} - ${empresa.razonSocial} - ${empresa.cuit} - iluminacion`
-		: `${empresa.razonSocial} - ${empresa.cuit} - iluminacion - (borrador)`
 }

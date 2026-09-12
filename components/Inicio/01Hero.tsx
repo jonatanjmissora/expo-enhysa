@@ -101,6 +101,7 @@ function HeroImageContainer() {
 
 function HeroIcons() {
 	const router = useRouter()
+	const green = "rgba(18, 201, 58, 1)"
 
 	return (
 		<View
@@ -108,7 +109,7 @@ function HeroIcons() {
 				flexDirection: "row",
 				justifyContent: "center",
 				alignItems: "center",
-				gap: 10,
+				gap: 14,
 			}}
 		>
 			{items.map(item => (
@@ -117,18 +118,28 @@ function HeroIcons() {
 						style={{
 							width: 86,
 							aspectRatio: 1,
-							backgroundColor: "#ccccccdd",
-							borderRadius: 14,
+							backgroundColor: "#333333ef",
+							borderRadius: 20,
 							justifyContent: "center",
 							alignItems: "center",
+							gap: 4,
 							borderWidth: 1,
-							borderColor: "gray",
-							boxShadow: "3px 3px 3px #00000050",
+							borderColor: "green",
+							boxShadow: "0px 0px 3px 3px #18ac4960",
 							elevation: 5,
 						}}
 					>
-						<Ionicons name={item.icon} size={24} color="black" />
-						<Text style={{ color: "#222", fontSize: 12 }}>{item.title}</Text>
+						<Ionicons name={item.icon} size={30} color={green} />
+						<Text
+							style={{
+								color: green,
+								fontSize: 11,
+								fontWeight: 600,
+								letterSpacing: 1,
+							}}
+						>
+							{item.title}
+						</Text>
 					</View>
 				</Pressable>
 			))}

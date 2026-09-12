@@ -6,7 +6,7 @@ import ImageViewer from "@/components/ImageViewer"
 import Button from "@/components/Button"
 import { randomUUID } from "expo-crypto"
 
-export default function AreasContent({
+export default function AreasShowContent({
 	areasIluminacion,
 	id,
 }: {
@@ -44,8 +44,7 @@ export default function AreasContent({
 					onPress={() => {
 						const areaId = randomUUID()
 						router.push({
-							pathname:
-								"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/area-nuevo",
+							pathname: "/(informe)/iluminacion/[id]/area/[areaId]/area-nuevo",
 							params: { id, areaId },
 						})
 					}}

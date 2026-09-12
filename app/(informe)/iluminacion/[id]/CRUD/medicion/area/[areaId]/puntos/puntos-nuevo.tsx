@@ -1,11 +1,8 @@
 import Button from "@/components/Button"
-import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
 import { type AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
 import { router, useLocalSearchParams } from "expo-router"
-import { useState } from "react"
 import {
 	ActivityIndicator,
 	KeyboardAvoidingView,
@@ -128,20 +125,6 @@ function MedicionArea({ area }: { area: AreaIluminacionType }) {
 		divisiones: m.divisiones,
 		altoFila: m.altoFila,
 	})
-	const [deleteVisible, setDeleteVisible] = useState<boolean>(false)
-
-	const handleEliminarArea = async () => {
-		try {
-			await areaIluminacionRepository.delete(area.id)
-			setDeleteVisible(false)
-			router.push({
-				pathname: "/(informe)/iluminacion/[id]/CRUD/medicion",
-				params: { id: area.reportId },
-			})
-		} catch (e) {
-			console.error("Error al eliminar el área", e)
-		}
-	}
 
 	return (
 		<View style={{ flex: 1 }}>
@@ -206,14 +189,6 @@ function MedicionArea({ area }: { area: AreaIluminacionType }) {
 					onFinalizar={m.handleFinalizar}
 				/>
 			</ScrollView>
-
-			<ModalDeleteConfirm
-				visible={deleteVisible}
-				title="Eliminar área"
-				message={`¿Estás seguro de que querés eliminar el área "${area.nombre} - ${area.tipo}"? Esta acción no se puede deshacer.`}
-				onClose={() => setDeleteVisible(false)}
-				onConfirm={handleEliminarArea}
-			/>
 		</View>
 	)
 }

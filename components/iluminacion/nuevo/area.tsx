@@ -28,7 +28,7 @@ const FIELDS = [
 	{ key: "alto", label: "Alto (mts)" },
 ] as const
 
-export default function AreaShow({
+export default function AreaCRUD({
 	areaIluminacion,
 }: {
 	areaIluminacion: AreaIluminacionType
@@ -255,7 +255,8 @@ function MenuArea({
 						onPress={() => {
 							setShowMenu(false)
 							router.push({
-								pathname: "/(informe)/iluminacion/[id]/area/[areaId]/area-edit",
+								pathname:
+									"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/area-edit",
 								params: {
 									id: areaIluminacion.reportId,
 									areaId: areaIluminacion.id,

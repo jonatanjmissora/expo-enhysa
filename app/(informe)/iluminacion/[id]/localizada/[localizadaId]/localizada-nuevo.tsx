@@ -4,7 +4,7 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { router } from "expo-router"
 import { View, Text } from "react-native"
 
-export default function ShowLocalizadaNuevo() {
+export default function LocalizadaShowNuevo() {
 	return (
 		<ViewWithLogo>
 			<View

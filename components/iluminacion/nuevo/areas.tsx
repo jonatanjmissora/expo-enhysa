@@ -1,26 +1,16 @@
 import { theme } from "@/constants/theme"
-import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
+import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { router } from "expo-router"
 import { Pressable, Text, View } from "react-native"
+import ImageViewer from "@/components/ImageViewer"
 import Button from "@/components/Button"
 import { randomUUID } from "expo-crypto"
-import ImageViewer from "@/components/ImageViewer"
 
-export default function LocalizadasShowContent({
-	localizadasIluminacion,
+export default function AreasCRUDContent({
+	areasIluminacion,
 	id,
 }: {
-	localizadasIluminacion: LocalizadaIluminacionType[]
-	id: string
-}) {
-	return <Localizadas localizadasIluminacion={localizadasIluminacion} id={id} />
-}
-
-function Localizadas({
-	localizadasIluminacion,
-	id,
-}: {
-	localizadasIluminacion: LocalizadaIluminacionType[]
+	areasIluminacion: AreaIluminacionType[]
 	id: string
 }) {
 	return (
@@ -30,7 +20,7 @@ function Localizadas({
 					flexDirection: "row",
 					justifyContent: "space-between",
 					alignItems: "center",
-					paddingVertical: 30,
+					marginVertical: 30,
 					paddingBottom: 10,
 					borderBottomWidth: 1,
 					borderBottomColor: theme.orangeAlpha,
@@ -43,7 +33,7 @@ function Localizadas({
 						fontSize: 18,
 					}}
 				>
-					Mediciones Localizadas
+					Mediciones en Areas
 				</Text>
 				<Button
 					text="Añadir"
@@ -52,74 +42,65 @@ function Localizadas({
 					iconLeft="add"
 					iconSize={10}
 					onPress={() => {
-						const localizedId = randomUUID()
+						const areaId = randomUUID()
 						router.push({
 							pathname:
-								"/(informe)/iluminacion/[id]/localizada/[localizadaId]/localizada-nuevo",
-							params: { id, localizedId },
+								"/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]/area-nuevo",
+							params: { id, areaId },
 						})
 					}}
 				/>
 			</View>
-			{localizadasIluminacion.length > 0 ? (
-				<LocalizadasList
-					localizadasIluminacion={localizadasIluminacion}
-					id={id}
-				/>
+			{areasIluminacion.length > 0 ? (
+				<AreasList areasIluminacion={areasIluminacion} id={id} />
 			) : (
 				<Text
 					style={{
 						color: "#aaa",
 						textAlign: "center",
 						fontStyle: "italic",
-						marginVertical: 80,
+						marginVertical: 40,
 					}}
 				>
-					No se encontraron mediciones localizadas
+					No se encontraron mediciones en area
 				</Text>
 			)}
 		</View>
 	)
 }
 
-function LocalizadasList({
-	localizadasIluminacion,
+function AreasList({
+	areasIluminacion,
 	id,
 }: {
-	localizadasIluminacion: LocalizadaIluminacionType[]
+	areasIluminacion: AreaIluminacionType[]
 	id: string
 }) {
 	return (
 		<View style={{ gap: 8 }}>
-			{localizadasIluminacion.map(localizada => (
-				<LocalizadaMiniCard
-					key={localizada.id}
-					localizadaIluminacion={localizada}
-					id={id}
-				/>
+			{areasIluminacion.map(area => (
+				<AreaMiniCard key={area.id} areaIluminacion={area} id={id} />
 			))}
 		</View>
 	)
 }
 
-function LocalizadaMiniCard({
-	localizadaIluminacion,
+function AreaMiniCard({
+	areaIluminacion,
 	id,
 }: {
-	localizadaIluminacion: LocalizadaIluminacionType
+	areaIluminacion: AreaIluminacionType
 	id: string
 }) {
+	const medidos = areaIluminacion.puntos.filter(punto => punto > 0).length
 	const fontSize =
-		`${localizadaIluminacion.nombre} - ${localizadaIluminacion.tipo}`.length >
-		25
-			? 14
-			: 18
+		`${areaIluminacion.nombre} - ${areaIluminacion.tipo}`.length > 25 ? 14 : 18
 	return (
 		<Pressable
 			onPress={() => {
 				router.push({
-					pathname: "/(informe)/iluminacion/[id]/localizada/[localizadaId]",
-					params: { id, localizadaId: localizadaIluminacion.id },
+					pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/area/[areaId]",
+					params: { id, areaId: areaIluminacion.id },
 				})
 			}}
 			style={({ pressed }) => ({
@@ -133,7 +114,7 @@ function LocalizadaMiniCard({
 			})}
 		>
 			<ImageViewer
-				imgSource={{ uri: localizadaIluminacion.imagenes[0] }}
+				imgSource={{ uri: areaIluminacion.imagenes[0] }}
 				contentFit="cover"
 				style={{
 					height: fontSize === 14 ? "170%" : "160%",
@@ -151,10 +132,14 @@ function LocalizadaMiniCard({
 				}}
 			>
 				<Text style={{ color: theme.orange, fontWeight: "600", fontSize }}>
-					{localizadaIluminacion.nombre} - {localizadaIluminacion.tipo}
+					{areaIluminacion.nombre} - {areaIluminacion.tipo}
 				</Text>
 				<Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 2 }}>
-					VALOR : {localizadaIluminacion.valor} lux
+					{areaIluminacion.largo}m × {areaIluminacion.ancho}m ×{" "}
+					{areaIluminacion.alto}m
+					{areaIluminacion.puntos.length > 0
+						? ` · ${medidos}/${areaIluminacion.puntos.length} medidos`
+						: " · sin medir"}
 				</Text>
 			</View>
 		</Pressable>

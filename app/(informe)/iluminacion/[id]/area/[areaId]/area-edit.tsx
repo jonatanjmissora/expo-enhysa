@@ -8,7 +8,7 @@ import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
 import IluminacionShowAreaEditContent from "@/components/iluminacion/show/area-edit"
 
-export default function AreaEdit() {
+export default function AreaShowEdit() {
 	const { areaId } = useGlobalSearchParams<{
 		areaId: string
 	}>()

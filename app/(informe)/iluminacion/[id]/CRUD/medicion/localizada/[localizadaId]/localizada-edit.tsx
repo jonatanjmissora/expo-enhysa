@@ -6,9 +6,9 @@ import { useCallback, useState } from "react"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 import { theme } from "@/constants/theme"
-import IluminacionShowLocalizadaEditContent from "@/components/iluminacion/show/localizada-edit"
+import IluminacionCRUDLocalizadaEditContent from "@/components/iluminacion/nuevo/localizada-edit"
 
-export default function LocalizadaShowEdit() {
+export default function LocalizadaCRUDEdit() {
 	const { localizadaId } = useGlobalSearchParams<{
 		localizadaId: string
 	}>()
@@ -95,7 +95,7 @@ export default function LocalizadaShowEdit() {
 					Localizada Editar
 				</Text>
 			</View>
-			<IluminacionShowLocalizadaEditContent
+			<IluminacionCRUDLocalizadaEditContent
 				localizadaIluminacion={localizadaIluminacion}
 			/>
 		</ViewWithLogo>

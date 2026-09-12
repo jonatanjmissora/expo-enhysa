@@ -6,7 +6,7 @@ import Button from "@/components/Button"
 import { randomUUID } from "expo-crypto"
 import ImageViewer from "@/components/ImageViewer"
 
-export default function LocalizadasShowContent({
+export default function LocalizadasCRUDContent({
 	localizadasIluminacion,
 	id,
 }: {
@@ -55,7 +55,7 @@ function Localizadas({
 						const localizedId = randomUUID()
 						router.push({
 							pathname:
-								"/(informe)/iluminacion/[id]/localizada/[localizadaId]/localizada-nuevo",
+								"/(informe)/iluminacion/[id]/CRUD/medicion/localizada/[localizadaId]/localizada-nuevo",
 							params: { id, localizedId },
 						})
 					}}
@@ -118,7 +118,8 @@ function LocalizadaMiniCard({
 		<Pressable
 			onPress={() => {
 				router.push({
-					pathname: "/(informe)/iluminacion/[id]/localizada/[localizadaId]",
+					pathname:
+						"/(informe)/iluminacion/[id]/CRUD/medicion/localizada/[localizadaId]",
 					params: { id, localizadaId: localizadaIluminacion.id },
 				})
 			}}

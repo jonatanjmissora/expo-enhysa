@@ -1,8 +1,11 @@
 import Button from "@/components/Button"
+import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
 import { type AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
+import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
 import { router, useLocalSearchParams } from "expo-router"
+import { useState } from "react"
 import {
 	ActivityIndicator,
 	KeyboardAvoidingView,
@@ -26,7 +29,7 @@ import {
 	TextoDimensiones,
 } from "@/components/iluminacion/puntos/puntos-info"
 
-export default function ShowAreaPuntosNuevos() {
+export default function CRUDAreaPuntosEdit() {
 	const { areaId } = useLocalSearchParams<{
 		id?: string
 		areaId?: string
@@ -118,13 +121,27 @@ function PantallaAreaInexistente({ areaId }: { areaId?: string }) {
 }
 
 function MedicionArea({ area }: { area: AreaIluminacionType }) {
-	const show = true
+	const show = false
 	const m = useMedicionArea(area, show)
 	const { scrollRef, onGridLayout } = useScrollCeldaVisible({
 		editing: m.editing,
 		divisiones: m.divisiones,
 		altoFila: m.altoFila,
 	})
+	const [deleteVisible, setDeleteVisible] = useState<boolean>(false)
+
+	const handleEliminarArea = async () => {
+		try {
+			await areaIluminacionRepository.delete(area.id)
+			setDeleteVisible(false)
+			router.push({
+				pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo",
+				params: { id: area.reportId },
+			})
+		} catch (e) {
+			console.error("Error al eliminar el área", e)
+		}
+	}
 
 	return (
 		<View style={{ flex: 1 }}>
@@ -189,6 +206,14 @@ function MedicionArea({ area }: { area: AreaIluminacionType }) {
 					onFinalizar={m.handleFinalizar}
 				/>
 			</ScrollView>
+
+			<ModalDeleteConfirm
+				visible={deleteVisible}
+				title="Eliminar área"
+				message={`¿Estás seguro de que querés eliminar el área "${area.nombre} - ${area.tipo}"? Esta acción no se puede deshacer.`}
+				onClose={() => setDeleteVisible(false)}
+				onConfirm={handleEliminarArea}
+			/>
 		</View>
 	)
 }

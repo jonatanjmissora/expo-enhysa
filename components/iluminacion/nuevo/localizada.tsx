@@ -19,7 +19,7 @@ const FIELDS = [
 	{ key: "observaciones", label: "Observaciones" },
 ] as const
 
-export default function LocalizadaShow({
+export default function LocalizadaCRUD({
 	localizadaIluminacion,
 }: {
 	localizadaIluminacion: LocalizadaIluminacionType
@@ -206,7 +206,7 @@ function MenuLocalizada({
 							setShowMenu(false)
 							router.push({
 								pathname:
-									"/(informe)/iluminacion/[id]/localizada/[localizadaId]/localizada-edit",
+									"/(informe)/iluminacion/[id]/CRUD/medicion/localizada/[localizadaId]/localizada-edit",
 								params: {
 									id: localizadaIluminacion.reportId,
 									localizadaId: localizadaIluminacion.id,

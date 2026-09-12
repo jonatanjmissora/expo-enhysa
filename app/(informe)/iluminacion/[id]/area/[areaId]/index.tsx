@@ -6,9 +6,9 @@ import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
-import Area from "@/components/iluminacion/show/area"
+import AreaShow from "@/components/iluminacion/show/area"
 
-export default function AreaIndex() {
+export default function AreaShowIndex() {
 	const { areaId } = useGlobalSearchParams<{
 		id: string
 		areaId: string
@@ -56,7 +56,7 @@ export default function AreaIndex() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>No existe el localizada</Text>
+				<Text style={{ color: "#94a3b8" }}>No existe el area</Text>
 			</View>
 		)
 	return (
@@ -92,7 +92,7 @@ export default function AreaIndex() {
 					Area
 				</Text>
 			</View>
-			<Area areaIluminacion={areaIluminacion} />
+			<AreaShow areaIluminacion={areaIluminacion} />
 		</ViewWithLogo>
 	)
 }

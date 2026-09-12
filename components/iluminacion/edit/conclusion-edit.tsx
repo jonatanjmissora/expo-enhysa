@@ -11,7 +11,6 @@ import {
 } from "@/src/repositories/informes-iluminacion.repository"
 import { useForm } from "@tanstack/react-form"
 import InformeHeaderContent from "@/components/InformeHeader"
-import { updateTitle } from "@/src/utils/updateInformeIluminacionTitle"
 
 const FIELDS = [
 	{
@@ -56,11 +55,17 @@ export default function IluminacionConclusionEditContent({
 				return router.back()
 			}
 
+			const completo =
+				value.observacion !== "" &&
+				value.conclusion !== "" &&
+				value.recomendacion !== ""
+
 			try {
+				const newTitle = updateTitle(informeIluminacion, completo)
 				await informesIluminacionRepository.update(informeIluminacion.id, {
 					...value,
-					finishedAt: new Date().toISOString(),
-					title: updateTitle(informeIluminacion, informeIluminacion.empresaId),
+					finishedAt: completo ? new Date().toISOString() : "",
+					title: newTitle,
 					observacion: value.observacion,
 					conclusion: value.conclusion,
 					recomendacion: value.recomendacion,
@@ -158,4 +163,17 @@ export default function IluminacionConclusionEditContent({
 			</View>
 		</ScrollView>
 	)
+}
+
+function updateTitle(
+	informeIluminacion: InformesIluminacionType,
+	completo: boolean
+) {
+	const newDate = new Date().toLocaleDateString("es-AR")
+	const empresaTitleString = informeIluminacion.finishedAt
+		? informeIluminacion.title.split(" - ").splice(1).join(" - ")
+		: informeIluminacion.title
+	return completo
+		? `${newDate} - ${empresaTitleString}`
+		: `${empresaTitleString}`
 }

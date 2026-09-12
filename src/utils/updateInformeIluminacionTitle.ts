@@ -1,17 +1,17 @@
 import { InformesIluminacionType } from "../repositories/informes-iluminacion.repository"
 
 export function updateTitle(
-		informe : InformesIluminacionType,
-		empresaId : string
+	informe: InformesIluminacionType,
+	empresaId: string
 ) {
-
 	const oldTitle = informe.finishedAt
-				? informe.title.split(" - ").slice(1).join(" - ")
-				: informe.title
+		? informe.title.split(" - ").slice(1).join(" - ")
+		: informe.title
 
-	const newTitle = informe.empresaId === empresaId
-				? oldTitle
-				: new Date().toISOString() + " - " + oldTitle  
+	const newTitle =
+		informe.empresaId === empresaId
+			? oldTitle
+			: `${new Date().toISOString()} - ${oldTitle}`
 
 	return newTitle
 }

@@ -1,7 +1,7 @@
 import Button from "@/components/Button"
+import AreasCRUDContent from "@/components/iluminacion/nuevo/areas"
 import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
-import AreasContent from "@/components/iluminacion/show/areas"
-import LocalizadasContent from "@/components/iluminacion/show/localizadas"
+import LocalizadasCRUDContent from "@/components/iluminacion/nuevo/localizadas"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
@@ -76,8 +76,8 @@ function MedicionContent({
 					marginHorizontal: "auto",
 				}}
 			>
-				<AreasContent areasIluminacion={areas} id={id} />
-				<LocalizadasContent localizadasIluminacion={localizadas} id={id} />
+				<AreasCRUDContent areasIluminacion={areas} id={id} />
+				<LocalizadasCRUDContent localizadasIluminacion={localizadas} id={id} />
 
 				<Button
 					text="Siguiente"

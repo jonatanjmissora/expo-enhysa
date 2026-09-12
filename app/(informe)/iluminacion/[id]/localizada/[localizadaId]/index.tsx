@@ -1,14 +1,14 @@
 import { View, Text } from "react-native"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import Button from "@/components/Button"
-import Localizada from "@/components/iluminacion/show/localizada"
+import LocalizadaShow from "@/components/iluminacion/show/localizada"
 import { theme } from "@/constants/theme"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
 import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
 import { useCallback, useState } from "react"
 
-export default function LocalizadaIndex() {
+export default function LocalizadaShowIndex() {
 	const { localizadaId } = useGlobalSearchParams<{
 		id: string
 		localizadaId: string
@@ -93,7 +93,7 @@ export default function LocalizadaIndex() {
 					Localizada
 				</Text>
 			</View>
-			<Localizada localizadaIluminacion={localizadaIluminacion} />
+			<LocalizadaShow localizadaIluminacion={localizadaIluminacion} />
 		</ViewWithLogo>
 	)
 }

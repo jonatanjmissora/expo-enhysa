@@ -12,12 +12,7 @@ import { iluminacionGeneralFormValidator } from "@/src/db/schema/informes-ilumin
 import { router } from "expo-router"
 import { theme } from "@/constants/theme"
 import Select from "@/components/Select"
-import {
-	ESTADO,
-	HUMEDAD,
-	TEMPERATURA,
-	updateInformeIluminacionTitle,
-} from "@/constants"
+import { ESTADO, HUMEDAD, TEMPERATURA } from "@/constants"
 import Button from "@/components/Button"
 import InformeHeaderContent from "@/components/InformeHeader"
 import { hasChanges } from "@/src/utils/hasChanges"
@@ -55,13 +50,7 @@ export default function IluminacionGeneralEditFormContent({
 			}
 
 			try {
-				let titleStr = informe.title
-				if (informe.empresaId !== value.empresaId || informe.finishedAt) {
-					const empresa = empresas.find(e => e.id === value.empresaId)
-					titleStr = !empresa
-						? ""
-						: updateInformeIluminacionTitle(informe, empresa)
-				}
+				const newTitle = updateTitle(informe, empresas, value.empresaId)
 
 				await informesIluminacionRepository.update(informe.id, {
 					empresaId: value.empresaId,
@@ -69,7 +58,7 @@ export default function IluminacionGeneralEditFormContent({
 					estado: value.estado,
 					humedad: value.humedad,
 					temperatura: value.temperatura,
-					title: titleStr,
+					title: newTitle,
 				})
 
 				router.back()
@@ -383,4 +372,24 @@ function TecnicoContent({ tecnico }: { tecnico: TecnicoType }) {
 			</Text>
 		</View>
 	)
+}
+
+const updateTitle = (
+	informe: InformesIluminacionType,
+	empresas: EmpresaType[],
+	empresaIdValue: string
+) => {
+	const newDate = new Date().toLocaleDateString("es-AR")
+	return informe.empresaId !== empresaIdValue
+		? informe.finishedAt
+			? `${newDate} - ${getEmpresaString(empresas, empresaIdValue)} - iluminacion`
+			: `${getEmpresaString(empresas, empresaIdValue)} - iluminacion`
+		: informe.finishedAt
+			? `${newDate} - ${getEmpresaString(empresas, informe.empresaId)} - iluminacion`
+			: `${getEmpresaString(empresas, informe.empresaId)} - iluminacion`
+}
+
+const getEmpresaString = (empresas: EmpresaType[], empresaId: string) => {
+	const empresa = empresas.find(empresa => empresa.id === empresaId)
+	return `${empresa?.razonSocial} - ${empresa?.cuit}` || ""
 }

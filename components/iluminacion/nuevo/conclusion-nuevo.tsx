@@ -45,25 +45,17 @@ export default function IluminacionConclusionNuevoContent({
 		onSubmit: async ({ value }) => {
 			setError(null)
 
-			if (
-				value.observacion === "" ||
-				value.conclusion === "" ||
-				value.recomendacion === ""
-			) {
-				return router.push({
-					pathname: "/iluminacion/informes",
-				})
-			}
+			const completo =
+				value.observacion !== "" &&
+				value.conclusion !== "" &&
+				value.recomendacion !== ""
 
-			const finishedAtDate = new Date().toISOString()
-			const finishedAtDateToLocale = new Date(
-				finishedAtDate
-			).toLocaleDateString("es-AR")
-			const titleStr = `${finishedAtDateToLocale} - ${informeIluminacion.title}`
+			const newDate = new Date().toLocaleDateString("es-AR")
+			const titleStr = `${newDate} - ${informeIluminacion.title}`
 			try {
 				await informesIluminacionRepository.update(informeIluminacion.id, {
 					...value,
-					finishedAt: finishedAtDate,
+					finishedAt: completo ? new Date().toISOString() : "",
 					title: titleStr,
 					observacion: value.observacion,
 					conclusion: value.conclusion,
