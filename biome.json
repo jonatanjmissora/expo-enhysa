@@ -24,7 +24,7 @@
 		"enabled": true,
 		"indentStyle": "tab",
 		"lineWidth": 80,
-		"lineEnding": "lf"
+		"lineEnding": "crlf"
 	},
 	"linter": {
 		"enabled": true,

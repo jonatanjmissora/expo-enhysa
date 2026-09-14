@@ -4,10 +4,8 @@ import FirmaPicker from "@/components/perfil/FirmaPicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import {
-	type CreateTecnicoInput,
-	tecnicoRepository,
-} from "@/src/repositories/tecnico.repository"
+import { useCreateTecnico } from "@/src/query/hooks/use-tecnico"
+import type { CreateTecnicoInput } from "@/src/repositories/tecnico.repository"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
@@ -45,6 +43,7 @@ export default function NuevoTecnico() {
 
 function TecnicoNuevoForm() {
 	const router = useRouter()
+	const createTecnico = useCreateTecnico()
 
 	const [error, setError] = useState<string | null>(null)
 	const [matriculaImg, setMatriculaImg] = useState<string | null>(null)
@@ -66,7 +65,7 @@ function TecnicoNuevoForm() {
 
 			setError(null)
 			try {
-				await tecnicoRepository.create({
+				await createTecnico.mutateAsync({
 					...value,
 					matriculaImg,
 					firmaImg,

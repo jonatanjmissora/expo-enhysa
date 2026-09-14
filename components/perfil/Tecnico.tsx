@@ -1,11 +1,12 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import {
-	type TecnicoType,
-	tecnicoRepository,
-} from "@/src/repositories/tecnico.repository"
-import { useFocusEffect, useRouter } from "expo-router"
-import { useCallback, useState } from "react"
+	useDeleteTecnico,
+	useTecnicoByUserId,
+} from "@/src/query/hooks/use-tecnico"
+import type { TecnicoType } from "@/src/repositories/tecnico.repository"
+import { useRouter } from "expo-router"
+import { useState } from "react"
 import { Text, View } from "react-native"
 import ImageViewer from "../ImageViewer"
 import ModalDeleteConfirm from "../ModalDeleteConfirm"
@@ -23,24 +24,10 @@ const FIELDS = [
 ] as const
 
 export default function Tecnico() {
-	const [tecnico, setTecnico] = useState<TecnicoType | null | undefined>(
-		undefined
-	)
-
-	const load = useCallback(async () => {
-		const data = await tecnicoRepository.getByUserId(USER_ID)
-		setTecnico(data ?? null)
-	}, [])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
+	const { data: tecnico, isLoading } = useTecnicoByUserId(USER_ID)
 	const router = useRouter()
 
-	if (tecnico === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -75,16 +62,10 @@ export default function Tecnico() {
 		)
 	}
 
-	return <TecnicoItem tecnico={tecnico} onDeleted={load} />
+	return <TecnicoItem tecnico={tecnico} />
 }
 
-function TecnicoItem({
-	tecnico,
-	onDeleted,
-}: {
-	tecnico: TecnicoType
-	onDeleted: () => void
-}) {
+function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 	return (
 		<View
 			style={{
@@ -97,7 +78,7 @@ function TecnicoItem({
 				paddingBottom: 100,
 			}}
 		>
-			<MenuTecnico tecnico={tecnico} onDeleted={onDeleted} />
+			<MenuTecnico tecnico={tecnico} />
 
 			{FIELDS.map(field => (
 				<View
@@ -187,21 +168,15 @@ function TecnicoItem({
 	)
 }
 
-function MenuTecnico({
-	tecnico,
-	onDeleted,
-}: {
-	tecnico: TecnicoType
-	onDeleted?: () => void
-}) {
+function MenuTecnico({ tecnico }: { tecnico: TecnicoType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()
+	const deleteTecnico = useDeleteTecnico()
 
 	const handleDelete = async () => {
 		try {
-			await tecnicoRepository.delete(tecnico.id)
-			onDeleted?.()
+			await deleteTecnico.mutateAsync(tecnico.id)
 		} catch (error) {
 			console.error(error)
 		}

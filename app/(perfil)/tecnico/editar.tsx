@@ -4,12 +4,10 @@ import FirmaPicker from "@/components/perfil/FirmaPicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import {
-	TecnicoType,
-	tecnicoRepository,
-} from "@/src/repositories/tecnico.repository"
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
-import { useCallback, useState } from "react"
+import { useTecnicoById, useUpdateTecnico } from "@/src/query/hooks/use-tecnico"
+import type { TecnicoType } from "@/src/repositories/tecnico.repository"
+import { useLocalSearchParams, useRouter } from "expo-router"
+import { useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
 import { useForm } from "@tanstack/react-form"
 import { tecnicoFormValidator } from "@/src/db/schema/tecnicos"
@@ -28,25 +26,9 @@ const FIELDS = [
 
 export default function EditarTecnico() {
 	const { tecnicoId } = useLocalSearchParams<{ tecnicoId: string }>()
-	const [tecnico, setTecnico] = useState<TecnicoType | null | undefined>(
-		undefined
-	)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadTecnicoById() {
-				if (!tecnicoId) return
-				try {
-					const data = await tecnicoRepository.getById(tecnicoId)
-					setTecnico(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadTecnicoById()
-		}, [tecnicoId])
-	)
+	const { data: tecnico, isLoading } = useTecnicoById(tecnicoId)
 
-	if (tecnico === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -94,6 +76,7 @@ export default function EditarTecnico() {
 
 function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 	const router = useRouter()
+	const updateTecnico = useUpdateTecnico()
 
 	const [error, setError] = useState<string | null>(null)
 	const [matriculaImg, setMatriculaImg] = useState<string | null>(
@@ -143,13 +126,16 @@ function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 			}
 
 			try {
-				await tecnicoRepository.update(tecnico.id, {
-					...value,
-					matriculaImg,
-					firmaImg,
-					empresaLogo,
-					dni: value.dni ? Number(value.dni) : null,
-					userId: USER_ID,
+				await updateTecnico.mutateAsync({
+					id: tecnico.id,
+					input: {
+						...value,
+						matriculaImg,
+						firmaImg,
+						empresaLogo,
+						dni: value.dni ? Number(value.dni) : null,
+						userId: USER_ID,
+					},
 				})
 				router.dismissTo("/(inicio)/perfil")
 			} catch (e) {
