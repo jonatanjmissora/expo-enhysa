@@ -24,8 +24,6 @@ import { useUpdateAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion
 import { hasChanges } from "@/src/utils/hasChanges"
 import Formula from "../puntos/formula"
 
-const USER_ID = "user-1"
-
 export default function IluminacionCRUDAreaEditContent({
 	areaIluminacion,
 }: {
@@ -73,7 +71,6 @@ export default function IluminacionCRUDAreaEditContent({
 					input: {
 						...value,
 						imagenes,
-						userId: USER_ID,
 					},
 				})
 				router.push({

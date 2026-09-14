@@ -11,8 +11,6 @@ import { ScrollView, Text, TextInput, View } from "react-native"
 import { useForm } from "@tanstack/react-form"
 import { defaultEmpresa, empresaFormValidator } from "@/src/db/schema/empresas"
 
-const USER_ID = "user-1"
-
 const FIELDS = [
 	{ key: "razonSocial", label: "Razón Social", placeholder: "Mi Empresa SRL" },
 	{ key: "cuit", label: "CUIT", placeholder: "20304050607" },
@@ -66,8 +64,7 @@ function EmpresaNuevoForm() {
 				await createEmpresa.mutateAsync({
 					...value,
 					logo,
-					userId: USER_ID,
-				} satisfies CreateEmpresaInput)
+				} satisfies Omit<CreateEmpresaInput, "userId">)
 				router.dismissTo("/(inicio)/perfil?header=empresa")
 			} catch (e) {
 				setError(

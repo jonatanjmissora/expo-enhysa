@@ -1,23 +1,20 @@
 import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
-import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
-import { useInstrumentosByUserId } from "@/src/query/hooks/use-instrumento"
+import { useEmpresas } from "@/src/query/hooks/use-empresa"
+import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
 import { router, useGlobalSearchParams } from "expo-router"
-import { ScrollView, View, Text } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
 import GeneralContent from "@/components/iluminacion/show/general"
-
-const USER_ID = "user-1"
 
 export default function General() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const { data: informe, isLoading: isLoadingInforme } =
 		useInformeIluminacionById(id)
-	const { data: empresas, isLoading: isLoadingEmpresas } =
-		useEmpresasByUserId(USER_ID)
+	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
 	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
-		useInstrumentosByUserId(USER_ID)
+		useInstrumentos()
 
 	const loading = isLoadingInforme || isLoadingEmpresas || isLoadingInstrumentos
 

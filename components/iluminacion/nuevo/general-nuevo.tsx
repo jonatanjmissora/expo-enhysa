@@ -16,8 +16,6 @@ import {
 } from "@/src/db/schema/informes-iluminacion"
 import { randomUUID } from "expo-crypto"
 
-const USER_ID = "user-1"
-
 export default function IluminacionGeneralFormContent({
 	tecnico,
 	empresas,
@@ -44,7 +42,6 @@ export default function IluminacionGeneralFormContent({
 					...value,
 					id: informeId,
 					tecnicoId: tecnico?.id ?? "",
-					userId: USER_ID,
 					title: titleStr,
 					createdAt: new Date().toISOString(),
 					finishedAt: "",

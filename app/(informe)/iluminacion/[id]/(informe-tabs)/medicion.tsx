@@ -2,20 +2,17 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { router, useGlobalSearchParams } from "expo-router"
 import { ScrollView, View, Text } from "react-native"
 import MedicionContent from "@/components/iluminacion/show/medicion"
-import { useAreasIluminacionByReportId } from "@/src/query/hooks/use-area-iluminacion"
-import { useLocalizadasIluminacionByReportId } from "@/src/query/hooks/use-localizada-iluminacion"
+import { useAreasIluminacion } from "@/src/query/hooks/use-area-iluminacion"
+import { useLocalizadasIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 
-const USER_ID = "user-1"
-
 export default function Medicion() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
-	const { data: areas, isLoading: isLoadingAreas } =
-		useAreasIluminacionByReportId(id, USER_ID)
+	const { data: areas, isLoading: isLoadingAreas } = useAreasIluminacion(id)
 	const { data: localizadas, isLoading: isLoadingLocalizadas } =
-		useLocalizadasIluminacionByReportId(id, USER_ID)
+		useLocalizadasIluminacion(id)
 	const { data: informe, isLoading: isLoadingInforme } =
 		useInformeIluminacionById(id)
 

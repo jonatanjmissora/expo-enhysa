@@ -2,14 +2,12 @@ import Button from "@/components/Button"
 import { router } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
-import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
+import { useEmpresas } from "@/src/query/hooks/use-empresa"
 import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import ImageViewer from "../ImageViewer"
 
-const USER_ID = "user-1"
-
 export default function Empresas() {
-	const { data: empresas, isLoading } = useEmpresasByUserId(USER_ID)
+	const { data: empresas, isLoading } = useEmpresas()
 
 	if (isLoading) {
 		return (

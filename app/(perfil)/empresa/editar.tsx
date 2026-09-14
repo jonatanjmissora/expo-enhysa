@@ -12,8 +12,6 @@ import { useForm } from "@tanstack/react-form"
 import { empresaFormValidator } from "@/src/db/schema/empresas"
 import { hasChanges } from "@/src/utils/hasChanges"
 
-const USER_ID = "user-1"
-
 const FIELDS = [
 	{ key: "cuit", label: "CUIT", placeholder: "20304050607" },
 	{ key: "razonSocial", label: "Razón Social", placeholder: "Mi Empresa SRL" },
@@ -115,7 +113,6 @@ function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 					input: {
 						...value,
 						logo,
-						userId: USER_ID,
 					},
 				})
 				router.dismissTo("/(inicio)/perfil?header=empresa")

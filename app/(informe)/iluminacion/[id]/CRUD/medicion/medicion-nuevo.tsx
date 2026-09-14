@@ -5,19 +5,16 @@ import LocalizadasCRUDContent from "@/components/iluminacion/nuevo/localizadas"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
-import { useAreasIluminacionByReportId } from "@/src/query/hooks/use-area-iluminacion"
-import { useLocalizadasIluminacionByReportId } from "@/src/query/hooks/use-localizada-iluminacion"
+import { useAreasIluminacion } from "@/src/query/hooks/use-area-iluminacion"
+import { useLocalizadasIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 import { router, useLocalSearchParams } from "expo-router"
 import { View, ScrollView } from "react-native"
 
-const USER_ID = "user-1"
-
 export default function MedicionNuevo() {
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: areas, isLoading: isLoadingAreas } =
-		useAreasIluminacionByReportId(id, USER_ID)
+	const { data: areas, isLoading: isLoadingAreas } = useAreasIluminacion(id)
 	const { data: localizadas, isLoading: isLoadingLocalizadas } =
-		useLocalizadasIluminacionByReportId(id, USER_ID)
+		useLocalizadasIluminacion(id)
 
 	if (isLoadingAreas || isLoadingLocalizadas) {
 		return (

@@ -3,9 +3,11 @@ import {
 	type CreateEmpresaInput,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
+import { useUserId } from "@/src/session/session-context"
 import { empresaKeys } from "../keys/empresa.keys"
 
-export function useEmpresasByUserId(userId: string) {
+export function useEmpresas() {
+	const userId = useUserId()
 	return useQuery({
 		queryKey: empresaKeys.byUserId(userId),
 		queryFn: () => empresaRepository.getAllByUserId(userId),
@@ -29,8 +31,10 @@ export function useEmpresaById(id: string | undefined) {
 
 export function useCreateEmpresa() {
 	const qc = useQueryClient()
+	const userId = useUserId()
 	return useMutation({
-		mutationFn: (input: CreateEmpresaInput) => empresaRepository.create(input),
+		mutationFn: (input: Omit<CreateEmpresaInput, "userId">) =>
+			empresaRepository.create({ ...input, userId }),
 		onSuccess: () => qc.invalidateQueries({ queryKey: empresaKeys.all }),
 	})
 }
@@ -43,7 +47,7 @@ export function useUpdateEmpresa() {
 			input,
 		}: {
 			id: string
-			input: Partial<CreateEmpresaInput>
+			input: Partial<Omit<CreateEmpresaInput, "userId">>
 		}) => empresaRepository.update(id, input),
 		onSuccess: () => qc.invalidateQueries({ queryKey: empresaKeys.all }),
 	})

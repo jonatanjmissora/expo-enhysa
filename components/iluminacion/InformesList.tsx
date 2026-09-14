@@ -3,18 +3,15 @@ import type { InformesIluminacionType } from "@/src/repositories/informes-ilumin
 import { router } from "expo-router"
 import { theme } from "@/constants/theme"
 import type { EmpresaType } from "@/src/repositories/empresa.repository"
-import { useInformesIluminacionByUserId } from "@/src/query/hooks/use-informe-iluminacion"
-import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
+import { useInformesIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
+import { useEmpresas } from "@/src/query/hooks/use-empresa"
 import Button from "../Button"
 import InformeCard from "./InformeCard"
 
-const USER_ID = "user-1"
-
 export default function InformesList({ qnt }: { qnt: number }) {
 	const { data: informes, isLoading: isLoadingInformes } =
-		useInformesIluminacionByUserId(USER_ID)
-	const { data: empresas, isLoading: isLoadingEmpresas } =
-		useEmpresasByUserId(USER_ID)
+		useInformesIluminacion()
+	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
 
 	if (isLoadingInformes || isLoadingEmpresas) {
 		return (

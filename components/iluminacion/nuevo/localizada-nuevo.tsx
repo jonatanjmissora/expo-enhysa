@@ -22,8 +22,6 @@ import {
 } from "@/src/db/schema/localizadas-iluminacion"
 import { useCreateLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 
-const USER_ID = "user-1"
-
 export default function IluminacionLocalizadaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
@@ -48,7 +46,6 @@ export default function IluminacionLocalizadaNuevoContent() {
 					iluminacion: "localizada",
 					imagenes,
 					timestamps: [new Date().toISOString()],
-					userId: USER_ID,
 				})
 				router.push({
 					pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo",

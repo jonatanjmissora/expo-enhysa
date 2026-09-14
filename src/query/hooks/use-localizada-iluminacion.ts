@@ -3,12 +3,11 @@ import {
 	type CreateLocalizadaIluminacionInput,
 	localizadaIluminacionRepository,
 } from "@/src/repositories/localizada-iluminacion.repository"
+import { useUserId } from "@/src/session/session-context"
 import { localizadaIluminacionKeys } from "../keys/localizada-iluminacion.keys"
 
-export function useLocalizadasIluminacionByReportId(
-	reportId: string | undefined,
-	userId: string
-) {
+export function useLocalizadasIluminacion(reportId: string | undefined) {
+	const userId = useUserId()
 	return useQuery({
 		queryKey: localizadaIluminacionKeys.byReportId(reportId ?? "", userId),
 		queryFn: () => {
@@ -41,9 +40,10 @@ export function useLocalizadaIluminacionById(id: string | undefined) {
 
 export function useCreateLocalizadaIluminacion() {
 	const qc = useQueryClient()
+	const userId = useUserId()
 	return useMutation({
-		mutationFn: (input: CreateLocalizadaIluminacionInput) =>
-			localizadaIluminacionRepository.create(input),
+		mutationFn: (input: Omit<CreateLocalizadaIluminacionInput, "userId">) =>
+			localizadaIluminacionRepository.create({ ...input, userId }),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: localizadaIluminacionKeys.all }),
 	})
@@ -57,7 +57,7 @@ export function useUpdateLocalizadaIluminacion() {
 			input,
 		}: {
 			id: string
-			input: Partial<CreateLocalizadaIluminacionInput>
+			input: Partial<Omit<CreateLocalizadaIluminacionInput, "userId">>
 		}) => localizadaIluminacionRepository.update(id, input),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: localizadaIluminacionKeys.all }),

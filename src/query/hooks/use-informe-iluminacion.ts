@@ -3,9 +3,11 @@ import {
 	type CreateInformesIluminacionInput,
 	informesIluminacionRepository,
 } from "@/src/repositories/informes-iluminacion.repository"
+import { useUserId } from "@/src/session/session-context"
 import { informeIluminacionKeys } from "../keys/informe-iluminacion.keys"
 
-export function useInformesIluminacionByUserId(userId: string) {
+export function useInformesIluminacion() {
+	const userId = useUserId()
 	return useQuery({
 		queryKey: informeIluminacionKeys.byUserId(userId),
 		queryFn: () => informesIluminacionRepository.getAllByUserId(userId),
@@ -29,9 +31,10 @@ export function useInformeIluminacionById(id: string | undefined) {
 
 export function useCreateInformeIluminacion() {
 	const qc = useQueryClient()
+	const userId = useUserId()
 	return useMutation({
-		mutationFn: (input: CreateInformesIluminacionInput) =>
-			informesIluminacionRepository.create(input),
+		mutationFn: (input: Omit<CreateInformesIluminacionInput, "userId">) =>
+			informesIluminacionRepository.create({ ...input, userId }),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
 	})
@@ -45,7 +48,7 @@ export function useUpdateInformeIluminacion() {
 			input,
 		}: {
 			id: string
-			input: Partial<CreateInformesIluminacionInput>
+			input: Partial<Omit<CreateInformesIluminacionInput, "userId">>
 		}) => informesIluminacionRepository.update(id, input),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),

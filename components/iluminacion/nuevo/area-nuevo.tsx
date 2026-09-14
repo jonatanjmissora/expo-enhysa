@@ -24,8 +24,6 @@ import { useCreateAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion
 import { randomUUID } from "expo-crypto"
 import Formula from "@/components/iluminacion/puntos/formula"
 
-const USER_ID = "user-1"
-
 export default function IluminacionCRUDAreaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
@@ -46,7 +44,6 @@ export default function IluminacionCRUDAreaNuevoContent() {
 					imagenes,
 					puntos: [],
 					timestamps: [],
-					userId: USER_ID,
 				})
 				router.push({
 					pathname:

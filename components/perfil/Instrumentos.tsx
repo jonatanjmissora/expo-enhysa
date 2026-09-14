@@ -1,15 +1,13 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import { useInstrumentosByUserId } from "@/src/query/hooks/use-instrumento"
+import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
 import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { router } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import ImageViewer from "../ImageViewer"
 
-const USER_ID = "user-1"
-
 export default function Instrumentos() {
-	const { data: instrumentos, isLoading } = useInstrumentosByUserId(USER_ID)
+	const { data: instrumentos, isLoading } = useInstrumentos()
 
 	if (isLoading) {
 		return (

@@ -22,8 +22,6 @@ import {
 import { useUpdateLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 import { hasChanges } from "@/src/utils/hasChanges"
 
-const USER_ID = "user-1"
-
 export default function IluminacionShowLocalizadaEditContent({
 	localizadaIluminacion,
 }: {
@@ -72,7 +70,6 @@ export default function IluminacionShowLocalizadaEditContent({
 					input: {
 						...value,
 						imagenes,
-						userId: USER_ID,
 					},
 				})
 				router.push({

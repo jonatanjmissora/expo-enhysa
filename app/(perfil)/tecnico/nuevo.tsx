@@ -12,8 +12,6 @@ import { ScrollView, Text, TextInput, View } from "react-native"
 import { useForm } from "@tanstack/react-form"
 import { defaultTecnico, tecnicoFormValidator } from "@/src/db/schema/tecnicos"
 
-const USER_ID = "user-1"
-
 const FIELDS = [
 	{ key: "nombre", label: "Nombre", placeholder: "Juan Pérez" },
 	{ key: "dni", label: "DNI", placeholder: "29123456" },
@@ -71,8 +69,7 @@ function TecnicoNuevoForm() {
 					firmaImg,
 					empresaLogo,
 					dni: value.dni ? Number(value.dni) : null,
-					userId: USER_ID,
-				} satisfies CreateTecnicoInput)
+				} satisfies Omit<CreateTecnicoInput, "userId">)
 				router.dismissTo("/(inicio)/perfil")
 			} catch (e) {
 				setError(

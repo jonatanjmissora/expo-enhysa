@@ -2,22 +2,18 @@ import Button from "@/components/Button"
 import IluminacionGeneralEditFormContent from "@/components/iluminacion/edit/general-edit"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
-import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
-import { useInstrumentosByUserId } from "@/src/query/hooks/use-instrumento"
-import { useTecnicoByUserId } from "@/src/query/hooks/use-tecnico"
+import { useEmpresas } from "@/src/query/hooks/use-empresa"
+import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
+import { useTecnico } from "@/src/query/hooks/use-tecnico"
 import { router, useLocalSearchParams } from "expo-router"
 import { View, Text } from "react-native"
 
-const USER_ID = "user-1"
-
 export default function IluminacionGeneralEditContent() {
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: tecnico, isLoading: isLoadingTecnico } =
-		useTecnicoByUserId(USER_ID)
-	const { data: empresas, isLoading: isLoadingEmpresas } =
-		useEmpresasByUserId(USER_ID)
+	const { data: tecnico, isLoading: isLoadingTecnico } = useTecnico()
+	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
 	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
-		useInstrumentosByUserId(USER_ID)
+		useInstrumentos()
 	const { data: informe, isLoading: isLoadingInforme } =
 		useInformeIluminacionById(id)
 

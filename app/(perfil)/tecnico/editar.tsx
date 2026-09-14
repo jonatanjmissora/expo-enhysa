@@ -13,8 +13,6 @@ import { useForm } from "@tanstack/react-form"
 import { tecnicoFormValidator } from "@/src/db/schema/tecnicos"
 import { hasChanges } from "@/src/utils/hasChanges"
 
-const USER_ID = "user-1"
-
 const FIELDS = [
 	{ key: "nombre", label: "Nombre", placeholder: "Juan Pérez" },
 	{ key: "dni", label: "DNI", placeholder: "29123456" },
@@ -134,7 +132,6 @@ function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 						firmaImg,
 						empresaLogo,
 						dni: value.dni ? Number(value.dni) : null,
-						userId: USER_ID,
 					},
 				})
 				router.dismissTo("/(inicio)/perfil")

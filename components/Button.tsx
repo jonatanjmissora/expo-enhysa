@@ -16,6 +16,7 @@ export default function Button({
 	variant = "primary",
 	size = "medium",
 	iconSize = 24,
+	iconColor,
 }: {
 	iconLeft?: IconName
 	iconRight?: IconName
@@ -27,6 +28,7 @@ export default function Button({
 	variant?: "primary" | "secondary" | "ghost" | "danger"
 	size?: "xsmall" | "small" | "medium" | "large"
 	iconSize?: number
+	iconColor?: string
 }) {
 	const fontSize =
 		size === "xsmall" ? 12 : size === "small" ? 14 : size === "medium" ? 16 : 20
@@ -63,7 +65,7 @@ export default function Button({
 				...style,
 			})}
 		>
-			{iconLeft && <Ionicons name={iconLeft} size={iconSize} color="white" />}
+			{iconLeft && <Ionicons name={iconLeft} size={iconSize} color={iconColor || "white"} />}
 			<Text
 				style={{
 					color: "#fff",

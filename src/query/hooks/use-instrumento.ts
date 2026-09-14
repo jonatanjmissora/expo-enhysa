@@ -3,9 +3,11 @@ import {
 	type CreateInstrumentoInput,
 	instrumentoRepository,
 } from "@/src/repositories/instrumento.repository"
+import { useUserId } from "@/src/session/session-context"
 import { instrumentoKeys } from "../keys/instrumento.keys"
 
-export function useInstrumentosByUserId(userId: string) {
+export function useInstrumentos() {
+	const userId = useUserId()
 	return useQuery({
 		queryKey: instrumentoKeys.byUserId(userId),
 		queryFn: () => instrumentoRepository.getAllByUserId(userId),
@@ -29,9 +31,10 @@ export function useInstrumentoById(id: string | undefined) {
 
 export function useCreateInstrumento() {
 	const qc = useQueryClient()
+	const userId = useUserId()
 	return useMutation({
-		mutationFn: (input: CreateInstrumentoInput) =>
-			instrumentoRepository.create(input),
+		mutationFn: (input: Omit<CreateInstrumentoInput, "userId">) =>
+			instrumentoRepository.create({ ...input, userId }),
 		onSuccess: () => qc.invalidateQueries({ queryKey: instrumentoKeys.all }),
 	})
 }
@@ -44,7 +47,7 @@ export function useUpdateInstrumento() {
 			input,
 		}: {
 			id: string
-			input: Partial<CreateInstrumentoInput>
+			input: Partial<Omit<CreateInstrumentoInput, "userId">>
 		}) => instrumentoRepository.update(id, input),
 		onSuccess: () => qc.invalidateQueries({ queryKey: instrumentoKeys.all }),
 	})

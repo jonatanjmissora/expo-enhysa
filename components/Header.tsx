@@ -6,9 +6,11 @@ import ImageViewer from "./ImageViewer"
 import { theme } from "@/constants/theme"
 import Button from "./Button"
 import { router } from "expo-router"
+import { useSession } from "@/src/session/session-context"
 
 export default function Header() {
 	const insets = useSafeAreaInsets()
+	const { isRegistered } = useSession()
 
 	return (
 		<View
@@ -43,9 +45,11 @@ export default function Header() {
 				</Text>
 			</Pressable>
 			<Button
-				text="Log in"
+				text={isRegistered ? "Cuenta" : "Log in"}
 				variant="secondary"
-				onPress={() => {}}
+				onPress={() =>
+					router.push(isRegistered ? "/auth/cuenta" : "/auth/login")
+				}
 				size="xsmall"
 			/>
 		</View>

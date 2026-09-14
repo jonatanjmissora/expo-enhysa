@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite"
+import { CREATE_USERS_TABLE } from "./schema/users"
 import { CREATE_TECNICOS_TABLE } from "./schema/tecnicos"
 import { CREATE_EMPRESAS_TABLE } from "./schema/empresas"
 import { CREATE_INSTRUMENTOS_TABLE } from "./schema/instrumentos"
@@ -57,6 +58,7 @@ async function migrateDatabase(database: SQLite.SQLiteDatabase) {
 
 async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await migrateDatabase(database)
+	await database.execAsync(CREATE_USERS_TABLE)
 	await database.execAsync(CREATE_TECNICOS_TABLE)
 	await database.execAsync(CREATE_EMPRESAS_TABLE)
 	await database.execAsync(CREATE_INSTRUMENTOS_TABLE)
@@ -67,6 +69,9 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await ensureUpdatedAtColumn(database, "informes_iluminacion")
 	await ensureUpdatedAtColumn(database, "areas_iluminacion")
 	await ensureUpdatedAtColumn(database, "localizadas_iluminacion")
+	await ensureUpdatedAtColumn(database, "tecnicos")
+	await ensureUpdatedAtColumn(database, "empresas")
+	await ensureUpdatedAtColumn(database, "instrumentos")
 }
 
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {

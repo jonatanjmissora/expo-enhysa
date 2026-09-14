@@ -16,8 +16,6 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker"
 import ImageViewer from "@/components/ImageViewer"
 
-const USER_ID = "user-1"
-
 const FIELDS = [
 	{ key: "nombre", label: "Nombre", placeholder: "Amperímetro" },
 	{ key: "marca", label: "Marca", placeholder: "Fluke" },
@@ -70,8 +68,7 @@ function InstrumentoNuevoForm() {
 					fechaCalibracion: value.fechaCalibracion.toISOString(),
 					imagenesCalibracion: JSON.stringify(imagenesCalibracion),
 					imagenes: JSON.stringify(imagenes),
-					userId: USER_ID,
-				} satisfies CreateInstrumentoInput)
+				} satisfies Omit<CreateInstrumentoInput, "userId">)
 				router.dismissTo("/(inicio)/perfil?header=instrumento")
 			} catch (e) {
 				setError(

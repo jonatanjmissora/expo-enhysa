@@ -1,9 +1,6 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import {
-	useDeleteTecnico,
-	useTecnicoByUserId,
-} from "@/src/query/hooks/use-tecnico"
+import { useDeleteTecnico, useTecnico } from "@/src/query/hooks/use-tecnico"
 import type { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { useRouter } from "expo-router"
 import { useState } from "react"
@@ -11,8 +8,6 @@ import { Text, View } from "react-native"
 import ImageViewer from "../ImageViewer"
 import ModalDeleteConfirm from "../ModalDeleteConfirm"
 import PictureNotFound from "../PictureNotFound"
-
-const USER_ID = "user-1"
 
 const FIELDS = [
 	{ key: "nombre", label: "Nombre Completo", placeholder: "Juan Pérez" },
@@ -24,7 +19,7 @@ const FIELDS = [
 ] as const
 
 export default function Tecnico() {
-	const { data: tecnico, isLoading } = useTecnicoByUserId(USER_ID)
+	const { data: tecnico, isLoading } = useTecnico()
 	const router = useRouter()
 
 	if (isLoading) {

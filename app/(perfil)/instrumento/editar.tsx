@@ -17,8 +17,6 @@ import { instrumentoFormValidator } from "@/src/db/schema/instrumentos"
 import { hasChanges } from "@/src/utils/hasChanges"
 import DateTimePicker from "@react-native-community/datetimepicker"
 
-const USER_ID = "user-1"
-
 const FIELDS = [
 	{ key: "nombre", label: "Nombre", placeholder: "Amperímetro" },
 	{ key: "marca", label: "Marca", placeholder: "Fluke" },
@@ -141,7 +139,6 @@ function InstrumentoEditForm({
 						fechaCalibracion: value.fechaCalibracion.toISOString(),
 						imagenesCalibracion: JSON.stringify(imagenesCalibracion),
 						imagenes: JSON.stringify(imagenes),
-						userId: USER_ID,
 					},
 				})
 				router.dismissTo("/(inicio)/perfil?header=instrumento")

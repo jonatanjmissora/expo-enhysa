@@ -3,12 +3,11 @@ import {
 	type CreateAreaIluminacionInput,
 	areaIluminacionRepository,
 } from "@/src/repositories/area-iluminacion.repository"
+import { useUserId } from "@/src/session/session-context"
 import { areaIluminacionKeys } from "../keys/area-iluminacion.keys"
 
-export function useAreasIluminacionByReportId(
-	reportId: string | undefined,
-	userId: string
-) {
+export function useAreasIluminacion(reportId: string | undefined) {
+	const userId = useUserId()
 	return useQuery({
 		queryKey: areaIluminacionKeys.byReportId(reportId ?? "", userId),
 		queryFn: () => {
@@ -41,9 +40,10 @@ export function useAreaIluminacionById(id: string | undefined) {
 
 export function useCreateAreaIluminacion() {
 	const qc = useQueryClient()
+	const userId = useUserId()
 	return useMutation({
-		mutationFn: (input: CreateAreaIluminacionInput) =>
-			areaIluminacionRepository.create(input),
+		mutationFn: (input: Omit<CreateAreaIluminacionInput, "userId">) =>
+			areaIluminacionRepository.create({ ...input, userId }),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: areaIluminacionKeys.all }),
 	})
@@ -57,7 +57,7 @@ export function useUpdateAreaIluminacion() {
 			input,
 		}: {
 			id: string
-			input: Partial<CreateAreaIluminacionInput>
+			input: Partial<Omit<CreateAreaIluminacionInput, "userId">>
 		}) => areaIluminacionRepository.update(id, input),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: areaIluminacionKeys.all }),
