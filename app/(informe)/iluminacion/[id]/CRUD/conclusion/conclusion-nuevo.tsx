@@ -2,32 +2,14 @@ import IluminacionConclusionNuevoContent from "@/components/iluminacion/nuevo/co
 import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { Text, View } from "react-native"
-import { useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
-import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
-import { informesIluminacionRepository } from "@/src/repositories/informes-iluminacion.repository"
+import { useGlobalSearchParams } from "expo-router"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 
 export default function ConclusionNuevo() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [loading, setLoading] = useState<boolean>(true)
-	const [informeIluminacion, setInformeIluminacion] =
-		useState<InformesIluminacionType | null>(null)
+	const { data: informeIluminacion, isLoading } = useInformeIluminacionById(id)
 
-	const load = useCallback(async () => {
-		const informeIluminacionData = await informesIluminacionRepository.getById(
-			id ?? ""
-		)
-		setInformeIluminacion(informeIluminacionData ?? null)
-		setLoading(false)
-	}, [id])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading)
+	if (isLoading)
 		return (
 			<View style={{}}>
 				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}

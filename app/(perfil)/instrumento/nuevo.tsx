@@ -3,10 +3,8 @@ import ImagePicker from "@/components/ImagePicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import {
-	type CreateInstrumentoInput,
-	instrumentoRepository,
-} from "@/src/repositories/instrumento.repository"
+import { useCreateInstrumento } from "@/src/query/hooks/use-instrumento"
+import type { CreateInstrumentoInput } from "@/src/repositories/instrumento.repository"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
@@ -51,6 +49,7 @@ export default function NuevoInstrumento() {
 
 function InstrumentoNuevoForm() {
 	const router = useRouter()
+	const createInstrumento = useCreateInstrumento()
 
 	const [error, setError] = useState<string | null>(null)
 	const [imagenesCalibracion, setImagenesCalibracion] = useState<string[]>([])
@@ -63,7 +62,7 @@ function InstrumentoNuevoForm() {
 		onSubmit: async ({ value }) => {
 			setError(null)
 			try {
-				await instrumentoRepository.create({
+				await createInstrumento.mutateAsync({
 					nombre: value.nombre,
 					marca: value.marca,
 					modelo: value.modelo,

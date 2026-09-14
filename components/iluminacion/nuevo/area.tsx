@@ -5,8 +5,8 @@ import { useState } from "react"
 import { router } from "expo-router"
 import Button from "@/components/Button"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
-import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import type { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
+import { useDeleteAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
 import { useMedicionArea } from "../puntos/puntos-hooks"
 import { getColoresEstado, getEstadoCelda } from "../puntos/puntos-utils"
 import {
@@ -178,10 +178,11 @@ function MenuArea({
 }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
+	const deleteArea = useDeleteAreaIluminacion()
 
 	const handleDelete = async () => {
 		try {
-			await areaIluminacionRepository.delete(areaIluminacion.id)
+			await deleteArea.mutateAsync(areaIluminacion.id)
 			router.back()
 		} catch (error) {
 			console.error(error)

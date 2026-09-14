@@ -3,10 +3,8 @@ import ImagePicker from "@/components/ImagePicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import {
-	type CreateEmpresaInput,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
+import { useCreateEmpresa } from "@/src/query/hooks/use-empresa"
+import type { CreateEmpresaInput } from "@/src/repositories/empresa.repository"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
@@ -49,6 +47,7 @@ export default function NuevaEmpresa() {
 
 function EmpresaNuevoForm() {
 	const router = useRouter()
+	const createEmpresa = useCreateEmpresa()
 
 	const [error, setError] = useState<string | null>(null)
 	const [logo, setLogo] = useState<string | null>(null)
@@ -64,7 +63,7 @@ function EmpresaNuevoForm() {
 			}
 
 			try {
-				await empresaRepository.create({
+				await createEmpresa.mutateAsync({
 					...value,
 					logo,
 					userId: USER_ID,

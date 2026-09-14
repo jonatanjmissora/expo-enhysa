@@ -36,7 +36,7 @@ export default function Tecnico() {
 					justifyContent: "center",
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando técnico…</Text>
 			</View>
 		)
 	}
@@ -223,6 +223,7 @@ function MenuTecnico({ tecnico }: { tecnico: TecnicoType }) {
 						size="small"
 						style={{ flex: 1, gap: 4 }}
 						onPress={() => {
+							setShowMenu(false)
 							router.push({
 								pathname: "/tecnico/editar",
 								params: { tecnicoId: tecnico.id },

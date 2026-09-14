@@ -1,15 +1,8 @@
 import { View, Text, ScrollView } from "react-native"
-import {
-	router,
-	useFocusEffect,
-	useLocalSearchParams,
-	useRouter,
-} from "expo-router"
-import { useCallback, useState } from "react"
-import {
-	type EmpresaType,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
+import { router, useLocalSearchParams, useRouter } from "expo-router"
+import { useState } from "react"
+import { useDeleteEmpresa, useEmpresaById } from "@/src/query/hooks/use-empresa"
+import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import ImageViewer from "@/components/ImageViewer"
@@ -30,25 +23,10 @@ const FIELDS = [
 
 export default function Empresa() {
 	const { empresaId } = useLocalSearchParams<{ empresaId?: string }>()
-	const [empresa, setEmpresa] = useState<EmpresaType | null>(null)
+	const id = Array.isArray(empresaId) ? empresaId[0] : empresaId
+	const { data: empresa, isLoading } = useEmpresaById(id)
 
-	const load = useCallback(async () => {
-		const id = Array.isArray(empresaId) ? empresaId[0] : empresaId
-		if (!id) {
-			setEmpresa(null)
-			return
-		}
-		const data = await empresaRepository.getById(id)
-		setEmpresa(data)
-	}, [empresaId])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (empresa === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -168,10 +146,11 @@ function MenuEmpresa({ empresa }: { empresa: EmpresaType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()
+	const deleteEmpresa = useDeleteEmpresa()
 
 	const handleDelete = async () => {
 		try {
-			await empresaRepository.delete(empresa.id)
+			await deleteEmpresa.mutateAsync(empresa.id)
 			setModalVisible(false)
 			router.dismissTo("/(inicio)/perfil?header=empresa")
 		} catch (error) {

@@ -5,10 +5,8 @@ import { ScrollView, Text, View } from "react-native"
 import TextArea from "../../TextArea"
 import { useState } from "react"
 import { iluminacionConclusionFormValidator } from "@/src/db/schema/informes-iluminacion"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
+import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
+import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { useForm } from "@tanstack/react-form"
 import InformeHeaderContent from "@/components/InformeHeader"
 
@@ -36,6 +34,7 @@ export default function IluminacionConclusionEditContent({
 	informeIluminacion: InformesIluminacionType
 }) {
 	const [error, setError] = useState<string | null>(null)
+	const updateInforme = useUpdateInformeIluminacion()
 
 	const form = useForm({
 		defaultValues: {
@@ -62,13 +61,16 @@ export default function IluminacionConclusionEditContent({
 
 			try {
 				const newTitle = updateTitle(informeIluminacion, completo)
-				await informesIluminacionRepository.update(informeIluminacion.id, {
-					...value,
-					finishedAt: completo ? new Date().toISOString() : "",
-					title: newTitle,
-					observacion: value.observacion,
-					conclusion: value.conclusion,
-					recomendacion: value.recomendacion,
+				await updateInforme.mutateAsync({
+					id: informeIluminacion.id,
+					input: {
+						...value,
+						finishedAt: completo ? new Date().toISOString() : "",
+						title: newTitle,
+						observacion: value.observacion,
+						conclusion: value.conclusion,
+						recomendacion: value.recomendacion,
+					},
 				})
 				router.back()
 			} catch (e) {

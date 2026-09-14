@@ -1,11 +1,9 @@
 import { ScrollView, Text, View } from "react-native"
-import { EmpresaType } from "@/src/repositories/empresa.repository"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
-import { InstrumentoType } from "@/src/repositories/instrumento.repository"
-import { TecnicoType } from "@/src/repositories/tecnico.repository"
+import type { EmpresaType } from "@/src/repositories/empresa.repository"
+import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
+import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
+import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
+import type { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
 import { iluminacionGeneralFormValidator } from "@/src/db/schema/informes-iluminacion"
@@ -31,6 +29,7 @@ export default function IluminacionGeneralEditFormContent({
 	informe,
 }: Props) {
 	const [error, setError] = useState<string | null>(null)
+	const updateInforme = useUpdateInformeIluminacion()
 
 	const defaultValues = {
 		empresaId: informe.empresaId,
@@ -52,13 +51,16 @@ export default function IluminacionGeneralEditFormContent({
 			try {
 				const newTitle = updateTitle(informe, empresas, value.empresaId)
 
-				await informesIluminacionRepository.update(informe.id, {
-					empresaId: value.empresaId,
-					instrumentoId: value.instrumentoId,
-					estado: value.estado,
-					humedad: value.humedad,
-					temperatura: value.temperatura,
-					title: newTitle,
+				await updateInforme.mutateAsync({
+					id: informe.id,
+					input: {
+						empresaId: value.empresaId,
+						instrumentoId: value.instrumentoId,
+						estado: value.estado,
+						humedad: value.humedad,
+						temperatura: value.temperatura,
+						title: newTitle,
+					},
 				})
 
 				router.back()

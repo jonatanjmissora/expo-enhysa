@@ -1,6 +1,5 @@
 import { theme } from "@/constants/theme"
 import { LinearGradient } from "expo-linear-gradient"
-import { useRouter } from "expo-router"
 import { View } from "react-native"
 import Header from "./Header"
 
@@ -9,10 +8,9 @@ export default function ViewWithLogo({
 }: {
 	children: React.ReactNode
 }) {
-	const router = useRouter()
 	return (
 		<View style={{ flex: 1 }}>
-			<Header onPress={() => router.push("/")} />
+			<Header />
 			<LinearGradient
 				colors={[theme.headerBG, theme.tabBG]}
 				style={{

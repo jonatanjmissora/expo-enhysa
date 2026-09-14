@@ -17,9 +17,9 @@ import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
 import {
 	localizadaIluminacionFormValidator,
-	LocalizadaIluminacionType,
+	type LocalizadaIluminacionType,
 } from "@/src/db/schema/localizadas-iluminacion"
-import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
+import { useUpdateLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 import { hasChanges } from "@/src/utils/hasChanges"
 
 const USER_ID = "user-1"
@@ -33,6 +33,7 @@ export default function IluminacionCRUDLocalizadaEditContent({
 	const [imagenes, setImagenes] = useState<string[]>(
 		localizadaIluminacion.imagenes ?? []
 	)
+	const updateLocalizada = useUpdateLocalizadaIluminacion()
 
 	const defaultValues = {
 		nombre: localizadaIluminacion.nombre,
@@ -66,10 +67,13 @@ export default function IluminacionCRUDLocalizadaEditContent({
 				return
 			}
 			try {
-				await localizadaIluminacionRepository.update(localizadaIluminacion.id, {
-					...value,
-					imagenes,
-					userId: USER_ID,
+				await updateLocalizada.mutateAsync({
+					id: localizadaIluminacion.id,
+					input: {
+						...value,
+						imagenes,
+						userId: USER_ID,
+					},
 				})
 				router.push({
 					pathname: "/(informe)/iluminacion/[id]/CRUD/medicion/medicion-nuevo",

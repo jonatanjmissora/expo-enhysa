@@ -3,12 +3,10 @@ import ImagePicker from "@/components/ImagePicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import {
-	type EmpresaType,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
-import { useCallback, useState } from "react"
+import { useEmpresaById, useUpdateEmpresa } from "@/src/query/hooks/use-empresa"
+import type { EmpresaType } from "@/src/repositories/empresa.repository"
+import { useLocalSearchParams, useRouter } from "expo-router"
+import { useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
 import { useForm } from "@tanstack/react-form"
 import { empresaFormValidator } from "@/src/db/schema/empresas"
@@ -28,25 +26,9 @@ const FIELDS = [
 
 export default function EditarEmpresa() {
 	const { empresaId } = useLocalSearchParams<{ empresaId: string }>()
-	const [empresa, setEmpresa] = useState<EmpresaType | null | undefined>(
-		undefined
-	)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadEmpresaById() {
-				if (!empresaId) return
-				try {
-					const data = await empresaRepository.getById(empresaId)
-					setEmpresa(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadEmpresaById()
-		}, [empresaId])
-	)
+	const { data: empresa, isLoading } = useEmpresaById(empresaId)
 
-	if (empresa === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -98,6 +80,7 @@ export default function EditarEmpresa() {
 
 function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 	const router = useRouter()
+	const updateEmpresa = useUpdateEmpresa()
 
 	const [error, setError] = useState<string | null>(null)
 	const [logo, setLogo] = useState<string | null>(empresa?.logo ?? null)
@@ -127,10 +110,13 @@ function EmpresaEditForm({ empresa }: { empresa: EmpresaType }) {
 				return
 			}
 			try {
-				await empresaRepository.update(empresa.id, {
-					...value,
-					logo,
-					userId: USER_ID,
+				await updateEmpresa.mutateAsync({
+					id: empresa.id,
+					input: {
+						...value,
+						logo,
+						userId: USER_ID,
+					},
 				})
 				router.dismissTo("/(inicio)/perfil?header=empresa")
 			} catch (e) {

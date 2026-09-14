@@ -20,7 +20,7 @@ import {
 } from "@/constants"
 import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import { useCreateAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
 import { randomUUID } from "expo-crypto"
 import Formula from "@/components/iluminacion/puntos/formula"
 
@@ -30,6 +30,7 @@ export default function IluminacionShowAreaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
 	const [imagenes, setImagenes] = useState<string[]>([])
+	const createArea = useCreateAreaIluminacion()
 
 	const form = useForm({
 		defaultValues: defaultAreaIluminacionPart1,
@@ -38,7 +39,7 @@ export default function IluminacionShowAreaNuevoContent() {
 			setError(null)
 			const areaId = randomUUID()
 			try {
-				await areaIluminacionRepository.create({
+				await createArea.mutateAsync({
 					...value,
 					id: areaId,
 					reportId: id,

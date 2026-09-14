@@ -1,50 +1,25 @@
 import ViewWithLogo from "@/components/ViewWithLogo"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
+import { router, useGlobalSearchParams } from "expo-router"
 import { ScrollView, View, Text } from "react-native"
-import { useState } from "react"
-import { useCallback } from "react"
 import MedicionContent from "@/components/iluminacion/show/medicion"
-import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
-import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
-import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
+import { useAreasIluminacionByReportId } from "@/src/query/hooks/use-area-iluminacion"
+import { useLocalizadasIluminacionByReportId } from "@/src/query/hooks/use-localizada-iluminacion"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import Button from "@/components/Button"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
 import { theme } from "@/constants/theme"
 
 const USER_ID = "user-1"
 
 export default function Medicion() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [areas, setAreas] = useState<AreaIluminacionType[]>([])
-	const [localizadas, setLocalizadas] = useState<LocalizadaIluminacionType[]>(
-		[]
-	)
-	const [informe, setInforme] = useState<InformesIluminacionType | null>(null)
-	const load = useCallback(async () => {
-		const [areasData, localizadasData, informeData] = await Promise.all([
-			areaIluminacionRepository.getAllByReportIdAndUserId(id ?? "", USER_ID),
-			localizadaIluminacionRepository.getAllByReportIdAndUserId(
-				id ?? "",
-				USER_ID
-			),
-			informesIluminacionRepository.getById(id ?? ""),
-		])
-		setAreas(areasData ?? [])
-		setLocalizadas(localizadasData ?? [])
-		setInforme(informeData ?? null)
-	}, [id])
+	const { data: areas, isLoading: isLoadingAreas } =
+		useAreasIluminacionByReportId(id, USER_ID)
+	const { data: localizadas, isLoading: isLoadingLocalizadas } =
+		useLocalizadasIluminacionByReportId(id, USER_ID)
+	const { data: informe, isLoading: isLoadingInforme } =
+		useInformeIluminacionById(id)
 
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (!areas || !localizadas || !informe) {
+	if (isLoadingAreas || isLoadingLocalizadas || isLoadingInforme) {
 		return (
 			<View
 				style={{
@@ -95,8 +70,8 @@ export default function Medicion() {
 				}}
 			>
 				<MedicionContent
-					areas={areas}
-					localizadas={localizadas}
+					areas={areas ?? []}
+					localizadas={localizadas ?? []}
 					informe={informe}
 				/>
 			</ScrollView>

@@ -20,7 +20,7 @@ import {
 	defaultLocalizadaIluminacion,
 	localizadaIluminacionFormValidator,
 } from "@/src/db/schema/localizadas-iluminacion"
-import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
+import { useCreateLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 
 const USER_ID = "user-1"
 
@@ -28,6 +28,7 @@ export default function IluminacionShowLocalizadaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
 	const [imagenes, setImagenes] = useState<string[]>([])
+	const createLocalizada = useCreateLocalizadaIluminacion()
 
 	const form = useForm({
 		defaultValues: defaultLocalizadaIluminacion,
@@ -40,7 +41,7 @@ export default function IluminacionShowLocalizadaNuevoContent() {
 			}
 			const localizadaId = randomUUID()
 			try {
-				await localizadaIluminacionRepository.create({
+				await createLocalizada.mutateAsync({
 					...value,
 					id: localizadaId,
 					reportId: id,

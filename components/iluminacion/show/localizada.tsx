@@ -1,11 +1,11 @@
 import { View, Text, ScrollView } from "react-native"
-import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
+import type { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { theme } from "@/constants/theme"
 import ImageViewer from "@/components/ImageViewer"
 import { useState } from "react"
 import { router } from "expo-router"
 import Button from "@/components/Button"
-import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
+import { useDeleteLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 
 const FIELDS = [
@@ -128,10 +128,11 @@ function MenuLocalizada({
 }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
+	const deleteLocalizada = useDeleteLocalizadaIluminacion()
 
 	const handleDelete = async () => {
 		try {
-			await localizadaIluminacionRepository.delete(localizadaIluminacion.id)
+			await deleteLocalizada.mutateAsync(localizadaIluminacion.id)
 			router.back()
 		} catch (error) {
 			console.error(error)

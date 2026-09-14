@@ -1,33 +1,17 @@
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import {
-	type InstrumentoType,
-	instrumentoRepository,
-} from "@/src/repositories/instrumento.repository"
-import { router, useFocusEffect } from "expo-router"
-import { useCallback, useState } from "react"
+import { useInstrumentosByUserId } from "@/src/query/hooks/use-instrumento"
+import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
+import { router } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import ImageViewer from "../ImageViewer"
 
 const USER_ID = "user-1"
 
 export default function Instrumentos() {
-	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
-	const [loading, setLoading] = useState(true)
+	const { data: instrumentos, isLoading } = useInstrumentosByUserId(USER_ID)
 
-	const load = useCallback(async () => {
-		const data = await instrumentoRepository.getAllByUserId(USER_ID)
-		setInstrumentos(data)
-		setLoading(false)
-	}, [])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -41,7 +25,7 @@ export default function Instrumentos() {
 		)
 	}
 
-	if (instrumentos.length === 0) {
+	if (!instrumentos || instrumentos.length === 0) {
 		return (
 			<View
 				style={{

@@ -1,6 +1,9 @@
 import { resetPuntos, resetTimestamps } from "@/constants"
 import { type AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import {
+	useAreaIluminacionById,
+	useUpdateAreaIluminacion,
+} from "@/src/query/hooks/use-area-iluminacion"
 import { router } from "expo-router"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { type ScrollView, useWindowDimensions } from "react-native"
@@ -11,28 +14,14 @@ import {
 } from "./puntos-utils"
 
 export function useCargarArea(areaId: string | undefined) {
-	const [area, setArea] = useState<AreaIluminacionType | null>(null)
-	const [loading, setLoading] = useState<boolean>(true)
-	const [error, setError] = useState<string | null>(null)
+	const { data, isLoading, error, refetch } = useAreaIluminacionById(areaId)
 
-	const load = useCallback(async () => {
-		setLoading(true)
-		setError(null)
-		try {
-			const data = await areaIluminacionRepository.getById(areaId ?? "")
-			setArea(data ?? null)
-		} catch (e) {
-			setError(e instanceof Error ? e.message : "No se pudo cargar el área")
-		} finally {
-			setLoading(false)
-		}
-	}, [areaId])
-
-	useEffect(() => {
-		load()
-	}, [load])
-
-	return { area, loading, error, reload: load }
+	return {
+		area: data ?? null,
+		loading: isLoading,
+		error: error instanceof Error ? error.message : null,
+		reload: refetch,
+	}
 }
 
 export function useMedicionArea(area: AreaIluminacionType, show?: boolean) {
@@ -70,11 +59,18 @@ export function useMedicionArea(area: AreaIluminacionType, show?: boolean) {
 	const restantes = celdas - medidos
 	const guardando = autosaving || saving
 
+	const updateArea = useUpdateAreaIluminacion()
+	const updateAreaRef = useRef(updateArea.mutateAsync)
+	updateAreaRef.current = updateArea.mutateAsync
+
 	const persist = useCallback(
 		async (nuevosPuntos: number[], nuevosTimestamps: string[]) => {
-			await areaIluminacionRepository.update(area.id, {
-				puntos: nuevosPuntos,
-				timestamps: nuevosTimestamps,
+			await updateAreaRef.current({
+				id: area.id,
+				input: {
+					puntos: nuevosPuntos,
+					timestamps: nuevosTimestamps,
+				},
 			})
 		},
 		[area.id]

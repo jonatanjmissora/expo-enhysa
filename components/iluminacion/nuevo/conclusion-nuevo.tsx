@@ -8,10 +8,8 @@ import {
 	defaultIluminacionConclusion,
 	iluminacionConclusionFormValidator,
 } from "@/src/db/schema/informes-iluminacion"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
+import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
+import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { useForm } from "@tanstack/react-form"
 
 const FIELDS = [
@@ -38,6 +36,7 @@ export default function IluminacionConclusionNuevoContent({
 	informeIluminacion: InformesIluminacionType
 }) {
 	const [error, setError] = useState<string | null>(null)
+	const updateInforme = useUpdateInformeIluminacion()
 
 	const form = useForm({
 		defaultValues: defaultIluminacionConclusion,
@@ -53,13 +52,16 @@ export default function IluminacionConclusionNuevoContent({
 			const newDate = new Date().toLocaleDateString("es-AR")
 			const titleStr = `${newDate} - ${informeIluminacion.title}`
 			try {
-				await informesIluminacionRepository.update(informeIluminacion.id, {
-					...value,
-					finishedAt: completo ? new Date().toISOString() : "",
-					title: titleStr,
-					observacion: value.observacion,
-					conclusion: value.conclusion,
-					recomendacion: value.recomendacion,
+				await updateInforme.mutateAsync({
+					id: informeIluminacion.id,
+					input: {
+						...value,
+						finishedAt: completo ? new Date().toISOString() : "",
+						title: titleStr,
+						observacion: value.observacion,
+						conclusion: value.conclusion,
+						recomendacion: value.recomendacion,
+					},
 				})
 				router.push({
 					pathname: "/iluminacion/informes",

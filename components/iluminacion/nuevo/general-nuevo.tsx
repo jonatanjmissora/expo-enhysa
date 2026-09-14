@@ -5,7 +5,7 @@ import { theme } from "@/constants/theme"
 import { type EmpresaType } from "@/src/repositories/empresa.repository"
 import { type InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { TecnicoType } from "@/src/repositories/tecnico.repository"
-import { informesIluminacionRepository } from "@/src/repositories/informes-iluminacion.repository"
+import { useCreateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { useForm } from "@tanstack/react-form"
 import { router } from "expo-router"
 import { useState } from "react"
@@ -28,6 +28,7 @@ export default function IluminacionGeneralFormContent({
 	instrumentos: InstrumentoType[]
 }) {
 	const [error, setError] = useState<string | null>(null)
+	const createInforme = useCreateInformeIluminacion()
 	const form = useForm({
 		defaultValues: defaultIluminacionGeneral,
 		validators: { onSubmit: iluminacionGeneralFormValidator },
@@ -39,7 +40,7 @@ export default function IluminacionGeneralFormContent({
 				? `${empresa?.razonSocial} - ${empresa?.cuit} - iluminacion`
 				: ""
 			try {
-				await informesIluminacionRepository.create({
+				await createInforme.mutateAsync({
 					...value,
 					id: informeId,
 					tecnicoId: tecnico?.id ?? "",

@@ -5,16 +5,12 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
-	type InstrumentoType,
-	instrumentoRepository,
-} from "@/src/repositories/instrumento.repository"
-import {
-	router,
-	useFocusEffect,
-	useLocalSearchParams,
-	useRouter,
-} from "expo-router"
-import { useCallback, useState } from "react"
+	useDeleteInstrumento,
+	useInstrumentoById,
+} from "@/src/query/hooks/use-instrumento"
+import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
+import { router, useLocalSearchParams, useRouter } from "expo-router"
+import { useState } from "react"
 import { ScrollView, Text, View } from "react-native"
 
 const FIELDS = [
@@ -27,25 +23,10 @@ const FIELDS = [
 
 export default function Instrumento() {
 	const { instrumentoId } = useLocalSearchParams<{ instrumentoId?: string }>()
-	const [instrumento, setInstrumento] = useState<InstrumentoType | null>(null)
+	const id = Array.isArray(instrumentoId) ? instrumentoId[0] : instrumentoId
+	const { data: instrumento, isLoading } = useInstrumentoById(id)
 
-	const load = useCallback(async () => {
-		const id = Array.isArray(instrumentoId) ? instrumentoId[0] : instrumentoId
-		if (!id) {
-			setInstrumento(null)
-			return
-		}
-		const data = await instrumentoRepository.getById(id)
-		setInstrumento(data)
-	}, [instrumentoId])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (instrumento === null) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -222,10 +203,11 @@ function MenuInstrumento({ instrumento }: { instrumento: InstrumentoType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()
+	const deleteInstrumento = useDeleteInstrumento()
 
 	const handleDelete = async () => {
 		try {
-			await instrumentoRepository.delete(instrumento.id)
+			await deleteInstrumento.mutateAsync(instrumento.id)
 			setModalVisible(false)
 			router.dismissTo("/(inicio)/perfil?header=instrumento")
 		} catch (error) {

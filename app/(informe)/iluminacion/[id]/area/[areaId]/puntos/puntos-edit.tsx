@@ -3,7 +3,7 @@ import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
 import { type AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import { useDeleteAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
 import { router, useLocalSearchParams } from "expo-router"
 import { useState } from "react"
 import {
@@ -129,10 +129,11 @@ function MedicionArea({ area }: { area: AreaIluminacionType }) {
 		altoFila: m.altoFila,
 	})
 	const [deleteVisible, setDeleteVisible] = useState<boolean>(false)
+	const deleteArea = useDeleteAreaIluminacion()
 
 	const handleEliminarArea = async () => {
 		try {
-			await areaIluminacionRepository.delete(area.id)
+			await deleteArea.mutateAsync(area.id)
 			setDeleteVisible(false)
 			router.push({
 				pathname: "/(informe)/iluminacion/[id]/medicion",

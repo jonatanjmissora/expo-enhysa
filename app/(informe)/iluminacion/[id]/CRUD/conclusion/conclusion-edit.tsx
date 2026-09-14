@@ -1,35 +1,15 @@
 import Button from "@/components/Button"
 import IluminacionConclusionEditContent from "@/components/iluminacion/edit/conclusion-edit"
 import ViewWithLogo from "@/components/ViewWithLogo"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
+import { router, useGlobalSearchParams } from "expo-router"
 import { View, Text } from "react-native"
 
 export default function ConclusionEdit() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [loading, setLoading] = useState<boolean>(true)
-	const [informeIluminacion, setInformeIluminacion] =
-		useState<InformesIluminacionType | null>(null)
+	const { data: informeIluminacion, isLoading } = useInformeIluminacionById(id)
 
-	const load = useCallback(async () => {
-		const informeIluminacionData = await informesIluminacionRepository.getById(
-			id ?? ""
-		)
-		setInformeIluminacion(informeIluminacionData ?? null)
-		setLoading(false)
-	}, [id])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (loading)
+	if (isLoading)
 		return (
 			<View style={{}}>
 				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}

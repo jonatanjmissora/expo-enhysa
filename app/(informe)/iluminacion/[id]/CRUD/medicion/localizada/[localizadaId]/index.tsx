@@ -3,36 +3,18 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import Button from "@/components/Button"
 import LocalizadaCRUD from "@/components/iluminacion/nuevo/localizada"
 import { theme } from "@/constants/theme"
-import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
-import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
+import { useLocalizadaIluminacionById } from "@/src/query/hooks/use-localizada-iluminacion"
+import { router, useGlobalSearchParams } from "expo-router"
 
 export default function LocalizadaCRUDIndex() {
 	const { localizadaId } = useGlobalSearchParams<{
 		id: string
 		localizadaId: string
 	}>()
-	const [localizadaIluminacion, setLocalizadaIluminacion] = useState<
-		LocalizadaIluminacionType | null | undefined
-	>(undefined)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadInformeIluminacionById() {
-				if (!localizadaId) return
-				try {
-					const data =
-						await localizadaIluminacionRepository.getById(localizadaId)
-					setLocalizadaIluminacion(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadInformeIluminacionById()
-		}, [localizadaId])
-	)
+	const { data: localizadaIluminacion, isLoading } =
+		useLocalizadaIluminacionById(localizadaId)
 
-	if (localizadaIluminacion === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{

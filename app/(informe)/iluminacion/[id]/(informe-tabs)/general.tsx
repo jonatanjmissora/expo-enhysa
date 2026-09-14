@@ -1,20 +1,10 @@
 import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
-import {
-	InformesIluminacionType,
-	informesIluminacionRepository,
-} from "@/src/repositories/informes-iluminacion.repository"
-import {
-	type EmpresaType,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { ScrollView, View } from "react-native"
-import { useCallback, useState } from "react"
-import {
-	instrumentoRepository,
-	InstrumentoType,
-} from "@/src/repositories/instrumento.repository"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
+import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
+import { useInstrumentosByUserId } from "@/src/query/hooks/use-instrumento"
+import { router, useGlobalSearchParams } from "expo-router"
+import { ScrollView, View, Text } from "react-native"
 import { theme } from "@/constants/theme"
 import GeneralContent from "@/components/iluminacion/show/general"
 
@@ -22,40 +12,16 @@ const USER_ID = "user-1"
 
 export default function General() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [informe, setInforme] = useState<
-		InformesIluminacionType | null | undefined
-	>(undefined)
-	const [empresas, setEmpresas] = useState<EmpresaType[] | null | undefined>([])
-	const [instrumentos, setInstrumentos] = useState<
-		InstrumentoType[] | null | undefined
-	>(undefined)
+	const { data: informe, isLoading: isLoadingInforme } =
+		useInformeIluminacionById(id)
+	const { data: empresas, isLoading: isLoadingEmpresas } =
+		useEmpresasByUserId(USER_ID)
+	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
+		useInstrumentosByUserId(USER_ID)
 
-	const load = useCallback(async () => {
-		if (!id) return
-		const [informeData, empresasData, instrumentosData] = await Promise.all([
-			informesIluminacionRepository.getById(id),
-			empresaRepository.getAllByUserId(USER_ID),
-			instrumentoRepository.getAllByUserId(USER_ID),
-		])
-		setInforme(informeData)
-		setEmpresas(empresasData ?? [])
-		setInstrumentos(instrumentosData ?? [])
-	}, [id])
+	const loading = isLoadingInforme || isLoadingEmpresas || isLoadingInstrumentos
 
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (
-		informe === undefined ||
-		informe === null ||
-		empresas === undefined ||
-		empresas === null ||
-		instrumentos === undefined ||
-		instrumentos === null
-	) {
+	if (loading || !informe || !empresas || !instrumentos) {
 		return (
 			<View
 				style={{
@@ -65,7 +31,7 @@ export default function General() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando...</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando...</Text>
 			</View>
 		)
 	}

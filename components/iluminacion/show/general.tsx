@@ -1,8 +1,6 @@
 import { EmpresaType } from "@/src/repositories/empresa.repository"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
+import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
+import { useDeleteInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { Text, View } from "react-native"
 import { theme } from "@/constants/theme"
@@ -218,10 +216,11 @@ function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()
+	const deleteInforme = useDeleteInformeIluminacion()
 
 	const handleDelete = async () => {
 		try {
-			await informesIluminacionRepository.delete(informe.id)
+			await deleteInforme.mutateAsync(informe.id)
 			router.push("/iluminacion/informes")
 		} catch (error) {
 			console.error(error)

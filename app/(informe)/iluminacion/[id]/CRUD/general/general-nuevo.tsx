@@ -1,19 +1,9 @@
 import { View, Text } from "react-native"
 import Button from "@/components/Button"
-import { useCallback, useState } from "react"
-import { useFocusEffect, router } from "expo-router"
-import {
-	TecnicoType,
-	tecnicoRepository,
-} from "@/src/repositories/tecnico.repository"
-import {
-	EmpresaType,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
-import {
-	InstrumentoType,
-	instrumentoRepository,
-} from "@/src/repositories/instrumento.repository"
+import { router } from "expo-router"
+import { useTecnicoByUserId } from "@/src/query/hooks/use-tecnico"
+import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
+import { useInstrumentosByUserId } from "@/src/query/hooks/use-instrumento"
 import IluminacionGeneralFormContent from "@/components/iluminacion/nuevo/general-nuevo"
 import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
 import ViewWithLogo from "@/components/ViewWithLogo"
@@ -21,30 +11,14 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 const USER_ID = "user-1"
 
 export default function IluminacionGeneralNuevo() {
-	const [loading, setLoading] = useState<boolean>(true)
-	const [tecnico, setTecnico] = useState<TecnicoType | null | undefined>(
-		undefined
-	)
-	const [empresas, setEmpresas] = useState<EmpresaType[]>([])
-	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
+	const { data: tecnico, isLoading: isLoadingTecnico } =
+		useTecnicoByUserId(USER_ID)
+	const { data: empresas, isLoading: isLoadingEmpresas } =
+		useEmpresasByUserId(USER_ID)
+	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
+		useInstrumentosByUserId(USER_ID)
 
-	const load = useCallback(async () => {
-		const [tecnicoData, empresasData, instrumentosData] = await Promise.all([
-			tecnicoRepository.getByUserId(USER_ID),
-			empresaRepository.getAllByUserId(USER_ID),
-			instrumentoRepository.getAllByUserId(USER_ID),
-		])
-		setTecnico(tecnicoData ?? null)
-		setEmpresas(empresasData ?? [])
-		setInstrumentos(instrumentosData ?? [])
-		setLoading(false)
-	}, [])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
+	const loading = isLoadingTecnico || isLoadingEmpresas || isLoadingInstrumentos
 
 	if (loading) return <Loading />
 
@@ -64,9 +38,9 @@ export default function IluminacionGeneralNuevo() {
 			/>
 			{!tecnico ? (
 				<NoTecnico />
-			) : empresas.length === 0 ? (
+			) : !empresas || empresas.length === 0 ? (
 				<EmpresasEmpty />
-			) : instrumentos.length === 0 ? (
+			) : !instrumentos || instrumentos.length === 0 ? (
 				<InstrumentosEmpty />
 			) : (
 				<>
@@ -155,7 +129,7 @@ function Loading() {
 				gap: 20,
 			}}
 		>
-			{/* <Text style={{ color: "#cbd5e1" }}>Cargando...</Text> */}
+			<Text style={{ color: "#cbd5e1" }}>Cargando...</Text>
 		</View>
 	)
 }

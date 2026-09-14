@@ -1,60 +1,31 @@
 import Button from "@/components/Button"
 import IluminacionGeneralEditFormContent from "@/components/iluminacion/edit/general-edit"
 import ViewWithLogo from "@/components/ViewWithLogo"
-import {
-	empresaRepository,
-	EmpresaType,
-} from "@/src/repositories/empresa.repository"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
-import {
-	instrumentoRepository,
-	InstrumentoType,
-} from "@/src/repositories/instrumento.repository"
-import {
-	tecnicoRepository,
-	TecnicoType,
-} from "@/src/repositories/tecnico.repository"
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
+import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
+import { useInstrumentosByUserId } from "@/src/query/hooks/use-instrumento"
+import { useTecnicoByUserId } from "@/src/query/hooks/use-tecnico"
+import { router, useLocalSearchParams } from "expo-router"
 import { View, Text } from "react-native"
 
 const USER_ID = "user-1"
 
 export default function IluminacionGeneralEditContent() {
-	const [loading, setLoading] = useState<boolean>(true)
-	const [tecnico, setTecnico] = useState<TecnicoType | null | undefined>(
-		undefined
-	)
-	const [empresas, setEmpresas] = useState<EmpresaType[]>([])
-	const [instrumentos, setInstrumentos] = useState<InstrumentoType[]>([])
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const [informe, setInforme] = useState<
-		InformesIluminacionType | null | undefined
-	>(undefined)
+	const { data: tecnico, isLoading: isLoadingTecnico } =
+		useTecnicoByUserId(USER_ID)
+	const { data: empresas, isLoading: isLoadingEmpresas } =
+		useEmpresasByUserId(USER_ID)
+	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
+		useInstrumentosByUserId(USER_ID)
+	const { data: informe, isLoading: isLoadingInforme } =
+		useInformeIluminacionById(id)
 
-	const load = useCallback(async () => {
-		const [tecnicoData, empresasData, instrumentosData, informeData] =
-			await Promise.all([
-				tecnicoRepository.getByUserId(USER_ID),
-				empresaRepository.getAllByUserId(USER_ID),
-				instrumentoRepository.getAllByUserId(USER_ID),
-				informesIluminacionRepository.getById(id ?? ""),
-			])
-		setTecnico(tecnicoData ?? null)
-		setEmpresas(empresasData ?? [])
-		setInstrumentos(instrumentosData ?? [])
-		setInforme(informeData ?? null)
-		setLoading(false)
-	}, [id])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
+	const loading =
+		isLoadingTecnico ||
+		isLoadingEmpresas ||
+		isLoadingInstrumentos ||
+		isLoadingInforme
 
 	if (loading) {
 		return (
@@ -78,7 +49,7 @@ export default function IluminacionGeneralEditContent() {
 		)
 	}
 
-	if (empresas.length === 0) {
+	if (!empresas || empresas.length === 0) {
 		return (
 			<View style={{}}>
 				<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
@@ -92,7 +63,7 @@ export default function IluminacionGeneralEditContent() {
 		)
 	}
 
-	if (instrumentos.length === 0) {
+	if (!instrumentos || instrumentos.length === 0) {
 		return (
 			<View style={{}}>
 				<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>

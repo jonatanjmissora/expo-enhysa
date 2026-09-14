@@ -1,36 +1,18 @@
 import { View, Text } from "react-native"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import Button from "@/components/Button"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
+import { router, useGlobalSearchParams } from "expo-router"
 import { theme } from "@/constants/theme"
-import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import { useAreaIluminacionById } from "@/src/query/hooks/use-area-iluminacion"
 import IluminacionCRUDAreaEditContent from "@/components/iluminacion/nuevo/area-edit"
 
 export default function AreaCRUDEdit() {
 	const { areaId } = useGlobalSearchParams<{
 		areaId: string
 	}>()
-	const [areaIluminacion, setAreaIluminacion] = useState<
-		AreaIluminacionType | null | undefined
-	>(undefined)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadLocalizadaIluminacionById() {
-				if (!areaId) return
-				try {
-					const data = await areaIluminacionRepository.getById(areaId)
-					setAreaIluminacion(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadLocalizadaIluminacionById()
-		}, [areaId])
-	)
+	const { data: areaIluminacion, isLoading } = useAreaIluminacionById(areaId)
 
-	if (areaIluminacion === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{

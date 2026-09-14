@@ -4,12 +4,10 @@ import { Pressable, Text, View } from "react-native"
 import LogoImage from "../assets/images/logo2.png"
 import ImageViewer from "./ImageViewer"
 import { theme } from "@/constants/theme"
+import Button from "./Button"
+import { router } from "expo-router"
 
-type HeaderProps = {
-	onPress?: () => void
-}
-
-export default function Header({ onPress }: HeaderProps) {
+export default function Header() {
 	const insets = useSafeAreaInsets()
 
 	return (
@@ -17,16 +15,19 @@ export default function Header({ onPress }: HeaderProps) {
 			style={{
 				paddingTop: insets.top,
 				backgroundColor: theme.headerBG,
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "space-between",
+				paddingHorizontal: 16,
 			}}
 		>
 			<Pressable
-				onPress={onPress}
+				onPress={() => router.push("/")}
 				style={{
 					height: 70,
 					flexDirection: "row",
 					alignItems: "center",
 					gap: 10,
-					paddingHorizontal: 16,
 				}}
 			>
 				<ImageViewer imgSource={LogoImage} style={{ width: 30, height: 30 }} />
@@ -41,6 +42,12 @@ export default function Header({ onPress }: HeaderProps) {
 					EnHySa
 				</Text>
 			</Pressable>
+			<Button
+				text="Log in"
+				variant="secondary"
+				onPress={() => {}}
+				size="xsmall"
+			/>
 		</View>
 	)
 }

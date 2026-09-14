@@ -1,33 +1,17 @@
 import Button from "@/components/Button"
-import { router, useFocusEffect } from "expo-router"
-import { useCallback, useState } from "react"
+import { router } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
+import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
+import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import ImageViewer from "../ImageViewer"
-import {
-	type EmpresaType,
-	empresaRepository,
-} from "@/src/repositories/empresa.repository"
 
 const USER_ID = "user-1"
 
 export default function Empresas() {
-	const [empresas, setEmpresas] = useState<EmpresaType[] | null | undefined>(
-		undefined
-	)
+	const { data: empresas, isLoading } = useEmpresasByUserId(USER_ID)
 
-	const load = useCallback(async () => {
-		const data = await empresaRepository.getAllByUserId(USER_ID)
-		setEmpresas(data.length ? data : null)
-	}, [])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (empresas === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -41,7 +25,7 @@ export default function Empresas() {
 		)
 	}
 
-	if (!empresas) {
+	if (!empresas || empresas.length === 0) {
 		return (
 			<View
 				style={{

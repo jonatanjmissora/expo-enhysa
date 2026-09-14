@@ -18,9 +18,9 @@ import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
 import {
 	areaIluminacionFormPart1Validator,
-	AreaIluminacionType,
+	type AreaIluminacionType,
 } from "@/src/db/schema/areas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import { useUpdateAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
 import { hasChanges } from "@/src/utils/hasChanges"
 import Formula from "../puntos/formula"
 
@@ -35,6 +35,7 @@ export default function IluminacionCRUDAreaEditContent({
 	const [imagenes, setImagenes] = useState<string[]>(
 		areaIluminacion.imagenes ?? []
 	)
+	const updateArea = useUpdateAreaIluminacion()
 
 	const defaultValues = {
 		nombre: areaIluminacion.nombre,
@@ -67,10 +68,13 @@ export default function IluminacionCRUDAreaEditContent({
 				return
 			}
 			try {
-				await areaIluminacionRepository.update(areaIluminacion.id, {
-					...value,
-					imagenes,
-					userId: USER_ID,
+				await updateArea.mutateAsync({
+					id: areaIluminacion.id,
+					input: {
+						...value,
+						imagenes,
+						userId: USER_ID,
+					},
 				})
 				router.push({
 					pathname:

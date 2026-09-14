@@ -4,11 +4,12 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import {
-	instrumentoRepository,
-	InstrumentoType,
-} from "@/src/repositories/instrumento.repository"
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
-import { useCallback, useState } from "react"
+	useInstrumentoById,
+	useUpdateInstrumento,
+} from "@/src/query/hooks/use-instrumento"
+import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
+import { useLocalSearchParams, useRouter } from "expo-router"
+import { useState } from "react"
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
 import { useForm } from "@tanstack/react-form"
@@ -27,25 +28,9 @@ const FIELDS = [
 
 export default function EditarInstrumento() {
 	const { instrumentoId } = useLocalSearchParams<{ instrumentoId: string }>()
-	const [instrumento, setInstrumento] = useState<
-		InstrumentoType | null | undefined
-	>(undefined)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadInstrumentoById() {
-				if (!instrumentoId) return
-				try {
-					const data = await instrumentoRepository.getById(instrumentoId)
-					setInstrumento(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadInstrumentoById()
-		}, [instrumentoId])
-	)
+	const { data: instrumento, isLoading } = useInstrumentoById(instrumentoId)
 
-	if (instrumento === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{
@@ -101,6 +86,7 @@ function InstrumentoEditForm({
 	instrumento: InstrumentoType
 }) {
 	const router = useRouter()
+	const updateInstrumento = useUpdateInstrumento()
 
 	const [error, setError] = useState<string | null>(null)
 	const [showDatePicker, setShowDatePicker] = useState(false)
@@ -145,15 +131,18 @@ function InstrumentoEditForm({
 				return
 			}
 			try {
-				await instrumentoRepository.update(instrumento.id, {
-					nombre: value.nombre,
-					marca: value.marca,
-					modelo: value.modelo,
-					serie: value.serie,
-					fechaCalibracion: value.fechaCalibracion.toISOString(),
-					imagenesCalibracion: JSON.stringify(imagenesCalibracion),
-					imagenes: JSON.stringify(imagenes),
-					userId: USER_ID,
+				await updateInstrumento.mutateAsync({
+					id: instrumento.id,
+					input: {
+						nombre: value.nombre,
+						marca: value.marca,
+						modelo: value.modelo,
+						serie: value.serie,
+						fechaCalibracion: value.fechaCalibracion.toISOString(),
+						imagenesCalibracion: JSON.stringify(imagenesCalibracion),
+						imagenes: JSON.stringify(imagenes),
+						userId: USER_ID,
+					},
 				})
 				router.dismissTo("/(inicio)/perfil?header=instrumento")
 			} catch (e) {

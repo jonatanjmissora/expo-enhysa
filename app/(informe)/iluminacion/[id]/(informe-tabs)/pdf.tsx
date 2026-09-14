@@ -2,35 +2,15 @@ import Button from "@/components/Button"
 import PDFContent from "@/components/iluminacion/show/pdf"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
+import { router, useGlobalSearchParams } from "expo-router"
 import { ScrollView, View, Text } from "react-native"
 
 export default function PDF() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
-	const [informe, setInforme] = useState<
-		InformesIluminacionType | null | undefined
-	>(undefined)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadInformeIluminacionById() {
-				if (!id) return
-				try {
-					const data = await informesIluminacionRepository.getById(id)
-					setInforme(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadInformeIluminacionById()
-		}, [id])
-	)
+	const { data: informe, isLoading } = useInformeIluminacionById(id)
 
-	if (informe === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{

@@ -2,10 +2,8 @@ import { View, Text } from "react-native"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
-import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
-import { areaIluminacionRepository } from "@/src/repositories/area-iluminacion.repository"
+import { router, useGlobalSearchParams } from "expo-router"
+import { useAreaIluminacionById } from "@/src/query/hooks/use-area-iluminacion"
 import AreaCRUD from "@/components/iluminacion/nuevo/area"
 
 export default function AreaCRUDIndex() {
@@ -13,25 +11,9 @@ export default function AreaCRUDIndex() {
 		id: string
 		areaId: string
 	}>()
-	const [areaIluminacion, setAreaIluminacion] = useState<
-		AreaIluminacionType | null | undefined
-	>(undefined)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadAreaIluminacionById() {
-				if (!areaId) return
-				try {
-					const data = await areaIluminacionRepository.getById(areaId)
-					setAreaIluminacion(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadAreaIluminacionById()
-		}, [areaId])
-	)
+	const { data: areaIluminacion, isLoading } = useAreaIluminacionById(areaId)
 
-	if (areaIluminacion === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{

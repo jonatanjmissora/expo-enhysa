@@ -1,10 +1,8 @@
 import { View, Text } from "react-native"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import Button from "@/components/Button"
-import { router, useFocusEffect, useGlobalSearchParams } from "expo-router"
-import { useCallback, useState } from "react"
-import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
-import { localizadaIluminacionRepository } from "@/src/repositories/localizada-iluminacion.repository"
+import { router, useGlobalSearchParams } from "expo-router"
+import { useLocalizadaIluminacionById } from "@/src/query/hooks/use-localizada-iluminacion"
 import { theme } from "@/constants/theme"
 import IluminacionCRUDLocalizadaEditContent from "@/components/iluminacion/nuevo/localizada-edit"
 
@@ -12,26 +10,10 @@ export default function LocalizadaCRUDEdit() {
 	const { localizadaId } = useGlobalSearchParams<{
 		localizadaId: string
 	}>()
-	const [localizadaIluminacion, setLocalizadaIluminacion] = useState<
-		LocalizadaIluminacionType | null | undefined
-	>(undefined)
-	useFocusEffect(
-		useCallback(() => {
-			async function loadLocalizadaIluminacionById() {
-				if (!localizadaId) return
-				try {
-					const data =
-						await localizadaIluminacionRepository.getById(localizadaId)
-					setLocalizadaIluminacion(data)
-				} catch (error) {
-					console.error(error)
-				}
-			}
-			loadLocalizadaIluminacionById()
-		}, [localizadaId])
-	)
+	const { data: localizadaIluminacion, isLoading } =
+		useLocalizadaIluminacionById(localizadaId)
 
-	if (localizadaIluminacion === undefined) {
+	if (isLoading) {
 		return (
 			<View
 				style={{

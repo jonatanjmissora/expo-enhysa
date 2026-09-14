@@ -1,42 +1,22 @@
-import { useCallback, useState } from "react"
 import { View, Text } from "react-native"
-import {
-	informesIluminacionRepository,
-	InformesIluminacionType,
-} from "@/src/repositories/informes-iluminacion.repository"
-import { router, useFocusEffect } from "expo-router"
+import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
+import { router } from "expo-router"
 import { theme } from "@/constants/theme"
-import {
-	empresaRepository,
-	EmpresaType,
-} from "@/src/repositories/empresa.repository"
+import type { EmpresaType } from "@/src/repositories/empresa.repository"
+import { useInformesIluminacionByUserId } from "@/src/query/hooks/use-informe-iluminacion"
+import { useEmpresasByUserId } from "@/src/query/hooks/use-empresa"
 import Button from "../Button"
 import InformeCard from "./InformeCard"
 
 const USER_ID = "user-1"
 
 export default function InformesList({ qnt }: { qnt: number }) {
-	const [informes, setInformes] = useState<
-		InformesIluminacionType[] | null | undefined
-	>(undefined)
-	const [empresas, setEmpresas] = useState<EmpresaType[] | null | undefined>([])
+	const { data: informes, isLoading: isLoadingInformes } =
+		useInformesIluminacionByUserId(USER_ID)
+	const { data: empresas, isLoading: isLoadingEmpresas } =
+		useEmpresasByUserId(USER_ID)
 
-	const load = useCallback(async () => {
-		const [informesData, empresasData] = await Promise.all([
-			informesIluminacionRepository.getAllByUserId(USER_ID),
-			empresaRepository.getAllByUserId(USER_ID),
-		])
-		setEmpresas(empresasData ?? [])
-		setInformes(informesData ?? [])
-	}, [])
-
-	useFocusEffect(
-		useCallback(() => {
-			load()
-		}, [load])
-	)
-
-	if (informes === undefined || empresas === undefined) {
+	if (isLoadingInformes || isLoadingEmpresas) {
 		return (
 			<View
 				style={{
@@ -68,7 +48,11 @@ export default function InformesList({ qnt }: { qnt: number }) {
 		)
 	}
 	return (
-		<InformesListContent informe={informes} empresas={empresas} qnt={qnt} />
+		<InformesListContent
+			informe={informes}
+			empresas={empresas ?? []}
+			qnt={qnt}
+		/>
 	)
 }
 
