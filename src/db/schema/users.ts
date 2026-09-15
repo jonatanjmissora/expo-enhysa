@@ -5,6 +5,8 @@ export const CREATE_USERS_TABLE = `
 		id TEXT PRIMARY KEY NOT NULL,
 		email TEXT NOT NULL UNIQUE,
 		passwordHash TEXT NOT NULL,
+		name TEXT,
+		userImage TEXT,
 		createdAt TEXT NOT NULL,
 		updatedAt TEXT NOT NULL
 	);
@@ -46,3 +48,9 @@ export const defaultRegister = {
 	password: "",
 	confirmPassword: "",
 }
+
+export const userFormValidator = z.object({
+	name: z.string(),
+})
+
+export type UserFormType = z.infer<typeof userFormValidator>

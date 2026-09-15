@@ -33,15 +33,24 @@ async function columnExists(
 	return rows.some(row => row.name === column)
 }
 
+async function ensureColumn(
+	database: SQLite.SQLiteDatabase,
+	table: string,
+	column: string,
+	definition: string
+) {
+	if (!(await columnExists(database, table, column))) {
+		await database.execAsync(
+			`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
+		)
+	}
+}
+
 async function ensureUpdatedAtColumn(
 	database: SQLite.SQLiteDatabase,
 	table: string
 ) {
-	if (!(await columnExists(database, table, "updatedAt"))) {
-		await database.execAsync(
-			`ALTER TABLE ${table} ADD COLUMN updatedAt TEXT NOT NULL DEFAULT ''`
-		)
-	}
+	await ensureColumn(database, table, "updatedAt", "TEXT NOT NULL DEFAULT ''")
 }
 
 async function migrateDatabase(database: SQLite.SQLiteDatabase) {
@@ -72,6 +81,9 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await ensureUpdatedAtColumn(database, "tecnicos")
 	await ensureUpdatedAtColumn(database, "empresas")
 	await ensureUpdatedAtColumn(database, "instrumentos")
+
+	await ensureColumn(database, "users", "name", "TEXT")
+	await ensureColumn(database, "users", "userImage", "TEXT")
 }
 
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {

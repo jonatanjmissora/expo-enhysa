@@ -6,6 +6,8 @@ export type UserType = {
 	id: string
 	email: string
 	passwordHash: string
+	name: string | null
+	userImage: string | null
 	createdAt: string
 	updatedAt: string
 }
@@ -15,10 +17,19 @@ export type CreateUserInput = {
 	passwordHash: string
 }
 
+export type UpdateUserInput = {
+	email?: string
+	passwordHash?: string
+	name?: string | null
+	userImage?: string | null
+}
+
 const SELECT_COLUMNS = `
 	id,
 	email,
 	passwordHash,
+	name,
+	userImage,
 	createdAt,
 	updatedAt
 `
@@ -84,7 +95,7 @@ export const userRepository = {
 		return user ?? null
 	},
 
-	async update(id: string, input: Partial<CreateUserInput>): Promise<UserType> {
+	async update(id: string, input: UpdateUserInput): Promise<UserType> {
 		await initializeUsersTable()
 
 		const db = await getDatabase()
@@ -108,11 +119,15 @@ export const userRepository = {
 				UPDATE users SET
 					email = ?,
 					passwordHash = ?,
+					name = ?,
+					userImage = ?,
 					updatedAt = ?
 				WHERE id = ?
 			`,
 			user.email,
 			user.passwordHash,
+			user.name,
+			user.userImage,
 			user.updatedAt,
 			id
 		)

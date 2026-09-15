@@ -1,7 +1,7 @@
-import { Image, ImageContentFit, ImageSource, ImageStyle } from "expo-image"
+import { Image, ImageContentFit, ImageProps, ImageStyle } from "expo-image"
 
 type Props = {
-	imgSource: ImageSource
+	imgSource: ImageProps["source"]
 	style?: ImageStyle
 	contentFit?: ImageContentFit
 }
@@ -13,3 +13,4 @@ export default function ImageViewer({
 }: Props) {
 	return <Image source={imgSource} contentFit={contentFit} style={style} />
 }
+
