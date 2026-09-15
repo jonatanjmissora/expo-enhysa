@@ -33,6 +33,16 @@ async function migrateUserData(
 	})
 }
 
+export class RegisterError extends Error {
+	readonly code: "EMAIL_EXISTS"
+
+	constructor(code: "EMAIL_EXISTS", message: string) {
+		super(message)
+		this.name = "RegisterError"
+		this.code = code
+	}
+}
+
 export async function register(
 	email: string,
 	password: string
@@ -41,7 +51,10 @@ export async function register(
 
 	const existing = await userRepository.getByEmail(normalizedEmail)
 	if (existing) {
-		throw new Error("Ya existe una cuenta con ese email")
+		throw new RegisterError(
+			"EMAIL_EXISTS",
+			"Ya existe una cuenta con ese email"
+		)
 	}
 
 	const passwordHash = await hashPassword(password)
@@ -58,6 +71,16 @@ export async function register(
 	return user
 }
 
+export class LoginError extends Error {
+	readonly code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD"
+
+	constructor(code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD", message: string) {
+		super(message)
+		this.name = "LoginError"
+		this.code = code
+	}
+}
+
 export async function login(
 	email: string,
 	password: string
@@ -66,12 +89,15 @@ export async function login(
 
 	const user = await userRepository.getByEmail(normalizedEmail)
 	if (!user) {
-		throw new Error("Email inexistente, registrese primero")
+		throw new LoginError(
+			"EMAIL_NOT_FOUND",
+			"Email inexistente, registrese primero"
+		)
 	}
 
 	const valid = await verifyPassword(password, user.passwordHash)
 	if (!valid) {
-		throw new Error("Contraseña incorrectos")
+		throw new LoginError("INVALID_PASSWORD", "Contraseña incorrecta")
 	}
 
 	return user

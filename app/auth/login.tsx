@@ -2,7 +2,7 @@ import Button from "@/components/Button"
 import ImageViewer from "@/components/ImageViewer"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
-import { login } from "@/src/auth/auth.service"
+import { login, LoginError } from "@/src/auth/auth.service"
 import { defaultLogin, loginFormValidator } from "@/src/db/schema/users"
 import { useSession } from "@/src/session/session-context"
 import { useForm } from "@tanstack/react-form"
@@ -10,21 +10,6 @@ import { useRouter } from "expo-router"
 import { useState } from "react"
 import { Text, TextInput, View } from "react-native"
 import LogoImage from "../../assets/images/logo2.png"
-
-const FIELDS = [
-	{
-		key: "email",
-		label: "Email",
-		placeholder: "usuario@gmail.com",
-		secure: false,
-	},
-	{
-		key: "password",
-		label: "Contraseña",
-		placeholder: "••••••",
-		secure: true,
-	},
-] as const
 
 export default function Login() {
 	const router = useRouter()
@@ -50,7 +35,15 @@ export default function Login() {
 					router.replace("/")
 				}
 			} catch (e) {
-				setError(e instanceof Error ? e.message : "No se pudo iniciar sesión")
+				if (e instanceof LoginError) {
+					if (e.code === "EMAIL_NOT_FOUND") {
+						setMailError(e.message)
+					} else if (e.code === "INVALID_PASSWORD") {
+						setPassError(e.message)
+					}
+				} else {
+					setError(e instanceof Error ? e.message : "No se pudo iniciar sesión")
+				}
 			}
 		},
 		onSubmitInvalid: () => {
@@ -61,17 +54,17 @@ export default function Login() {
 	return (
 		<ViewWithLogo>
 			<Button
-							variant="ghost"
-							iconLeft="chevron-back"
-							text="Volver"
-							style={{
-								alignSelf: "flex-start",
-								paddingHorizontal: 20,
-								opacity: 0.85,
-								padding: 4,
-							}}
-							onPress={() => router.push("/")}
-							/>
+				variant="ghost"
+				iconLeft="chevron-back"
+				text="Volver"
+				style={{
+					alignSelf: "flex-start",
+					paddingHorizontal: 20,
+					opacity: 0.85,
+					padding: 4,
+				}}
+				onPress={() => router.push("/")}
+			/>
 
 			<View
 				style={{
@@ -81,56 +74,54 @@ export default function Login() {
 					marginTop: 100,
 				}}
 			>
-
-				<View style={{ gap:  30 }}>
-<form.Field name="email" >
-	{field => (
-		<View style={{ gap: 6 }}>
-									<Text style={{ color: "#cbd5e1" }}>Email</Text>
-									<TextInput
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChangeText={field.handleChange}
-										placeholder="usuario@gmail.com"
-										placeholderTextColor="#64748b"
-										secureTextEntry={false}
-										autoCapitalize="none"
-										autoCorrect={false}
-										keyboardType="email-address"
-										style={{
-											backgroundColor: theme.inputBG,
-											color: "#e2e8f0",
-											padding: 12,
-											borderRadius: 6,
-											borderWidth: 1,
-											borderColor: theme.inputBorder
-										}}
-									/>
-									{mailError && (
-						<Text style={{ color: "#fc4444", textAlign: "center" }}>
-							{mailError}
-						</Text>
-					)}
-									{!field.state.meta.isValid && (
-										<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-											{field.state.meta.errors
-												.map(err =>
-													typeof err === "string"
-														? err
-														: (err?.message ?? String(err))
-												)
-												.join(",")}
-										</Text>
-									)}
-								</View>
-	)}
-</form.Field>
-<form.Field name="password" >
-	{field => (
-		<View style={{ gap: 6 }}>
-									<Text style={{ color: "#cbd5e1" }}>Contraseña</Text>
-									<View style={{ position: "relative" }}>
-
+				<View style={{ gap: 30 }}>
+					<form.Field name="email">
+						{field => (
+							<View style={{ gap: 6 }}>
+								<Text style={{ color: "#cbd5e1" }}>Email</Text>
+								<TextInput
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChangeText={field.handleChange}
+									placeholder="usuario@gmail.com"
+									placeholderTextColor="#64748b"
+									secureTextEntry={false}
+									autoCapitalize="none"
+									autoCorrect={false}
+									keyboardType="email-address"
+									style={{
+										backgroundColor: theme.inputBG,
+										color: "#e2e8f0",
+										padding: 12,
+										borderRadius: 6,
+										borderWidth: 1,
+										borderColor: theme.inputBorder,
+									}}
+								/>
+								{mailError && (
+									<Text style={{ color: "#fc4444", textAlign: "center" }}>
+										{mailError}
+									</Text>
+								)}
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</View>
+						)}
+					</form.Field>
+					<form.Field name="password">
+						{field => (
+							<View style={{ gap: 6 }}>
+								<Text style={{ color: "#cbd5e1" }}>Contraseña</Text>
+								<View style={{ position: "relative" }}>
 									<TextInput
 										value={field.state.value}
 										onBlur={field.handleBlur}
@@ -147,41 +138,47 @@ export default function Login() {
 											padding: 12,
 											borderRadius: 6,
 											borderWidth: 1,
-											borderColor: theme.inputBorder
+											borderColor: theme.inputBorder,
 										}}
-										/>
-										<Button
-											onPress={() => setPasswordVisible(!passwordVisible)}
-											iconLeft={passwordVisible ? "eye" : "eye-off"}
-											iconSize={16}
-											iconColor={"#999"}
-											variant="ghost"
-											style={{
-												position: "absolute",
-												right: 0,
-												top: -5,
-											}}
-										/>
-										</View>
-									{passError && (
-						<Text style={{ color: "#fc4444", textAlign: "center" }}>
-							{passError}
-						</Text>
-					)}
-									{!field.state.meta.isValid && (
-										<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
-											{field.state.meta.errors
-												.map(err =>
-													typeof err === "string"
-														? err
-														: (err?.message ?? String(err))
-												)
-												.join(",")}
-										</Text>
-									)}
+									/>
+									<Button
+										onPress={() => setPasswordVisible(!passwordVisible)}
+										iconLeft={passwordVisible ? "eye" : "eye-off"}
+										iconSize={16}
+										iconColor={"#999"}
+										variant="ghost"
+										style={{
+											position: "absolute",
+											right: 0,
+											top: -5,
+										}}
+									/>
 								</View>
-	)}
-</form.Field>
+								{passError && (
+									<Text style={{ color: "#fc4444", textAlign: "center" }}>
+										{passError}
+									</Text>
+								)}
+								{!field.state.meta.isValid && (
+									<Text
+										style={{
+											color: "#fc4444",
+											fontStyle: "italic",
+											zIndex: 10,
+										}}
+									>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</View>
+						)}
+					</form.Field>
 
 					<form.Subscribe selector={state => state.isSubmitting}>
 						{isSubmitting => (
@@ -189,7 +186,7 @@ export default function Login() {
 								onPress={form.handleSubmit}
 								text={isSubmitting ? "Ingresando..." : "Ingresar"}
 								disabled={isSubmitting}
-								style={{ marginTop: 20 }}
+								style={{ marginTop: 20, zIndex: 10 }}
 							/>
 						)}
 					</form.Subscribe>
@@ -206,7 +203,6 @@ export default function Login() {
 						onPress={() => router.replace("/auth/register")}
 						style={{
 							zIndex: 10,
-							
 						}}
 						textStyle={{
 							color: "#999",

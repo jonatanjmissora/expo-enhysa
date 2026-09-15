@@ -33,6 +33,7 @@ export default function Index() {
 
 - graficos para el show/medicion/area?
 
+- cambiar "cuenta" por el mail del usuario
 
 INICIO:		
 	- iconos
