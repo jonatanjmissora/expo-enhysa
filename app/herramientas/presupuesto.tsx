@@ -1,5 +1,6 @@
 import Button from "@/components/Button"
 import ImagePicker from "@/components/ImagePicker"
+import Input from "@/components/Input"
 import Select from "@/components/Select"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
@@ -29,7 +30,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	View,
 } from "react-native"
 
@@ -479,29 +479,6 @@ function Label({ children }: { children: React.ReactNode }) {
 	return <Text style={styles.label}>{children}</Text>
 }
 
-function Input({
-	value,
-	onChangeText,
-	placeholder,
-	keyboardType,
-}: {
-	value: string
-	onChangeText: (v: string) => void
-	placeholder?: string
-	keyboardType?: "numeric" | "default"
-}) {
-	return (
-		<TextInput
-			value={value}
-			onChangeText={onChangeText}
-			placeholder={placeholder}
-			placeholderTextColor="#64748b"
-			keyboardType={keyboardType}
-			style={styles.input}
-		/>
-	)
-}
-
 const styles = StyleSheet.create({
 	content: {
 		width: "92%",
@@ -540,16 +517,6 @@ const styles = StyleSheet.create({
 	label: {
 		color: "#94a3b8",
 		fontSize: 12,
-	},
-	input: {
-		backgroundColor: theme.inputBG,
-		borderWidth: 1,
-		borderColor: theme.inputBorder,
-		borderRadius: 6,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
-		color: "#e2e8f0",
-		fontSize: 14,
 	},
 	card: {
 		gap: 8,

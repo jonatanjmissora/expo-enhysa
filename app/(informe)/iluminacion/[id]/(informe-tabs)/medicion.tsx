@@ -26,9 +26,7 @@ export default function Medicion() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				{/* <Text style={{ color: "#cbd5e1" }}>
-						No tenes Areas ni Localizadas cargadas
-					</Text> */}
+				<Text style={{ color: "#cbd5e1" }}>Cargando...</Text>
 				<Button text="Crear Areas" onPress={() => router.push("/")} />
 			</View>
 		)

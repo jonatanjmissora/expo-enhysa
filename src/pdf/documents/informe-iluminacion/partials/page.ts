@@ -5,6 +5,7 @@ import { membreteInferior, membreteSuperior } from "./membrete"
 export type PageBody = {
 	body: string
 	anexo?: string
+	landscape?: boolean
 }
 
 export type RenderPageOptions = PageBody & {
@@ -17,6 +18,7 @@ export type RenderPageOptions = PageBody & {
 export function renderPage({
 	body,
 	anexo,
+	landscape,
 	empresa,
 	tecnico,
 	pageNumber,
@@ -25,9 +27,10 @@ export function renderPage({
 	const anexoLabel = anexo
 		? `<div class="anexo-label">${escapeHtml(anexo)}</div>`
 		: ""
+	const pageClass = landscape ? "page page-landscape" : "page"
 
 	return `
-		<section class="page">
+		<section class="${pageClass}">
 			${membreteSuperior(empresa)}
 			<div class="page-body">
 				${anexoLabel}

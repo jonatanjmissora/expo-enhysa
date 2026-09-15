@@ -438,6 +438,7 @@ function NameEdit({ user }: { user: UserType }) {
 			}}
 		>
 			<TextInput
+				selectTextOnFocus
 				value={name}
 				onChangeText={setName}
 				placeholder={user.name ?? "nombre"}

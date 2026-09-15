@@ -32,7 +32,13 @@ export const reportStyles = `
 		page-break-after: always;
 	}
 	.page:last-child { page-break-after: auto; }
-	.page-body { flex: 1; display: flex; flex-direction: column;}
+	@page landscape { size: A4 landscape; margin: 0; }
+	.page-landscape {
+		width: 297mm;
+		height: 210mm;
+		page: landscape;
+	}
+	.page-body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 	.anexo-label {
 		text-align: center;
 		font-size: 11px;
@@ -50,6 +56,7 @@ export const reportStyles = `
 		align-items: center;
 		border-bottom: 1px solid ${reportColors.border};
 		padding-bottom: 6px;
+		flex-shrink: 0;
 	}
 	.membrete-top-left { flex: 1; display: flex; align-items: flex-start; }
 	.membrete-logo { height: 50px; object-fit: contain; }
@@ -61,7 +68,7 @@ export const reportStyles = `
 	.membrete-top-right { flex: 1; text-align: right; font-size: 11px; }
 
 	/* Membrete inferior */
-	.membrete-bottom { margin-top: 6px; }
+	.membrete-bottom { margin-top: 6px; flex-shrink: 0; }
 	.membrete-bottom-row {
 		display: flex;
 		flex-direction: row;
@@ -134,6 +141,203 @@ export const reportStyles = `
 	}
 	.cover-image img { max-width: 100%; max-height: 320px; object-fit: contain; }
 
+	/* Protocolo (Anexos) */
+	.proto-box { border: 1px solid #000000; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+	.proto-title {
+		font-size: 10px;
+		font-weight: 700;
+		text-align: center;
+		padding: 7px 0;
+		color: #ffffff;
+		background: #000000;
+		letter-spacing: 1px;
+	}
+	.proto-subtitle {
+		font-size: 10px;
+		font-weight: 500;
+		text-align: center;
+		padding: 5px 0;
+		color: #000000;
+		background: ${reportColors.gray};
+		letter-spacing: 1px;
+		border-bottom: 1px solid #000000;
+	}
+	.proto-row { font-size: 9px; border-bottom: 1px solid #000000; padding: 5px 10px; }
+	.proto-row-obs { height: 100px; border-bottom: none; }
+	.proto-flexrow { display: flex; flex-direction: row; border-bottom: 1px solid #000000; }
+	.proto-flexcell {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		font-size: 9px;
+		height: 100px;
+	}
+	.proto-flexcell-middle {
+		border-left: 1px solid #000000;
+		border-right: 1px solid #000000;
+	}
+	.proto-cell { font-size: 8px; padding: 5px 8px; }
+
+	/* Tabla de muestreo (Anexo 2) */
+	.muestreo-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+	.muestreo-table th,
+	.muestreo-table td {
+		font-size: 7px;
+		border: 1px solid #000000;
+		padding: 3px 4px;
+		text-align: center;
+		vertical-align: middle;
+		word-wrap: break-word;
+	}
+	.muestreo-table th { font-weight: 700; background: #f2f2f2; }
+	.muestreo-table tr { break-inside: avoid; page-break-inside: avoid; }
+	.muestreo-table .cell-red { color: #cc0000; }
+
+	/* Galerías de imágenes (Anexo 4) */
+	.inst-galleries {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-height: 0;
+	}
+	.inst-gallery-block {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+	.inst-gallery-title {
+		font-size: 9px;
+		font-weight: bold;
+		text-align: center;
+		margin-bottom: 4px;
+	}
+	.gallery {
+		flex: 1;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		gap: 6px;
+		min-height: 0;
+	}
+	.gallery img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+	.gallery-1 img { grid-column: span 2; grid-row: span 2; }
+	.gallery-2 img { grid-row: span 2; }
+	.gallery-3 img:first-child { grid-column: span 2; }
+	.gallery-empty {
+		grid-column: span 2;
+		grid-row: span 2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #999999;
+		font-size: 9px;
+		background: #f2f2f2;
+	}
+
+	/* Grilla de área (Anexo 5) */
+	.area-grid-wrap {
+		flex: 2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 0;
+		padding: 6px 0;
+	}
+	.area-grid {
+		display: grid;
+		border: 1px solid #666666;
+	}
+	.area-grid-cell {
+		border: 0.5px solid #bbbbbb;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+	}
+	.area-grid-index { font-size: 5px; color: #888888; }
+	.area-grid-value { font-size: 9px; font-weight: 700; }
+	.area-images {
+		flex: 1;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 6px;
+		min-height: 0;
+		padding-top: 6px;
+	}
+	.area-images img {
+		flex: 1;
+		height: 100%;
+		object-fit: contain;
+	}
+	.area-legend {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		gap: 14px;
+		margin: 4px 0;
+		width: 100%;
+	}
+	.legend-item {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 4px;
+		font-size: 8px;
+		color: #555555;
+	}
+	.legend-chip { width: 8px; height: 8px; border-radius: 2px; }
+	.legend-chip-ok { background: rgba(34, 197, 94, 0.7); }
+	.legend-chip-bajo { background: rgba(245, 158, 11, 0.7); }
+	.legend-chip-vacio { background: #bbbbbb; }
+	.area-info {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		font-size: 8px;
+		margin: 2px 0 6px;
+	}
+
+	/* Gráficos (Anexo 6) */
+	.chart-wrap {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 0;
+		padding: 4px 0;
+	}
+	.area-chart { width: 100%; height: 100%; }
+	.chart-empty { color: #999999; font-size: 10px; }
+	.chart-notes { display: flex; flex-direction: column; gap: 6px; }
+	.chart-note {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		// border: 0.5px solid #cccccc;
+		padding: 4px 8px;
+	}
+	.chart-note-row {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		font-size: 8px;
+	}
+	.chart-note-title { font-weight: 700; text-decoration: underline; }
+	.chart-note-value { color: #92400e; font-weight: 700; }
+	.chart-note-hint { color: #333333; }
+	.chart-note-conclusion { font-size: 7px; color: #222222; }
+
 	.p-space {
 		color: transparent;
 	}
@@ -149,7 +353,10 @@ export const reportStyles = `
 			margin: 0 auto 16px;
 			box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
 		}
-		}
+		/* El viewport mide 794 (A4 portrait). Escalamos la landscape para que
+		   todas las hojas queden al 100% del ancho del contenedor en la preview. */
+		.page-landscape { zoom: 0.7071; }
+	}
 		`
 
 export function wrapReportDocument(content: string): string {

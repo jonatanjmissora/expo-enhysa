@@ -154,6 +154,7 @@ function TecnicoEditForm({ tecnico }: { tecnico: TecnicoType }) {
 						<>
 							<Text style={{ color: "#cbd5e1" }}>{f.label}</Text>
 							<TextInput
+								selectTextOnFocus
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChangeText={field.handleChange}

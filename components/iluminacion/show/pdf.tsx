@@ -11,7 +11,10 @@ import {
 	generatePdf,
 	savePdfToDevice,
 } from "@/src/pdf/generate"
+import { useAreasIluminacion } from "@/src/query/hooks/use-area-iluminacion"
 import { useEmpresaById } from "@/src/query/hooks/use-empresa"
+import { useInstrumentoById } from "@/src/query/hooks/use-instrumento"
+import { useLocalizadasIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 import { useTecnicoById } from "@/src/query/hooks/use-tecnico"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 
@@ -26,22 +29,41 @@ export default function PDFContent({
 	const { data: tecnico, isLoading: isLoadingTecnico } = useTecnicoById(
 		informe.tecnicoId
 	)
+	const { data: instrumento, isLoading: isLoadingInstrumento } =
+		useInstrumentoById(informe.instrumentoId)
+	const { data: areas, isLoading: isLoadingAreas } = useAreasIluminacion(
+		informe.id
+	)
+	const { data: localizadas, isLoading: isLoadingLocalizadas } =
+		useLocalizadasIluminacion(informe.id)
 
 	const [html, setHtml] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
 	const [generating, setGenerating] = useState(false)
 
-	const isLoading = isLoadingEmpresa || isLoadingTecnico
-	const notFound = !isLoading && (!empresa || !tecnico)
+	const isLoading =
+		isLoadingEmpresa ||
+		isLoadingTecnico ||
+		isLoadingInstrumento ||
+		isLoadingAreas ||
+		isLoadingLocalizadas
+	const notFound = !isLoading && (!empresa || !tecnico || !instrumento)
 
 	useEffect(() => {
-		if (!empresa || !tecnico) return
+		if (!empresa || !tecnico || !instrumento || !areas || !localizadas) return
 
 		let active = true
 		setHtml(null)
 		setError(null)
 
-		buildInformeIluminacionData({ informe, empresa, tecnico })
+		buildInformeIluminacionData({
+			informe,
+			empresa,
+			tecnico,
+			instrumento,
+			areas,
+			localizadas,
+		})
 			.then(buildInformeIluminacionHtml)
 			.then(result => {
 				if (active) {
@@ -61,7 +83,7 @@ export default function PDFContent({
 		return () => {
 			active = false
 		}
-	}, [informe, empresa, tecnico])
+	}, [informe, empresa, tecnico, instrumento, areas, localizadas])
 
 	const filename = `Informe Iluminacion - ${informe.title}.pdf`
 
@@ -97,7 +119,7 @@ export default function PDFContent({
 	}
 
 	const message = notFound
-		? "No se encontró la empresa o el técnico del informe"
+		? "No se encontró la empresa, el técnico o el instrumento del informe"
 		: error
 
 	return (
@@ -107,9 +129,7 @@ export default function PDFContent({
 			<View
 				style={{
 					flex: 1,
-					borderRadius: 8,
 					overflow: "hidden",
-					backgroundColor: "#525659",
 				}}
 			>
 				{message ? (

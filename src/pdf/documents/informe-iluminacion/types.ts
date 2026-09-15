@@ -20,6 +20,45 @@ export type PdfTecnico = {
 	empresaLogo: string | null
 }
 
+export type PdfInstrumento = {
+	nombre: string
+	marca: string
+	modelo: string
+	fechaCalibracion: string
+	imagenesCalibracion: string[]
+	imagenes: string[]
+}
+
+export type PdfArea = {
+	id: string
+	nombre: string
+	tipo: string
+	iluminacionTipo: string
+	iluminacionFuente: string
+	iluminacion: string
+	valorRequerido: string
+	observaciones: string
+	largo: number
+	ancho: number
+	alto: number
+	imagenes: string[]
+	puntos: number[]
+	timestamps: string[]
+}
+
+export type PdfLocalizada = {
+	id: string
+	nombre: string
+	tipo: string
+	iluminacionTipo: string
+	iluminacionFuente: string
+	iluminacion: string
+	valorRequerido: string
+	observaciones: string
+	valor: number
+	timestamps: string[]
+}
+
 export type PdfInforme = {
 	title: string
 	createdAt: string
@@ -37,4 +76,7 @@ export type InformeIluminacionPdfData = {
 	informe: PdfInforme
 	empresa: PdfEmpresa
 	tecnico: PdfTecnico
+	instrumento: PdfInstrumento
+	areas: PdfArea[]
+	localizadas: PdfLocalizada[]
 }

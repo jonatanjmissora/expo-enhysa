@@ -18,6 +18,7 @@ import {
 	VALORES_REQUERIDOS_OBJ,
 	type ValoresRequeridosType,
 } from "@/constants"
+import DecimalInput from "@/components/DecimalInput"
 import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
 import { useCreateAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
@@ -77,6 +78,7 @@ export default function IluminacionCRUDAreaNuevoContent() {
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Nombre del Area</Text>
 							<TextInput
+								selectTextOnFocus
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChangeText={field.handleChange}
@@ -112,6 +114,7 @@ export default function IluminacionCRUDAreaNuevoContent() {
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Tipo de Area</Text>
 							<TextInput
+								selectTextOnFocus
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChangeText={field.handleChange}
@@ -155,7 +158,7 @@ export default function IluminacionCRUDAreaNuevoContent() {
 					}}
 				>
 					<Text style={{ color: "#cbd5e1", letterSpacing: 1.3, fontSize: 16 }}>
-						Iluminación
+						IluminaciÃ³n
 					</Text>
 					<Ionicons name="bulb-outline" size={14} color="#ccc" />
 				</View>
@@ -263,13 +266,13 @@ export default function IluminacionCRUDAreaNuevoContent() {
 									</Pressable>
 								</View>
 								<TextInput
+									selectTextOnFocus
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChangeText={val =>
 										field.handleChange(val as ValoresRequeridosType)
 									}
 									keyboardType="numeric"
-									selectTextOnFocus
 									placeholder="Ingresar valor requerido"
 									placeholderTextColor="#64748b"
 									style={{
@@ -381,23 +384,11 @@ export default function IluminacionCRUDAreaNuevoContent() {
 					{field => (
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Largo (mts)</Text>
-							<TextInput
-								value={String(field.state.value)}
+							<DecimalInput
+								value={field.state.value}
 								onBlur={field.handleBlur}
-								onChangeText={val => field.handleChange(Number(val) || 0)}
-								keyboardType="numeric"
-								selectTextOnFocus
+								onChange={field.handleChange}
 								placeholder="4 mts"
-								placeholderTextColor="#64748b"
-								style={{
-									backgroundColor: theme.inputBG,
-									color: "#e2e8f0",
-									padding: 12,
-									borderRadius: 6,
-									borderWidth: 1,
-									borderColor: theme.inputBorder,
-									textAlign: "right",
-								}}
 							/>
 							{!field.state.meta.isValid && (
 								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
@@ -418,23 +409,11 @@ export default function IluminacionCRUDAreaNuevoContent() {
 					{field => (
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Ancho (mts)</Text>
-							<TextInput
-								value={String(field.state.value)}
+							<DecimalInput
+								value={field.state.value}
 								onBlur={field.handleBlur}
-								onChangeText={val => field.handleChange(Number(val) || 0)}
-								keyboardType="numeric"
-								selectTextOnFocus
+								onChange={field.handleChange}
 								placeholder="3 mts"
-								placeholderTextColor="#64748b"
-								style={{
-									backgroundColor: theme.inputBG,
-									color: "#e2e8f0",
-									padding: 12,
-									borderRadius: 6,
-									borderWidth: 1,
-									borderColor: theme.inputBorder,
-									textAlign: "right",
-								}}
 							/>
 							{!field.state.meta.isValid && (
 								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
@@ -455,23 +434,11 @@ export default function IluminacionCRUDAreaNuevoContent() {
 					{field => (
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Alto (mts)</Text>
-							<TextInput
-								value={String(field.state.value)}
+							<DecimalInput
+								value={field.state.value}
 								onBlur={field.handleBlur}
-								onChangeText={val => field.handleChange(Number(val) || 0)}
-								keyboardType="numeric"
-								selectTextOnFocus
+								onChange={field.handleChange}
 								placeholder="2.5 mts"
-								placeholderTextColor="#64748b"
-								style={{
-									backgroundColor: theme.inputBG,
-									color: "#e2e8f0",
-									padding: 12,
-									borderRadius: 6,
-									borderWidth: 1,
-									borderColor: theme.inputBorder,
-									textAlign: "right",
-								}}
 							/>
 							{!field.state.meta.isValid && (
 								<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
@@ -504,7 +471,7 @@ export default function IluminacionCRUDAreaNuevoContent() {
 
 				<View style={{ gap: 2 }}>
 					<Text style={{ color: "#cbd5e1" }}>
-						Imágenes del Area ({imagenes.length}/4)
+						ImÃ¡genes del Area ({imagenes.length}/4)
 					</Text>
 					{imagenes.map((img, i) => (
 						<View

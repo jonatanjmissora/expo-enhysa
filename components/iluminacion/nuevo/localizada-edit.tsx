@@ -104,6 +104,7 @@ export default function IluminacionCRUDLocalizadaEditContent({
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Nombre Localizada</Text>
 							<TextInput
+								selectTextOnFocus
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChangeText={field.handleChange}
@@ -139,6 +140,7 @@ export default function IluminacionCRUDLocalizadaEditContent({
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Tipo Localizada</Text>
 							<TextInput
+								selectTextOnFocus
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChangeText={field.handleChange}
@@ -182,7 +184,7 @@ export default function IluminacionCRUDLocalizadaEditContent({
 					}}
 				>
 					<Text style={{ color: "#cbd5e1", letterSpacing: 1.3, fontSize: 16 }}>
-						Iluminación
+						IluminaciÃ³n
 					</Text>
 					<Ionicons name="bulb-outline" size={14} color="#ccc" />
 				</View>
@@ -244,6 +246,7 @@ export default function IluminacionCRUDLocalizadaEditContent({
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Iluminacion</Text>
 							<TextInput
+								selectTextOnFocus
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								placeholder="localizada"
@@ -299,13 +302,13 @@ export default function IluminacionCRUDLocalizadaEditContent({
 									</Pressable>
 								</View>
 								<TextInput
+									selectTextOnFocus
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChangeText={val =>
 										field.handleChange(val as ValoresRequeridosType)
 									}
 									keyboardType="numeric"
-									selectTextOnFocus
 									placeholder="Ingresar valor requerido"
 									placeholderTextColor="#64748b"
 									style={{
@@ -376,11 +379,11 @@ export default function IluminacionCRUDLocalizadaEditContent({
 						<View style={{ gap: 2 }}>
 							<Text style={{ color: "#cbd5e1" }}>Valor medido</Text>
 							<TextInput
+								selectTextOnFocus
 								value={String(field.state.value)}
 								onBlur={field.handleBlur}
 								onChangeText={val => field.handleChange(Number(val) || 0)}
 								keyboardType="numeric"
-								selectTextOnFocus
 								placeholder="3 mts"
 								placeholderTextColor="#64748b"
 								style={{
@@ -434,7 +437,7 @@ export default function IluminacionCRUDLocalizadaEditContent({
 
 				<View style={{ gap: 2 }}>
 					<Text style={{ color: "#cbd5e1" }}>
-						Imágenes del Area ({imagenes.length}/4)
+						ImÃ¡genes del Area ({imagenes.length}/4)
 					</Text>
 					{imagenes.map((img, i) => (
 						<View
