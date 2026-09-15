@@ -4,7 +4,7 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { router, useGlobalSearchParams } from "expo-router"
-import { ScrollView, View, Text } from "react-native"
+import { View, Text } from "react-native"
 
 export default function PDF() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
@@ -53,19 +53,15 @@ export default function PDF() {
 				onPress={() => router.push(`/iluminacion/informes`)}
 			/>
 
-			<ScrollView
-				contentContainerStyle={{
-					paddingTop: 10,
-					paddingHorizontal: 30,
-					paddingBottom: 200,
-					gap: 50,
-				}}
+			<View
 				style={{
 					flex: 1,
+					paddingHorizontal: 12,
+					paddingBottom: 12,
 				}}
 			>
 				<PDFContent informe={informe} />
-			</ScrollView>
+			</View>
 		</ViewWithLogo>
 	)
 }

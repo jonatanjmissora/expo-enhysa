@@ -19,10 +19,6 @@ export default function Index() {
   )
 }
 
-- auth / protected routes / role / reset password / supabase?
-
-- drizzle / op-sqlite
-
 - sync con database
 
 - generacion de PDF
@@ -33,7 +29,6 @@ export default function Index() {
 
 - graficos para el show/medicion/area?
 
-- cambiar "cuenta" por el mail del usuario
 
 INICIO:		
 	- iconos
