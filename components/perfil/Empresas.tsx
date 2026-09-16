@@ -18,7 +18,7 @@ export default function Empresas() {
 					justifyContent: "center",
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando empresas…</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando empresas…</Text>
 			</View>
 		)
 	}

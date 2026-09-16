@@ -36,7 +36,7 @@ export default function EditarEmpresa() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando empresa…</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando empresa…</Text>
 			</View>
 		)
 	}

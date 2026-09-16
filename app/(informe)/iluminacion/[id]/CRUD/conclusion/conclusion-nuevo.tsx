@@ -12,7 +12,7 @@ export default function ConclusionNuevo() {
 	if (isLoading)
 		return (
 			<View style={{}}>
-				{/* <Text style={{ color: "#ccc" }}>Cargando...</Text> */}
+				<Text style={{ color: "#ccc" }}>Cargando...</Text>
 			</View>
 		)
 

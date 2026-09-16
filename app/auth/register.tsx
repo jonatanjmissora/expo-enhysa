@@ -3,12 +3,13 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import { register } from "@/src/auth/auth.service"
+import type { UserType } from "@/src/repositories/user.repository"
 import { defaultRegister, registerFormValidator } from "@/src/db/schema/users"
 import { useSession } from "@/src/session/session-context"
 import { useForm } from "@tanstack/react-form"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
-import { ScrollView, Text, TextInput, View } from "react-native"
+import { Alert, ScrollView, Text, TextInput, View } from "react-native"
 
 const FIELDS = [
 	{
@@ -56,13 +57,20 @@ export default function Register() {
 		validators: { onSubmit: registerFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			let user: UserType
 			try {
-				const user = await register(value.email, value.password)
-				await setActiveUser(user.id)
-				goToOrigin()
+				user = await register(value.email, value.password)
 			} catch (e) {
 				setError(e instanceof Error ? e.message : "No se pudo crear la cuenta")
+				return
 			}
+			try {
+				await setActiveUser(user.id)
+			} catch {
+				Alert.alert("No se pudo guardar la sesión", "Volvé a ingresar.")
+				return
+			}
+			goToOrigin()
 		},
 		onSubmitInvalid: () => {
 			setError("Error en uno de los campos")

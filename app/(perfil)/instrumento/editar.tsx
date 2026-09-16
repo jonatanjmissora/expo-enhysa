@@ -38,7 +38,7 @@ export default function EditarInstrumento() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando instrumento…</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando instrumento…</Text>
 			</View>
 		)
 	}

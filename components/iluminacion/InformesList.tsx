@@ -23,7 +23,7 @@ export default function InformesList({ qnt }: { qnt: number }) {
 					minHeight: 300,
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando...</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando...</Text>
 			</View>
 		)
 	}

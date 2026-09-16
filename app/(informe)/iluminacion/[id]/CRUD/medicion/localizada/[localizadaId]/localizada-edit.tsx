@@ -23,7 +23,7 @@ export default function LocalizadaCRUDEdit() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando informe</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando informe</Text>
 			</View>
 		)
 	}

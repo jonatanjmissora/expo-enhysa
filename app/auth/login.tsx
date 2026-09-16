@@ -3,12 +3,13 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import { login } from "@/src/auth/auth.service"
+import type { UserType } from "@/src/repositories/user.repository"
 import { defaultLogin, loginFormValidator } from "@/src/db/schema/users"
 import { useSession } from "@/src/session/session-context"
 import { useForm } from "@tanstack/react-form"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
-import { ScrollView, Text, TextInput, View } from "react-native"
+import { Alert, ScrollView, Text, TextInput, View } from "react-native"
 
 const FIELDS = [
 	{
@@ -50,13 +51,20 @@ export default function Login() {
 		validators: { onSubmit: loginFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			let user: UserType
 			try {
-				const user = await login(value.email, value.password)
-				await setActiveUser(user.id)
-				goToOrigin()
+				user = await login(value.email, value.password)
 			} catch (e) {
 				setError(e instanceof Error ? e.message : "No se pudo iniciar sesión")
+				return
 			}
+			try {
+				await setActiveUser(user.id)
+			} catch {
+				Alert.alert("No se pudo guardar la sesión", "Volvé a ingresar.")
+				return
+			}
+			goToOrigin()
 		},
 		onSubmitInvalid: () => {
 			setError("Error en uno de los campos")

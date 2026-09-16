@@ -18,7 +18,7 @@ export default function Instrumentos() {
 					justifyContent: "center",
 				}}
 			>
-				{/* <Text style={{ color: "#94a3b8" }}>Cargando instrumentos…</Text> */}
+				<Text style={{ color: "#94a3b8" }}>Cargando instrumentos…</Text>
 			</View>
 		)
 	}

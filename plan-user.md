@@ -338,7 +338,9 @@ Register
    ├── crear fila en users
    ├── si activeUserId === "user-1": migrar datos "user-1" → id (obligatorio)
    │
-   └── activar esa identidad (activeUserId = id) + queryClient.clear()
+   ├── activar esa identidad (activeUserId = id) + queryClient.clear()
+   │
+   └── ⚠️ setActiveUser puede fallar → mostrar cartel (ver "Orden frágil")
 ```
 
 ## Migración obligatoria (primera cuenta)
@@ -361,6 +363,62 @@ COMMIT;
 * Si falla, se revierte y no se activa la cuenta.
 * Luego el usuario puede eliminar datos manualmente si quiere.
 * Tras la migración, no quedan filas con `userId = "user-1"`.
+
+> **Mantenimiento de `DATA_TABLES`:** la lista de tablas a migrar vive en
+> `auth.service.ts` (`DATA_TABLES`). Cada vez que se cree una **tabla nueva con
+> columna `userId`**, hay que agregarla a esa lista; de lo contrario sus filas
+> quedarían con `userId = "user-1"` y el usuario registrado no vería esos datos
+> (o quedarían huérfanos para la demo). La lista hoy es:
+>
+> ```ts
+> const DATA_TABLES = [
+> 	"informes_iluminacion",
+> 	"areas_iluminacion",
+> 	"localizadas_iluminacion",
+> 	"tecnicos",
+> 	"empresas",
+> 	"instrumentos",
+> ] as const
+> ```
+
+## Orden frágil: `register()` → migración → `setActiveUser`
+
+El flujo real es:
+
+```text
+register()
+   ├── crear fila en users
+   ├── migrar "user-1" → id            (transacción, ya commitea)
+   │
+   └── retornar user
+          │
+setActiveUser(user.id)                 (en la pantalla, DESPUÉS)
+   ├── SecureStore.setItemAsync(id)
+   ├── queryClient.clear()
+   └── setActiveUserIdState(id)
+```
+
+La migración ocurre **antes** de `setActiveUser`. Consecuencia: si `setActiveUser`
+fallara (por ejemplo, `SecureStore.setItemAsync` rechaza o la pantalla se cierra
+justo entre `register()` y `setActiveUser`), quedaría un estado inconsistente:
+
+```text
+✅ fila creada en users
+✅ datos ya migrados a userId = <uuid>
+❌ SecureStore vacío (sigue "user-1" al reabrir)
+```
+
+Al reabrir, `getUserId()` devolvería `"user-1"` y:
+
+* Si intenta **registrarse** con el mismo email → `RegisterError EMAIL_EXISTS`
+  ("Ya existe una cuenta con ese email").
+* Si intenta **loguearse** → funciona (la cuenta existe y los datos ya están
+  migrados); `login()` **no** re-migra, pero ya no hace falta.
+
+No es catastrófico, pero conviene que la UI lo detecte y lo informe. **Pendiente
+a implementar:** capturar el error de `setActiveUser` en login/register y mostrar
+un cartel ("No se pudo guardar la sesión. Volvé a ingresar.") en lugar de fallar
+silenciosamente.
 
 ## Registro de cuentas adicionales
 
