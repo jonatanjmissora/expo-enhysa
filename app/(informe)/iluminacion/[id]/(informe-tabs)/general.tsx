@@ -53,7 +53,7 @@ export default function General() {
 					paddingTop: 10,
 					paddingHorizontal: 30,
 					paddingBottom: 200,
-					gap: 50,
+					gap: 20,
 				}}
 				style={{
 					flex: 1,

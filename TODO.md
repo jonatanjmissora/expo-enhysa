@@ -21,21 +21,20 @@ export default function Index() {
 
 - sync con database
 
-- generacion de PDF
+- generacion de PDF 
+       completa y reducida
+       localizada imagenes
 
 - mercadopago
 
 - reanimated ?
 
-- graficos para el show/medicion/area?
+- .heic convertir fotos para que se reconozcan
 
 
 INICIO:		
 	- iconos
 	- alquiler
-
-SUSCRIPCION:
-	- mercadopago
 
 INFORMES:
 	- mi primer informe

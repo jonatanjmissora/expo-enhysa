@@ -188,7 +188,7 @@ export default function IluminacionCRUDAreaEditContent({
 					}}
 				>
 					<Text style={{ color: "#cbd5e1", letterSpacing: 1.3, fontSize: 16 }}>
-						IluminaciÃ³n
+						Iluminación
 					</Text>
 					<Ionicons name="bulb-outline" size={14} color="#ccc" />
 				</View>
@@ -196,12 +196,12 @@ export default function IluminacionCRUDAreaEditContent({
 				<form.Field name="iluminacionTipo">
 					{field => (
 						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Tipo de iluminacion</Text>
+							<Text style={{ color: "#cbd5e1" }}>Tipo de iluminación</Text>
 							<Select
 								data={ILUMINACION_TIPO}
 								value={field.state.value}
 								onChange={field.handleChange}
-								placeholder="Seleccionar tipo de iluminacion"
+								placeholder="Seleccionar tipo de iluminación"
 								renderItem={item => item}
 							/>
 							{!field.state.meta.isValid && (
@@ -222,12 +222,12 @@ export default function IluminacionCRUDAreaEditContent({
 				<form.Field name="iluminacionFuente">
 					{field => (
 						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Fuente de iluminacion</Text>
+							<Text style={{ color: "#cbd5e1" }}>Fuente de iluminación</Text>
 							<Select
 								data={ILUMINACION_FUENTE}
 								value={field.state.value}
 								onChange={field.handleChange}
-								placeholder="Seleccionar fuente de iluminacion"
+								placeholder="Seleccionar fuente de iluminación"
 								renderItem={item => item}
 							/>
 							{!field.state.meta.isValid && (
@@ -248,12 +248,12 @@ export default function IluminacionCRUDAreaEditContent({
 				<form.Field name="iluminacion">
 					{field => (
 						<View style={{ gap: 2 }}>
-							<Text style={{ color: "#cbd5e1" }}>Iluminacion</Text>
+							<Text style={{ color: "#cbd5e1" }}>Iluminación</Text>
 							<Select
 								data={ILUMINACION}
 								value={field.state.value}
 								onChange={field.handleChange}
-								placeholder="Seleccionar iluminacion"
+								placeholder="Seleccionar iluminación"
 								renderItem={item => item}
 							/>
 							{!field.state.meta.isValid && (
@@ -501,7 +501,7 @@ export default function IluminacionCRUDAreaEditContent({
 
 				<View style={{ gap: 2 }}>
 					<Text style={{ color: "#cbd5e1" }}>
-						ImÃ¡genes del Area ({imagenes.length}/4)
+						Imágenes del Area ({imagenes.length}/4)
 					</Text>
 					{imagenes.map((img, i) => (
 						<View

@@ -20,10 +20,10 @@ export default function MiniCard({
 			style={{
 				padding: 16,
 				gap: 2,
-				borderWidth: 1,
-				borderColor: theme.orangeAlpha,
-				backgroundColor: theme.gray,
-				borderRadius: 4,
+				// borderWidth: 1,
+				// borderColor: theme.orangeAlpha,
+				// backgroundColor: theme.gray,
+				// borderRadius: 4,
 				width: "100%",
 			}}
 		>
