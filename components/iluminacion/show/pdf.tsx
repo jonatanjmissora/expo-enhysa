@@ -85,7 +85,7 @@ export default function PDFContent({
 		}
 	}, [informe, empresa, tecnico, instrumento, areas, localizadas])
 
-	const filename = `Informe Iluminacion - ${informe.title}.pdf`
+	const filename = `${informe.title}.pdf`
 
 	const handleShare = async () => {
 		if (!html) return

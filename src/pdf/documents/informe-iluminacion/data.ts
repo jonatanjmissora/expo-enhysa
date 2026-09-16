@@ -18,6 +18,11 @@ function parseImages(value: string): string[] {
 	}
 }
 
+async function toDataUris(uris: string[]): Promise<string[]> {
+	const resolved = await Promise.all(uris.map(toDataUri))
+	return resolved.filter((uri): uri is string => uri !== null)
+}
+
 export async function buildInformeIluminacionData({
 	informe,
 	empresa,
@@ -44,11 +49,11 @@ export async function buildInformeIluminacionData({
 			: Promise.resolve(null),
 	])
 
-	const imagenesCalibracion = await Promise.all(
-		parseImages(instrumento.imagenesCalibracion).map(toDataUri)
+	const imagenesCalibracion = await toDataUris(
+		parseImages(instrumento.imagenesCalibracion)
 	)
-	const imagenesInstrumento = await Promise.all(
-		parseImages(instrumento.imagenes).map(toDataUri)
+	const imagenesInstrumento = await toDataUris(
+		parseImages(instrumento.imagenes)
 	)
 
 	return {
@@ -105,7 +110,7 @@ export async function buildInformeIluminacionData({
 				largo: area.largo,
 				ancho: area.ancho,
 				alto: area.alto,
-				imagenes: await Promise.all(area.imagenes.map(toDataUri)),
+				imagenes: await toDataUris(area.imagenes),
 				puntos: area.puntos,
 				timestamps: area.timestamps,
 			}))

@@ -1,7 +1,19 @@
 import { Alert, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
+import { randomUUID } from "expo-crypto"
+import { Directory, File, Paths } from "expo-file-system"
 import * as ExpoImagePicker from "expo-image-picker"
 import Button from "./Button"
+
+async function persistImage(uri: string): Promise<string> {
+	const directory = new Directory(Paths.document, "images")
+	directory.create({ intermediates: true, idempotent: true })
+
+	const extension = uri.split("?")[0].split(".").pop()?.toLowerCase() || "jpg"
+	const destination = new File(directory, `${randomUUID()}.${extension}`)
+	await new File(uri).copy(destination)
+	return destination.uri
+}
 
 export default function ImagePicker({
 	image,
@@ -45,11 +57,12 @@ export default function ImagePicker({
 		})
 
 		if (!result.canceled) {
+			const uri = await persistImage(result.assets[0].uri)
 			if (multiple && setImages && images) {
-				const combined = [...images, result.assets[0].uri].slice(0, max ?? 4)
+				const combined = [...images, uri].slice(0, max ?? 4)
 				setImages(combined)
 			} else {
-				setImage(result.assets[0].uri)
+				setImage(uri)
 			}
 		}
 	}
@@ -77,11 +90,12 @@ export default function ImagePicker({
 		)
 
 		if (!result.canceled) {
+			const uri = await persistImage(result.assets[0].uri)
 			if (multiple && setImages && images) {
-				const combined = [...images, result.assets[0].uri].slice(0, max ?? 4)
+				const combined = [...images, uri].slice(0, max ?? 4)
 				setImages(combined)
 			} else {
-				setImage(result.assets[0].uri)
+				setImage(uri)
 			}
 		}
 	}

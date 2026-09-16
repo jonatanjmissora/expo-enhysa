@@ -12,7 +12,15 @@ import { LOCAL_USER_ID } from "@/src/session/session.service"
 import { useRouter } from "expo-router"
 import * as ExpoImagePicker from "expo-image-picker"
 import { useEffect, useState } from "react"
-import { Alert, Modal, Text, TextInput, ScrollView, View } from "react-native"
+import {
+	Alert,
+	Modal,
+	Text,
+	TextInput,
+	ScrollView,
+	View,
+	Pressable,
+} from "react-native"
 
 export default function Cuenta() {
 	const router = useRouter()
@@ -257,13 +265,14 @@ function ImageEdit({ user }: { user: UserType }) {
 
 	return (
 		<>
-			<View
+			<Pressable
+				onPress={openModal}
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
 					borderWidth: 1,
-					width: 150,
-					height: 150,
+					width: 140,
+					height: 140,
 					backgroundColor: theme.gray,
 					borderColor: theme.orangeAlpha,
 					borderRadius: 100,
@@ -276,28 +285,13 @@ function ImageEdit({ user }: { user: UserType }) {
 					<ImageViewer
 						imgSource={{ uri: userImage }}
 						style={{
-							width: 120,
-							height: 120,
-							borderRadius: 50,
-							marginHorizontal: "auto",
+							width: 130,
+							height: 130,
+							borderRadius: 100,
 						}}
 					/>
 				)}
-				<Button
-					iconLeft="pencil"
-					iconSize={16}
-					iconColor={theme.orange}
-					variant="secondary"
-					onPress={openModal}
-					size="xsmall"
-					style={{
-						position: "absolute",
-						top: 0,
-						right: -14,
-						opacity: 0.7,
-					}}
-				/>
-			</View>
+			</Pressable>
 
 			<Modal
 				visible={modalVisible}
@@ -321,8 +315,17 @@ function ImageEdit({ user }: { user: UserType }) {
 							padding: 24,
 							alignItems: "center",
 							gap: 20,
+							position: "relative",
 						}}
 					>
+						<Button
+							iconLeft="close"
+							iconSize={32}
+							iconColor="#888"
+							variant="ghost"
+							onPress={() => setModalVisible(false)}
+							style={{ position: "absolute", top: -70, right: -10 }}
+						/>
 						<Text
 							style={{
 								fontSize: 20,
@@ -409,6 +412,7 @@ function ImageEdit({ user }: { user: UserType }) {
 }
 
 function NameEdit({ user }: { user: UserType }) {
+	const [showSaveButton, setShowSaveButton] = useState(false)
 	const [name, setName] = useState(user.name ?? "")
 	const [error, setError] = useState<string | null>(null)
 	const updateUser = useUpdateUser()
@@ -420,6 +424,7 @@ function NameEdit({ user }: { user: UserType }) {
 				id: user.id,
 				input: { name: trimmed === "" ? null : trimmed },
 			})
+			setShowSaveButton(false)
 			setName(trimmed)
 		} catch (e) {
 			setError(
@@ -440,7 +445,10 @@ function NameEdit({ user }: { user: UserType }) {
 			<TextInput
 				selectTextOnFocus
 				value={name}
-				onChangeText={setName}
+				onChangeText={text => {
+					setName(text)
+					setShowSaveButton(true)
+				}}
 				placeholder={user.name ?? "nombre"}
 				placeholderTextColor="#888"
 				style={{
@@ -454,17 +462,21 @@ function NameEdit({ user }: { user: UserType }) {
 					fontSize: 18,
 				}}
 			/>
-			<Button
-				iconLeft="pencil"
-				iconSize={16}
-				iconColor={theme.orange}
-				variant="secondary"
-				onPress={handleEdit}
-				size="xsmall"
-				style={{
-					opacity: 0.7,
-				}}
-			/>
+			{showSaveButton && (
+				<Button
+					iconLeft="save-outline"
+					iconSize={16}
+					iconColor="#aaa"
+					variant="ghost"
+					onPress={handleEdit}
+					size="xsmall"
+					style={{
+						borderColor: theme.orangeAlpha,
+						borderWidth: 1,
+						borderRadius: 10,
+					}}
+				/>
+			)}
 			{error && <Text style={{ color: "red" }}>{error}</Text>}
 		</View>
 	)

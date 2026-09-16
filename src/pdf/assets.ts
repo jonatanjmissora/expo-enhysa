@@ -13,8 +13,16 @@ export async function toBase64(uri: string): Promise<string> {
 	return await file.base64()
 }
 
-export async function toDataUri(uri: string): Promise<string> {
+export async function toDataUri(uri: string): Promise<string | null> {
 	if (uri.startsWith("data:")) return uri
-	const base64 = await toBase64(uri)
-	return `data:${mimeFromUri(uri)};base64,${base64}`
+
+	const file = new File(uri)
+	if (!file.exists) return null
+
+	try {
+		const base64 = await file.base64()
+		return `data:${mimeFromUri(uri)};base64,${base64}`
+	} catch {
+		return null
+	}
 }

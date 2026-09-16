@@ -124,7 +124,7 @@ export default function ToolsAndServices({
 					variant="primary"
 					size={"small"}
 					text="Consultar"
-					onPress={() => scrollTo("hero")}
+					onPress={() => router.push("/herramientas/alquiler")}
 					style={{ marginBottom: 30, minWidth: 150 }}
 				/>
 				<Text

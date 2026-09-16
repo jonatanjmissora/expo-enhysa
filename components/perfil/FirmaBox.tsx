@@ -157,9 +157,6 @@ function FirmaBoxContent({
 				{...panResponder.panHandlers}
 				style={{
 					height: 200,
-					borderWidth: 1,
-					borderColor: "#475569",
-					borderRadius: 12,
 					backgroundColor: "#ffffff",
 					overflow: "hidden",
 				}}
