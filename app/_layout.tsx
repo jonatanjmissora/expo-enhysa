@@ -30,6 +30,10 @@ export default function RootLayout() {
 							options={{ headerShown: false }}
 						/>
 						<Stack.Screen name="debug/db" options={{ title: "SQLite Debug" }} />
+						<Stack.Screen
+							name="debug/heic-test"
+							options={{ title: "HEIC Test" }}
+						/>
 					</Stack>
 				</SafeAreaProvider>
 			</SessionProvider>
