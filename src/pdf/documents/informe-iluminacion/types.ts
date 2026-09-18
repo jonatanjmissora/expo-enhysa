@@ -55,6 +55,7 @@ export type PdfLocalizada = {
 	iluminacion: string
 	valorRequerido: string
 	observaciones: string
+	imagenes: string[]
 	valor: number
 	timestamps: string[]
 }

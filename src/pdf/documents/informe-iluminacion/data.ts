@@ -121,17 +121,20 @@ export async function buildInformeIluminacionData({
 				timestamps: area.timestamps,
 			}))
 		),
-		localizadas: localizadas.map(localizada => ({
-			id: localizada.id,
-			nombre: localizada.nombre,
-			tipo: localizada.tipo,
-			iluminacionTipo: localizada.iluminacionTipo,
-			iluminacionFuente: localizada.iluminacionFuente,
-			iluminacion: localizada.iluminacion,
-			valorRequerido: localizada.valorRequerido,
-			observaciones: localizada.observaciones,
-			valor: localizada.valor,
-			timestamps: localizada.timestamps,
-		})),
+		localizadas: await Promise.all(
+			localizadas.map(async localizada => ({
+				id: localizada.id,
+				nombre: localizada.nombre,
+				tipo: localizada.tipo,
+				iluminacionTipo: localizada.iluminacionTipo,
+				iluminacionFuente: localizada.iluminacionFuente,
+				iluminacion: localizada.iluminacion,
+				valorRequerido: localizada.valorRequerido,
+				observaciones: localizada.observaciones,
+				imagenes: await toDataUris(localizada.imagenes),
+				valor: localizada.valor,
+				timestamps: localizada.timestamps,
+			}))
+		),
 	}
 }

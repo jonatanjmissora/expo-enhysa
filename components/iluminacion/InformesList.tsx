@@ -65,10 +65,9 @@ function InformesListContent({
 	return (
 		<View
 			style={{
-				gap: 40,
-				paddingVertical: 40,
-				width: "90%",
-				marginHorizontal: "auto",
+				gap: 14,
+				paddingVertical: 20,
+				width: "100%",
 			}}
 		>
 			{informe.slice(0, qnt).map(informe => (

@@ -3,6 +3,7 @@ import ImageViewer from "../ImageViewer"
 import EquiposImage from "../../assets/images/equipos.webp"
 import Button from "../Button"
 import { theme } from "@/constants/theme"
+import { router } from "expo-router"
 
 export default function AlquilerIluminacion() {
 	const { width } = useWindowDimensions()
@@ -46,7 +47,7 @@ export default function AlquilerIluminacion() {
 					variant="primary"
 					size={"small"}
 					text="Consultar"
-					onPress={() => {}}
+					onPress={() => router.push("/herramientas/alquiler")}
 					style={{ marginBottom: 30, minWidth: 150 }}
 				/>
 				<Text

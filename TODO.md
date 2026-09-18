@@ -1,7 +1,4 @@
 
-- hacer un instructivo de como se hace mi primer informe
-
-- instrucciones de uso de la app, donde se crea, donde se elimina un informe, donde se genera el pdf
 
 - scrollTop ?
 import { useScrollToTop } from "expo-router"
@@ -20,25 +17,12 @@ export default function Index() {
 }
 
 - sync con database
-
-- generacion de PDF 
-       completa y reducida
-       localizada imagenes
-
 - mercadopago
-
 - reanimated ?
-
-- .heic convertir fotos para que se reconozcan
-
-
-INICIO:		
-	- iconos
-	- alquiler
-
-INFORMES:
-	- mi primer informe
-	- preguntas frecuentes
+- plan-imagenes
+- iconos hero
+- alquiler
+- mi primer informe
 
 Diseo general de tanstack query + sincronizacion
 

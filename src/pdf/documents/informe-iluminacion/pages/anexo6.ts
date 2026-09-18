@@ -63,7 +63,7 @@ function anexo6Body(area: PdfArea): string {
 		<div class="proto-box" style="border:none">
 			<div class="proto-title">GRÁFICOS</div>
 			<div class="proto-flexrow" style="justify-content:space-between;align-items:flex-end;padding:8px 5px;margin:6px 0">
-				<div>(A) ${escapeHtml(area.nombre.toUpperCase())} - ${escapeHtml(
+				<div>${escapeHtml(area.nombre.toUpperCase())} - ${escapeHtml(
 					area.tipo.toUpperCase()
 				)}</div>
 				<div style="font-size:8px;opacity:0.75">Medidas: ${escapeHtml(

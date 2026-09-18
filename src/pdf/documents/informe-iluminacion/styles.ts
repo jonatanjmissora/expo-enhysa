@@ -218,14 +218,17 @@ export const reportStyles = `
 	.gallery {
 		flex: 1;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 6px;
 		min-height: 0;
 	}
 	.gallery img {
+		display: block;
 		width: 100%;
 		height: 100%;
+		min-width: 0;
+		min-height: 0;
 		object-fit: contain;
 	}
 	.gallery-1 img { grid-column: span 2; grid-row: span 2; }
@@ -306,6 +309,26 @@ export const reportStyles = `
 		justify-content: space-around;
 		font-size: 8px;
 		margin: 2px 0 6px;
+	}
+
+	/* Localizada (Anexo 7) */
+	.localizada-value {
+		display: flex;
+		flex-direction: row;
+		align-items: baseline;
+		justify-content: center;
+		gap: 6px;
+		min-width: 180px;
+		padding: 28px 48px;
+		
+		font-size: 24px;
+		font-weight: 700;
+	}
+	.localizada-value-unit { font-size: 14px; font-weight: 400; }
+	.localizada-gallery {
+		flex: 0 0 50%;
+		min-height: 0;
+		overflow: hidden;
 	}
 
 	/* Gráficos (Anexo 6) */

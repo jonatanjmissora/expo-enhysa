@@ -20,18 +20,29 @@ export default function IluminacionGeneralNuevo() {
 
 	return (
 		<ViewWithLogo>
-			<Button
-				variant="ghost"
-				iconLeft="chevron-back"
-				text="Volver"
+			<View
 				style={{
-					alignSelf: "flex-start",
-					paddingHorizontal: 20,
-					opacity: 0.85,
-					padding: 4,
+					flexDirection: "row",
+					justifyContent: "space-between",
+					alignItems: "center",
+					paddingHorizontal: 24,
 				}}
-				onPress={() => router.back()}
-			/>
+			>
+				<Button
+					variant="ghost"
+					iconLeft="chevron-back"
+					text="Volver"
+					style={{
+						opacity: 0.85,
+						paddingVertical: 4,
+						paddingHorizontal: 0,
+					}}
+					onPress={() => router.back()}
+				/>
+				<Text style={{ color: "#cbd5e1", fontSize: 19, fontWeight: 600 }}>
+					Nuevo Informe
+				</Text>
+			</View>
 			{!tecnico ? (
 				<NoTecnico />
 			) : !empresas || empresas.length === 0 ? (

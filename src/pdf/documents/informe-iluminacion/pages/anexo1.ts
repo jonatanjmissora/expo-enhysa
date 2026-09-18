@@ -63,7 +63,7 @@ export function buildAnexo1Page(data: InformeIluminacionPdfData): PageBody {
 
 			<div class="proto-subtitle">Documentación que se Adjuntará a la Medición</div>
 			<div class="proto-row">(15) Certificado de calibración: Anexo 4</div>
-			<div class="proto-row">(16) Plano o croquis del establecimiento: Anexo 5 - Gráficas: Anexo 6</div>
+			<div class="proto-row">(16) Plano o croquis del establecimiento: Anexo 5 - Gráficas: Anexo 6 - Localizadas: Anexo 7</div>
 
 			<div class="proto-row proto-row-obs">(17) Observaciones: ${escapeHtml(
 				observaciones
