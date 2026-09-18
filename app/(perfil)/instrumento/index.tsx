@@ -165,7 +165,8 @@ function InstrumentoItem({ instrumento }: { instrumento: InstrumentoType }) {
 							<ImageViewer
 								key={i}
 								imgSource={{ uri: img }}
-								style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
+								style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+								zoomable
 							/>
 						))}
 					</View>
@@ -189,7 +190,8 @@ function InstrumentoItem({ instrumento }: { instrumento: InstrumentoType }) {
 							<ImageViewer
 								key={i}
 								imgSource={{ uri: img }}
-								style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
+								style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+								zoomable
 							/>
 						))}
 					</View>

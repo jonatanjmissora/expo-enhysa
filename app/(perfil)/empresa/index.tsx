@@ -132,7 +132,8 @@ function EmpresaItem({ empresa }: { empresa: EmpresaType }) {
 				{empresa?.logo ? (
 					<ImageViewer
 						imgSource={{ uri: empresa?.logo }}
-						style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
+						style={{ width: "90%", aspectRatio: 4 / 3, borderRadius: 4 }}
+						zoomable
 					/>
 				) : (
 					<PictureNotFound />

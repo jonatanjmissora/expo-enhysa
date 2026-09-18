@@ -72,7 +72,10 @@ export type PdfInforme = {
 	creditConsumed: boolean
 }
 
+export type InformeIluminacionPdfTipo = "completa" | "reducida"
+
 export type InformeIluminacionPdfData = {
+	tipo: InformeIluminacionPdfTipo
 	informe: PdfInforme
 	empresa: PdfEmpresa
 	tecnico: PdfTecnico

@@ -46,9 +46,10 @@ const COLUMNS = [
 type MuestreoRow =
 	| { kind: "localizada"; localizada: PdfLocalizada }
 	| { kind: "punto"; area: PdfArea; punto: number; index: number }
+	| { kind: "area"; area: PdfArea }
 
 export function buildAnexo2Pages(data: InformeIluminacionPdfData): PageBody[] {
-	const rows = flattenRows(data.localizadas, data.areas)
+	const rows = flattenRows(data.localizadas, data.areas, data.tipo)
 	const observaciones = buildObservaciones(data.localizadas, data.areas)
 	const chunks = chunk(rows, MAX_ROWS)
 
@@ -66,13 +67,22 @@ export function buildAnexo2Pages(data: InformeIluminacionPdfData): PageBody[] {
 
 function flattenRows(
 	localizadas: PdfLocalizada[],
-	areas: PdfArea[]
+	areas: PdfArea[],
+	tipo: InformeIluminacionPdfData["tipo"]
 ): MuestreoRow[] {
 	const rows: MuestreoRow[] = []
 
 	for (const localizada of sortByName(localizadas)) {
 		rows.push({ kind: "localizada", localizada })
 	}
+
+	if (tipo === "reducida") {
+		for (const area of sortByName(areas)) {
+			rows.push({ kind: "area", area })
+		}
+		return rows
+	}
+
 	for (const area of sortByName(areas)) {
 		area.puntos.forEach((punto, index) => {
 			if (punto > 0) {
@@ -150,6 +160,50 @@ function rowHtml(row: MuestreoRow, muestreoIndex: number): string {
 				${cell("-")}
 				${cell(escapeHtml(String(localizada.valor)))}
 				${cell(escapeHtml(localizada.valorRequerido))}
+			</tr>
+		`
+	}
+
+	if (row.kind === "area") {
+		const { area } = row
+		const celdasMedidas = area.puntos.filter(p => p > 0)
+		const eminima = celdasMedidas.length > 0 ? Math.min(...celdasMedidas) : null
+		const promedio =
+			celdasMedidas.length > 0
+				? Math.round(
+						celdasMedidas.reduce((acc, valor) => acc + valor, 0) /
+							celdasMedidas.length
+					)
+				: null
+		const uniformidad = promedio !== null ? Math.ceil(promedio / 2) : null
+		const simbolo =
+			eminima !== null && uniformidad !== null && eminima >= uniformidad
+				? "\u2265"
+				: "\u003c"
+		const eminimaIndex = eminima !== null ? celdasMedidas.indexOf(eminima) : -1
+		const hora =
+			eminimaIndex >= 0 && area.timestamps[eminimaIndex]
+				? formatTime(area.timestamps[eminimaIndex])
+				: area.timestamps[0]
+					? formatTime(area.timestamps[0])
+					: "-"
+		const uniformidadCell =
+			eminima !== null && uniformidad !== null
+				? `${eminima} ${simbolo} ${uniformidad}`
+				: "-"
+
+		return `
+			<tr>
+				${cell(muestreoLabel(muestreoIndex))}
+				${cell(escapeHtml(hora))}
+				${cell(escapeHtml(capitalize(area.nombre)))}
+				${cell(escapeHtml(capitalize(area.tipo)))}
+				${cell(escapeHtml(capitalize(area.iluminacionTipo)))}
+				${cell(escapeHtml(capitalize(area.iluminacionFuente)))}
+				${cell(escapeHtml(capitalize(area.iluminacion)))}
+				${cell(uniformidadCell)}
+				${cell(escapeHtml(promedio !== null ? String(promedio) : "-"))}
+				${cell(escapeHtml(area.valorRequerido))}
 			</tr>
 		`
 	}

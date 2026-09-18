@@ -1,5 +1,5 @@
 import Button from "@/components/Button"
-import PDFContent from "@/components/iluminacion/show/pdf"
+import PDFContainer from "@/components/iluminacion/show/pdf"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
@@ -60,7 +60,7 @@ export default function PDF() {
 					paddingBottom: 12,
 				}}
 			>
-				<PDFContent informe={informe} />
+				<PDFContainer informe={informe} />
 			</View>
 		</ViewWithLogo>
 	)

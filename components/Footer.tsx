@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 	{ id: "3", label: "Mi Perfil", to: "/perfil" },
 	{ id: "4", label: "Suscripción", to: "/suscripcion" },
 	{ id: "5", label: "Base de datos", to: "/debug/db" },
-	{ id: "6", label: "Preguntas frecuentes", to: "/faq" },
+	{ id: "6", label: "Preguntas frecuentes", to: "/herramientas/faq" },
 ]
 
 const CONTACTOS = [
@@ -82,10 +82,7 @@ export default function Footer({
 	scrollTo: (section: string) => void
 }) {
 	const [soporte, setSoporte] = useState(false)
-	const { width } = useWindowDimensions()
 	const router = useRouter()
-	const isNarrow = width < 600
-
 	const actualYear = new Date().getFullYear()
 
 	return (
@@ -109,37 +106,7 @@ export default function Footer({
 				<Pressable onPress={() => setSoporte(s => !s)} style={styles.navItem}>
 					<Text style={styles.navText}>Soporte técnico</Text>
 				</Pressable>
-				{soporte && (
-					<View style={styles.contactosContainer}>
-						{isNarrow ? (
-							<View
-								style={{
-									gap: 12,
-									flexDirection: "row",
-									flexWrap: "wrap",
-									justifyContent: "space-evenly",
-								}}
-							>
-								{CONTACTOS.map((item, index) => (
-									<ContactoItem key={index} item={item} />
-								))}
-							</View>
-						) : (
-							<View
-								style={{
-									gap: 12,
-									flexDirection: "row",
-									flexWrap: "wrap",
-									justifyContent: "space-evenly",
-								}}
-							>
-								{DESKTOP_CONTACTOS.map((item, index) => (
-									<ContactoItem key={index} item={item} />
-								))}
-							</View>
-						)}
-					</View>
-				)}
+				{soporte && <Contactos />}
 			</View>
 
 			<Text style={styles.copy}>
@@ -159,6 +126,43 @@ export default function Footer({
 					zIndex: -1,
 				}}
 			/>
+		</View>
+	)
+}
+
+export function Contactos() {
+	const { width } = useWindowDimensions()
+	const isNarrow = width < 600
+
+	return (
+		<View style={styles.contactosContainer}>
+			{isNarrow ? (
+				<View
+					style={{
+						gap: 12,
+						flexDirection: "row",
+						flexWrap: "wrap",
+						justifyContent: "space-evenly",
+					}}
+				>
+					{CONTACTOS.map((item, index) => (
+						<ContactoItem key={index} item={item} />
+					))}
+				</View>
+			) : (
+				<View
+					style={{
+						gap: 12,
+						flexDirection: "row",
+						flexWrap: "wrap",
+						justifyContent: "space-evenly",
+					}}
+				>
+					{DESKTOP_CONTACTOS.map((item, index) => (
+						<ContactoItem key={index} item={item} />
+					))}
+				</View>
+			)}
 		</View>
 	)
 }

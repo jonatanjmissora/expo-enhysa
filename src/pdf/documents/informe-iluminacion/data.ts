@@ -5,7 +5,10 @@ import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
 import type { TecnicoType } from "@/src/repositories/tecnico.repository"
-import type { InformeIluminacionPdfData } from "./types"
+import type {
+	InformeIluminacionPdfData,
+	InformeIluminacionPdfTipo,
+} from "./types"
 
 function parseImages(value: string): string[] {
 	try {
@@ -30,6 +33,7 @@ export async function buildInformeIluminacionData({
 	instrumento,
 	areas,
 	localizadas,
+	tipo = "completa",
 }: {
 	informe: InformesIluminacionType
 	empresa: EmpresaType
@@ -37,6 +41,7 @@ export async function buildInformeIluminacionData({
 	instrumento: InstrumentoType
 	areas: AreaIluminacionType[]
 	localizadas: LocalizadaIluminacionType[]
+	tipo?: InformeIluminacionPdfTipo
 }): Promise<InformeIluminacionPdfData> {
 	const [logo, matriculaImg, firmaImg, empresaLogo] = await Promise.all([
 		empresa.logo ? toDataUri(empresa.logo) : Promise.resolve(null),
@@ -57,6 +62,7 @@ export async function buildInformeIluminacionData({
 	)
 
 	return {
+		tipo,
 		informe: {
 			title: informe.title,
 			createdAt: informe.createdAt,

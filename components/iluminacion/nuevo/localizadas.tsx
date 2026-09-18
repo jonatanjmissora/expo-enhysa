@@ -90,7 +90,7 @@ function LocalizadasList({
 	id: string
 }) {
 	return (
-		<View style={{ gap: 8 }}>
+		<View style={{ gap: 8, marginTop: 30 }}>
 			{localizadasIluminacion.map(localizada => (
 				<LocalizadaMiniCard
 					key={localizada.id}

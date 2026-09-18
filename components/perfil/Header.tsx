@@ -18,7 +18,8 @@ export default function HeaderPerfil({
 				display: "flex",
 				flexDirection: "row",
 				alignItems: "center",
-				justifyContent: "space-between",
+				justifyContent: "center",
+				gap: 20,
 				width: "100%",
 			}}
 		>
@@ -72,7 +73,7 @@ function HeaderCard({
 			}}
 		>
 			<Ionicons name={icon} size={24} color={"#fff"} />
-			<Text style={{ fontSize: 14, color: "#fff" }}>{text}</Text>
+			<Text style={{ fontSize: 12, color: "#fff" }}>{text}</Text>
 		</Pressable>
 	)
 }

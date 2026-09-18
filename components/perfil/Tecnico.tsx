@@ -118,7 +118,8 @@ function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 				{tecnico?.matriculaImg ? (
 					<ImageViewer
 						imgSource={{ uri: tecnico?.matriculaImg }}
-						style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
+						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+						zoomable
 					/>
 				) : (
 					<PictureNotFound />
@@ -129,19 +130,10 @@ function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 					Firma Digital
 				</Text>
 				{tecnico?.firmaImg ? (
-					<View
-						style={{
-							backgroundColor: "#eee",
-							width: 200,
-							aspectRatio: 4 / 3,
-							borderRadius: 4,
-						}}
-					>
-						<ImageViewer
-							imgSource={{ uri: tecnico?.firmaImg }}
-							style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
-						/>
-					</View>
+					<ImageViewer
+						imgSource={{ uri: tecnico?.firmaImg }}
+						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+					/>
 				) : (
 					<PictureNotFound />
 				)}
@@ -153,7 +145,8 @@ function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 				{tecnico?.empresaLogo ? (
 					<ImageViewer
 						imgSource={{ uri: tecnico?.empresaLogo }}
-						style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
+						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+						zoomable
 					/>
 				) : (
 					<PictureNotFound />

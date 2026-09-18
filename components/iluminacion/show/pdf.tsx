@@ -2,7 +2,7 @@ import Button from "@/components/Button"
 import InformeHeaderContent from "@/components/InformeHeader"
 import { theme } from "@/constants/theme"
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, Text, View } from "react-native"
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native"
 import { WebView } from "react-native-webview"
 import { buildInformeIluminacionHtml } from "@/src/pdf/documents/informe-iluminacion"
 import { buildInformeIluminacionData } from "@/src/pdf/documents/informe-iluminacion/data"
@@ -17,11 +17,104 @@ import { useInstrumentoById } from "@/src/query/hooks/use-instrumento"
 import { useLocalizadasIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
 import { useTecnicoById } from "@/src/query/hooks/use-tecnico"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
+import type { InformeIluminacionPdfTipo } from "@/src/pdf/documents/informe-iluminacion/types"
+import ImageViewer from "@/components/ImageViewer"
+import completa from "@/assets/images/completa.webp"
+import reducida from "@/assets/images/reducida.webp"
 
-export default function PDFContent({
+export default function PDFContainer({
 	informe,
 }: {
 	informe: InformesIluminacionType
+}) {
+	const [tipoPDF, setTipoPDF] = useState<"completa" | "reducida">("completa")
+	const [isSelected, setIsSelected] = useState(false)
+
+	if (!isSelected) {
+		return (
+			<ScrollView
+				style={{ flex: 1 }}
+				contentContainerStyle={{ paddingBottom: 150, gap: 12 }}
+			>
+				<Text
+					style={{
+						color: "#ccc",
+						fontSize: 18,
+						marginTop: 40,
+						paddingBottom: 8,
+						borderBottomColor: "#555",
+						borderBottomWidth: 1,
+						textAlign: "center",
+					}}
+				>
+					Selecciona el Tipo de PDF
+				</Text>
+				<View style={{ gap: 12 }}>
+					<View
+						style={{
+							justifyContent: "center",
+							alignItems: "center",
+							gap: 10,
+							paddingVertical: 40,
+						}}
+					>
+						<Text style={{ color: "#aaa", fontStyle: "italic" }}>
+							Muestra todos los puntos de medición por área
+						</Text>
+						<ImageViewer
+							imgSource={completa}
+							style={{ width: 250, aspectRatio: 4 / 3, borderRadius: 4 }}
+							zoomable
+						/>
+						<Button
+							text="Tabla Completa"
+							onPress={() => {
+								setIsSelected(true)
+								setTipoPDF("completa")
+							}}
+							style={{ width: 250, marginHorizontal: "auto" }}
+						/>
+					</View>
+
+					<View
+						style={{
+							justifyContent: "center",
+							alignItems: "center",
+							gap: 10,
+							paddingVertical: 40,
+						}}
+					>
+						<Text style={{ color: "#aaa", fontStyle: "italic" }}>
+							Muestra todos los puntos de medición por área
+						</Text>
+						<ImageViewer
+							imgSource={reducida}
+							style={{ width: 250, aspectRatio: 4 / 3, borderRadius: 4 }}
+							zoomable
+						/>
+						<Button
+							text="Tabla Reducida"
+							onPress={() => {
+								setIsSelected(true)
+								setTipoPDF("reducida")
+							}}
+							style={{ width: 250, marginHorizontal: "auto" }}
+						/>
+					</View>
+				</View>
+			</ScrollView>
+		)
+	}
+
+	return <PdfPreview informe={informe} tipo={tipoPDF} />
+}
+
+function PdfPreview({
+	informe,
+	tipo,
+}: {
+	informe: InformesIluminacionType
+	tipo: InformeIluminacionPdfTipo
 }) {
 	const { data: empresa, isLoading: isLoadingEmpresa } = useEmpresaById(
 		informe.empresaId
@@ -63,6 +156,7 @@ export default function PDFContent({
 			instrumento,
 			areas,
 			localizadas,
+			tipo,
 		})
 			.then(buildInformeIluminacionHtml)
 			.then(result => {
@@ -83,9 +177,11 @@ export default function PDFContent({
 		return () => {
 			active = false
 		}
-	}, [informe, empresa, tecnico, instrumento, areas, localizadas])
+	}, [informe, empresa, tecnico, instrumento, areas, localizadas, tipo])
 
-	const filename = `${informe.title}.pdf`
+	const filename = `${informe.title}${
+		tipo === "reducida" ? " (reducida)" : ""
+	}.pdf`
 
 	const handleShare = async () => {
 		if (!html) return
@@ -125,7 +221,6 @@ export default function PDFContent({
 	return (
 		<View style={{ flex: 1, gap: 12 }}>
 			<InformeHeaderContent informe={informe} />
-
 			<View
 				style={{
 					flex: 1,
