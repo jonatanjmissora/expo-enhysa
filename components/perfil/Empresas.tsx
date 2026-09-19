@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import Button from "@/components/Button"
 import { router } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
@@ -147,7 +148,7 @@ function EmpresaCard({ empresa }: { empresa: EmpresaType }) {
 					</Text>
 				</View>
 				<ImageViewer
-					imgSource={{ uri: empresa.logo }}
+					imgSource={{ uri: getImageUri(empresa.logo) }}
 					style={{
 						height: 50,
 						aspectRatio: 4 / 3,

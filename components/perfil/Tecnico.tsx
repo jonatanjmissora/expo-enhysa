@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import { useDeleteTecnico, useTecnico } from "@/src/query/hooks/use-tecnico"
@@ -117,7 +118,7 @@ function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 				</Text>
 				{tecnico?.matriculaImg ? (
 					<ImageViewer
-						imgSource={{ uri: tecnico?.matriculaImg }}
+						imgSource={{ uri: getImageUri(tecnico?.matriculaImg ?? "") }}
 						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
 						zoomable
 					/>
@@ -131,7 +132,7 @@ function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 				</Text>
 				{tecnico?.firmaImg ? (
 					<ImageViewer
-						imgSource={{ uri: tecnico?.firmaImg }}
+						imgSource={{ uri: getImageUri(tecnico?.firmaImg ?? "") }}
 						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
 					/>
 				) : (
@@ -144,7 +145,7 @@ function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 				</Text>
 				{tecnico?.empresaLogo ? (
 					<ImageViewer
-						imgSource={{ uri: tecnico?.empresaLogo }}
+						imgSource={{ uri: getImageUri(tecnico?.empresaLogo ?? "") }}
 						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
 						zoomable
 					/>

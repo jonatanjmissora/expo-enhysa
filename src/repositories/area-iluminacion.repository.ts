@@ -4,6 +4,7 @@ import {
 	CREATE_AREAS_ILUMINACION_TABLE,
 	type AreaIluminacionType,
 } from "../db/schema/areas-iluminacion"
+import { imageService } from "../media/image-service"
 
 export type CreateAreaIluminacionInput = Omit<
 	AreaIluminacionType,
@@ -268,6 +269,16 @@ export const areaIluminacionRepository = {
 
 		const db = await getDatabase()
 
+		const existing = await db.getFirstAsync<{ imagenes: string }>(
+			`SELECT imagenes FROM areas_iluminacion WHERE id = ?`,
+			id
+		)
+		const imageIds = existing ? parseStringArray(existing.imagenes) : []
+
 		await db.runAsync(`DELETE FROM areas_iluminacion WHERE id = ?`, id)
+
+		for (const imageId of imageIds) {
+			await imageService.deleteImage(imageId)
+		}
 	},
 }

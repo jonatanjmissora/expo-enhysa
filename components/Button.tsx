@@ -65,7 +65,13 @@ export default function Button({
 				...style,
 			})}
 		>
-			{iconLeft && <Ionicons name={iconLeft} size={iconSize} color={iconColor || "white"} />}
+			{iconLeft && (
+				<Ionicons
+					name={iconLeft}
+					size={iconSize}
+					color={iconColor || "white"}
+				/>
+			)}
 			<Text
 				style={{
 					color: "#fff",

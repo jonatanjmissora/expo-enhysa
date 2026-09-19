@@ -1,4 +1,4 @@
-import { toDataUri } from "@/src/pdf/assets"
+import { imageIdToDataUri, imageIdsToDataUris } from "@/src/media/image-base64"
 import type { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import type { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import type { EmpresaType } from "@/src/repositories/empresa.repository"
@@ -21,11 +21,6 @@ function parseImages(value: string): string[] {
 	}
 }
 
-async function toDataUris(uris: string[]): Promise<string[]> {
-	const resolved = await Promise.all(uris.map(toDataUri))
-	return resolved.filter((uri): uri is string => uri !== null)
-}
-
 export async function buildInformeIluminacionData({
 	informe,
 	empresa,
@@ -44,20 +39,22 @@ export async function buildInformeIluminacionData({
 	tipo?: InformeIluminacionPdfTipo
 }): Promise<InformeIluminacionPdfData> {
 	const [logo, matriculaImg, firmaImg, empresaLogo] = await Promise.all([
-		empresa.logo ? toDataUri(empresa.logo) : Promise.resolve(null),
+		empresa.logo ? imageIdToDataUri(empresa.logo) : Promise.resolve(null),
 		tecnico.matriculaImg
-			? toDataUri(tecnico.matriculaImg)
+			? imageIdToDataUri(tecnico.matriculaImg)
 			: Promise.resolve(null),
-		tecnico.firmaImg ? toDataUri(tecnico.firmaImg) : Promise.resolve(null),
+		tecnico.firmaImg
+			? imageIdToDataUri(tecnico.firmaImg)
+			: Promise.resolve(null),
 		tecnico.empresaLogo
-			? toDataUri(tecnico.empresaLogo)
+			? imageIdToDataUri(tecnico.empresaLogo)
 			: Promise.resolve(null),
 	])
 
-	const imagenesCalibracion = await toDataUris(
+	const imagenesCalibracion = await imageIdsToDataUris(
 		parseImages(instrumento.imagenesCalibracion)
 	)
-	const imagenesInstrumento = await toDataUris(
+	const imagenesInstrumento = await imageIdsToDataUris(
 		parseImages(instrumento.imagenes)
 	)
 
@@ -116,7 +113,7 @@ export async function buildInformeIluminacionData({
 				largo: area.largo,
 				ancho: area.ancho,
 				alto: area.alto,
-				imagenes: await toDataUris(area.imagenes),
+				imagenes: await imageIdsToDataUris(area.imagenes),
 				puntos: area.puntos,
 				timestamps: area.timestamps,
 			}))
@@ -131,7 +128,7 @@ export async function buildInformeIluminacionData({
 				iluminacion: localizada.iluminacion,
 				valorRequerido: localizada.valorRequerido,
 				observaciones: localizada.observaciones,
-				imagenes: await toDataUris(localizada.imagenes),
+				imagenes: await imageIdsToDataUris(localizada.imagenes),
 				valor: localizada.valor,
 				timestamps: localizada.timestamps,
 			}))

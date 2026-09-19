@@ -19,7 +19,6 @@ export default function Index() {
 - sync con database
 - mercadopago
 - reanimated ?
-- plan-imagenes
 - iconos hero
 - alquiler
 - mi primer informe

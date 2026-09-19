@@ -7,6 +7,7 @@ import { theme } from "@/constants/theme"
 import { router, usePathname } from "expo-router"
 import { useActiveUser } from "@/src/query/hooks/use-user"
 import { useSession } from "@/src/session/session-context"
+import { getImageUri } from "@/src/media/image-storage"
 
 export default function Header() {
 	const insets = useSafeAreaInsets()
@@ -81,7 +82,7 @@ function Avatar() {
 		>
 			{user?.userImage ? (
 				<ImageViewer
-					imgSource={{ uri: user.userImage }}
+					imgSource={{ uri: getImageUri(user.userImage) }}
 					contentFit="cover"
 					style={{ width: 40, height: 40 }}
 				/>

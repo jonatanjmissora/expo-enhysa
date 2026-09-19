@@ -3,6 +3,9 @@ import { Alert, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
 import * as ExpoImagePicker from "expo-image-picker"
 import FirmaBox from "./FirmaBox"
+import { imageService } from "@/src/media/image-service"
+import { getImageUri } from "@/src/media/image-storage"
+import { useUserId } from "@/src/session/session-context"
 
 export default function FirmaPicker({
 	image,
@@ -11,6 +14,7 @@ export default function FirmaPicker({
 	image: string | null
 	setImage: (value: string | null) => void
 }) {
+	const userId = useUserId()
 	const pickImage = async () => {
 		const permissionResult =
 			await ExpoImagePicker.requestMediaLibraryPermissionsAsync()
@@ -30,10 +34,21 @@ export default function FirmaPicker({
 			quality: 1,
 		})
 
-		// console.log("ImagePicker", result)
-
 		if (!result.canceled) {
-			setImage(result.assets[0].uri)
+			try {
+				const asset = result.assets[0]
+				const imported = await imageService.importImage(asset.uri, {
+					userId,
+					width: asset.width,
+					height: asset.height,
+				})
+				setImage(imported.imageId)
+			} catch (e) {
+				Alert.alert(
+					"Error",
+					e instanceof Error ? e.message : "No se pudo importar la imagen"
+				)
+			}
 		}
 	}
 
@@ -51,7 +66,10 @@ export default function FirmaPicker({
 						iconLeft="trash"
 						variant="danger"
 						iconSize={18}
-						onPress={() => setImage(null)}
+						onPress={async () => {
+							if (image) await imageService.deleteImage(image)
+							setImage(null)
+						}}
 						style={{
 							position: "absolute",
 							top: 0,
@@ -62,7 +80,7 @@ export default function FirmaPicker({
 						}}
 					/>
 					<ImageViewer
-						imgSource={{ uri: image }}
+						imgSource={{ uri: getImageUri(image) }}
 						style={{ width: 300, aspectRatio: 4 / 3 }}
 					/>
 				</View>

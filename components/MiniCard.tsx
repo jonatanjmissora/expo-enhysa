@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import { View, Text } from "react-native"
 import { theme } from "@/constants/theme"
 import ImageViewer from "./ImageViewer"
@@ -77,7 +78,7 @@ export default function MiniCard({
 				</View>
 				{imagen ? (
 					<ImageViewer
-						imgSource={{ uri: imagen }}
+						imgSource={{ uri: getImageUri(imagen) }}
 						style={{
 							height: 50,
 							aspectRatio: 4 / 3,

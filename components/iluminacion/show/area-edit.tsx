@@ -1,3 +1,5 @@
+import { imageService } from "@/src/media/image-service"
+import { getImageUri } from "@/src/media/image-storage"
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
 import { router } from "expo-router"
@@ -520,9 +522,10 @@ export default function IluminacionShowAreaEditContent({
 								iconLeft="trash"
 								variant="danger"
 								iconSize={18}
-								onPress={() =>
+								onPress={() => {
+									void imageService.deleteImage(img)
 									setImagenes(prev => prev.filter((_, idx) => idx !== i))
-								}
+								}}
 								style={{
 									position: "absolute",
 									top: 0,
@@ -533,7 +536,7 @@ export default function IluminacionShowAreaEditContent({
 								}}
 							/>
 							<ImageViewer
-								imgSource={{ uri: img }}
+								imgSource={{ uri: getImageUri(img) }}
 								style={{ width: 300, aspectRatio: 4 / 3 }}
 							/>
 						</View>

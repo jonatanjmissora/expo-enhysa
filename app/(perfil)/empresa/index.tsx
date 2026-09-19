@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import { View, Text, ScrollView } from "react-native"
 import { router, useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
@@ -131,7 +132,7 @@ function EmpresaItem({ empresa }: { empresa: EmpresaType }) {
 				</Text>
 				{empresa?.logo ? (
 					<ImageViewer
-						imgSource={{ uri: empresa?.logo }}
+						imgSource={{ uri: getImageUri(empresa?.logo ?? "") }}
 						style={{ width: "90%", aspectRatio: 4 / 3, borderRadius: 4 }}
 						zoomable
 					/>

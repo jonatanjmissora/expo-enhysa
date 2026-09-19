@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import Button from "@/components/Button"
 import ImageViewer from "@/components/ImageViewer"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
@@ -164,7 +165,7 @@ function InstrumentoItem({ instrumento }: { instrumento: InstrumentoType }) {
 						{imagenesParsed.map((img, i) => (
 							<ImageViewer
 								key={i}
-								imgSource={{ uri: img }}
+								imgSource={{ uri: getImageUri(img) }}
 								style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
 								zoomable
 							/>
@@ -189,7 +190,7 @@ function InstrumentoItem({ instrumento }: { instrumento: InstrumentoType }) {
 						{imagenesCalibracionParsed.map((img, i) => (
 							<ImageViewer
 								key={i}
-								imgSource={{ uri: img }}
+								imgSource={{ uri: getImageUri(img) }}
 								style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
 								zoomable
 							/>

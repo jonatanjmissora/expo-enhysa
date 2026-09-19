@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
 import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
@@ -165,7 +166,7 @@ function InstrumentoCard({ instrumento }: { instrumento: InstrumentoType }) {
 				</View>
 				{imagenCalibracion ? (
 					<ImageViewer
-						imgSource={{ uri: imagenLabel }}
+						imgSource={{ uri: getImageUri(imagenLabel) }}
 						style={{
 							height: 50,
 							aspectRatio: 4 / 3,

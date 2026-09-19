@@ -9,6 +9,8 @@ import type { UserType } from "@/src/repositories/user.repository"
 import { userRepository } from "@/src/repositories/user.repository"
 import { useSession } from "@/src/session/session-context"
 import { LOCAL_USER_ID } from "@/src/session/session.service"
+import { imageService } from "@/src/media/image-service"
+import { getImageUri } from "@/src/media/image-storage"
 import { useRouter } from "expo-router"
 import * as ExpoImagePicker from "expo-image-picker"
 import { useEffect, useState } from "react"
@@ -195,6 +197,7 @@ export default function Cuenta() {
 }
 
 function ImageEdit({ user }: { user: UserType }) {
+	const { activeUserId } = useSession()
 	const [userImage, setUserImage] = useState<string | null>(user.userImage)
 	const [draftImage, setDraftImage] = useState<string | null>(user.userImage)
 	const [modalVisible, setModalVisible] = useState(false)
@@ -206,6 +209,18 @@ function ImageEdit({ user }: { user: UserType }) {
 		setDraftImage(userImage)
 		setError(null)
 		setModalVisible(true)
+	}
+
+	const importPicked = async (uri: string, width: number, height: number) => {
+		if (draftImage && draftImage !== userImage) {
+			await imageService.deleteImage(draftImage)
+		}
+		const imported = await imageService.importImage(uri, {
+			userId: activeUserId,
+			width,
+			height,
+		})
+		setDraftImage(imported.imageId)
 	}
 
 	const pickFromGallery = async () => {
@@ -223,7 +238,8 @@ function ImageEdit({ user }: { user: UserType }) {
 			quality: 1,
 		})
 		if (!result.canceled) {
-			setDraftImage(result.assets[0].uri)
+			const asset = result.assets[0]
+			await importPicked(asset.uri, asset.width, asset.height)
 		}
 	}
 
@@ -240,8 +256,16 @@ function ImageEdit({ user }: { user: UserType }) {
 			quality: 1,
 		})
 		if (!result.canceled) {
-			setDraftImage(result.assets[0].uri)
+			const asset = result.assets[0]
+			await importPicked(asset.uri, asset.width, asset.height)
 		}
+	}
+
+	const removeDraft = async () => {
+		if (draftImage && draftImage !== userImage) {
+			await imageService.deleteImage(draftImage)
+		}
+		setDraftImage(null)
 	}
 
 	const handleOk = async () => {
@@ -252,6 +276,9 @@ function ImageEdit({ user }: { user: UserType }) {
 				id: user.id,
 				input: { userImage: draftImage },
 			})
+			if (userImage && userImage !== draftImage) {
+				await imageService.deleteImage(userImage)
+			}
 			setUserImage(draftImage)
 			setModalVisible(false)
 		} catch (e) {
@@ -283,7 +310,7 @@ function ImageEdit({ user }: { user: UserType }) {
 					<Text style={{ color: "#999", fontSize: 16 }}>No imagen</Text>
 				) : (
 					<ImageViewer
-						imgSource={{ uri: userImage }}
+						imgSource={{ uri: getImageUri(userImage) }}
 						style={{
 							width: 130,
 							height: 130,
@@ -349,7 +376,7 @@ function ImageEdit({ user }: { user: UserType }) {
 						>
 							{draftImage ? (
 								<ImageViewer
-									imgSource={{ uri: draftImage }}
+									imgSource={{ uri: getImageUri(draftImage) }}
 									style={{ width: 200, height: 200 }}
 								/>
 							) : (
@@ -386,7 +413,7 @@ function ImageEdit({ user }: { user: UserType }) {
 								iconColor="#e63946"
 								variant="ghost"
 								size="small"
-								onPress={() => setDraftImage(null)}
+								onPress={removeDraft}
 							/>
 							<Button
 								iconLeft="checkmark"

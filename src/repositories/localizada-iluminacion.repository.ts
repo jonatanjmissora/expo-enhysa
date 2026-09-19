@@ -4,6 +4,7 @@ import {
 	CREATE_LOCALIZADAS_ILUMINACION_TABLE,
 	type LocalizadaIluminacionType,
 } from "../db/schema/localizadas-iluminacion"
+import { imageService } from "../media/image-service"
 
 export type CreateLocalizadaIluminacionInput = Omit<
 	LocalizadaIluminacionType,
@@ -237,6 +238,16 @@ export const localizadaIluminacionRepository = {
 
 		const db = await getDatabase()
 
+		const existing = await db.getFirstAsync<{ imagenes: string }>(
+			`SELECT imagenes FROM localizadas_iluminacion WHERE id = ?`,
+			id
+		)
+		const imageIds = existing ? parseStringArray(existing.imagenes) : []
+
 		await db.runAsync(`DELETE FROM localizadas_iluminacion WHERE id = ?`, id)
+
+		for (const imageId of imageIds) {
+			await imageService.deleteImage(imageId)
+		}
 	},
 }

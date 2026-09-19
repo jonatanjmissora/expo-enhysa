@@ -5,6 +5,8 @@ import { CREATE_INSTRUMENTOS_TABLE } from "@/src/db/schema/instrumentos"
 import { CREATE_INFORMES_ILUMINACION_TABLE } from "@/src/db/schema/informes-iluminacion"
 import { CREATE_AREAS_ILUMINACION_TABLE } from "@/src/db/schema/areas-iluminacion"
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "@/src/db/schema/localizadas-iluminacion"
+import { CREATE_USERS_TABLE } from "@/src/db/schema/users"
+import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import {
@@ -24,21 +26,25 @@ type TableInfo = {
 type TableRow = Record<string, unknown>
 
 const TABLE_NAMES = [
+	"users",
 	"tecnicos",
 	"empresas",
 	"instrumentos",
 	"informes_iluminacion",
 	"areas_iluminacion",
 	"localizadas_iluminacion",
+	"images",
 ]
 
 const TABLE_SCHEMAS: Record<string, string> = {
+	users: CREATE_USERS_TABLE,
 	tecnicos: CREATE_TECNICOS_TABLE,
 	empresas: CREATE_EMPRESAS_TABLE,
 	instrumentos: CREATE_INSTRUMENTOS_TABLE,
 	informes_iluminacion: CREATE_INFORMES_ILUMINACION_TABLE,
 	areas_iluminacion: CREATE_AREAS_ILUMINACION_TABLE,
 	localizadas_iluminacion: CREATE_LOCALIZADAS_ILUMINACION_TABLE,
+	images: CREATE_IMAGES_TABLE,
 }
 
 export default function DebugDB() {

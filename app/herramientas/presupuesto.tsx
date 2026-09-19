@@ -5,7 +5,7 @@ import Select from "@/components/Select"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import { toDataUri } from "@/src/pdf/assets"
+import { imageIdToDataUri } from "@/src/media/image-base64"
 import {
 	type AdicionalRow,
 	type Perfil,
@@ -128,7 +128,7 @@ export default function Presupuesto() {
 	)
 
 	const buildData = useCallback(async (): Promise<PresupuestoData> => {
-		const logoDataUri = logo ? await toDataUri(logo) : null
+		const logoDataUri = logo ? await imageIdToDataUri(logo) : null
 		return {
 			perfil,
 			actividad,

@@ -6,6 +6,7 @@ import { CREATE_INSTRUMENTOS_TABLE } from "./schema/instrumentos"
 import { CREATE_INFORMES_ILUMINACION_TABLE } from "./schema/informes-iluminacion"
 import { CREATE_AREAS_ILUMINACION_TABLE } from "./schema/areas-iluminacion"
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "./schema/localizadas-iluminacion"
+import { CREATE_IMAGES_TABLE } from "./schema/images"
 
 const DATABASE_NAME = "app.db"
 
@@ -65,8 +66,36 @@ async function migrateDatabase(database: SQLite.SQLiteDatabase) {
 	}
 }
 
+const SCHEMA_VERSION = 1
+
+/**
+ * Reset único (etapa tester): las tablas de negocio guardaban URIs de imagen.
+ * Con el nuevo sistema de imágenes esas columnas pasan a guardar imageIds, así
+ * que se limpian los datos viejos una sola vez.
+ */
+async function resetLegacyImageData(database: SQLite.SQLiteDatabase) {
+	const row = await database.getFirstAsync<{ user_version: number }>(
+		"PRAGMA user_version"
+	)
+	const version = row?.user_version ?? 0
+	if (version >= SCHEMA_VERSION) return
+
+	for (const table of [
+		"empresas",
+		"tecnicos",
+		"instrumentos",
+		"areas_iluminacion",
+		"localizadas_iluminacion",
+	]) {
+		await database.execAsync(`DROP TABLE IF EXISTS ${table}`)
+	}
+
+	await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`)
+}
+
 async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await migrateDatabase(database)
+	await resetLegacyImageData(database)
 	await database.execAsync(CREATE_USERS_TABLE)
 	await database.execAsync(CREATE_TECNICOS_TABLE)
 	await database.execAsync(CREATE_EMPRESAS_TABLE)
@@ -74,6 +103,7 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await database.execAsync(CREATE_INFORMES_ILUMINACION_TABLE)
 	await database.execAsync(CREATE_AREAS_ILUMINACION_TABLE)
 	await database.execAsync(CREATE_LOCALIZADAS_ILUMINACION_TABLE)
+	await database.execAsync(CREATE_IMAGES_TABLE)
 
 	await ensureUpdatedAtColumn(database, "informes_iluminacion")
 	await ensureUpdatedAtColumn(database, "areas_iluminacion")

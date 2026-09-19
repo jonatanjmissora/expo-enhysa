@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import { theme } from "@/constants/theme"
 import { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { router } from "expo-router"
@@ -134,7 +135,7 @@ function LocalizadaMiniCard({
 			})}
 		>
 			<ImageViewer
-				imgSource={{ uri: localizadaIluminacion.imagenes[0] }}
+				imgSource={{ uri: getImageUri(localizadaIluminacion.imagenes[0]) }}
 				contentFit="cover"
 				style={{
 					height: fontSize === 14 ? "170%" : "160%",

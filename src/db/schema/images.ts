@@ -1,0 +1,13 @@
+export const CREATE_IMAGES_TABLE = `
+	CREATE TABLE IF NOT EXISTS images (
+		id TEXT PRIMARY KEY NOT NULL,
+		filename TEXT NOT NULL,
+		mimeType TEXT NOT NULL,
+		width INTEGER NOT NULL,
+		height INTEGER NOT NULL,
+		size INTEGER NOT NULL,
+		userId TEXT NOT NULL,
+		createdAt TEXT NOT NULL,
+		updatedAt TEXT NOT NULL DEFAULT ''
+	);
+`

@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import { View, Text, ScrollView } from "react-native"
 import type { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
 import { theme } from "@/constants/theme"
@@ -109,7 +110,7 @@ export default function LocalizadaCRUD({
 							{imagenes.map((img, i) => (
 								<ImageViewer
 									key={i}
-									imgSource={{ uri: img }}
+									imgSource={{ uri: getImageUri(img) }}
 									style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
 								/>
 							))}

@@ -1,19 +1,9 @@
 import { Alert, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
-import { randomUUID } from "expo-crypto"
-import { Directory, File, Paths } from "expo-file-system"
 import * as ExpoImagePicker from "expo-image-picker"
 import Button from "./Button"
-
-async function persistImage(uri: string): Promise<string> {
-	const directory = new Directory(Paths.document, "images")
-	directory.create({ intermediates: true, idempotent: true })
-
-	const extension = uri.split("?")[0].split(".").pop()?.toLowerCase() || "jpg"
-	const destination = new File(directory, `${randomUUID()}.${extension}`)
-	await new File(uri).copy(destination)
-	return destination.uri
-}
+import { imageService } from "@/src/media/image-service"
+import { useUserId } from "@/src/session/session-context"
 
 export default function ImagePicker({
 	image,
@@ -34,7 +24,34 @@ export default function ImagePicker({
 	allowsEditing?: boolean
 	aspect?: [number, number]
 }) {
+	const userId = useUserId()
 	const remaining = multiple && images && max ? max - images.length : undefined
+
+	const importAsset = async (asset: {
+		uri: string
+		width: number
+		height: number
+	}) => {
+		try {
+			const imported = await imageService.importImage(asset.uri, {
+				userId,
+				width: asset.width,
+				height: asset.height,
+			})
+
+			if (multiple && setImages && images) {
+				setImages([...images, imported.imageId].slice(0, max ?? 4))
+			} else {
+				if (image) await imageService.deleteImage(image)
+				setImage(imported.imageId)
+			}
+		} catch (e) {
+			Alert.alert(
+				"Error",
+				e instanceof Error ? e.message : "No se pudo importar la imagen"
+			)
+		}
+	}
 
 	const pickImage = async () => {
 		const permissionResult =
@@ -57,13 +74,7 @@ export default function ImagePicker({
 		})
 
 		if (!result.canceled) {
-			const uri = await persistImage(result.assets[0].uri)
-			if (multiple && setImages && images) {
-				const combined = [...images, uri].slice(0, max ?? 4)
-				setImages(combined)
-			} else {
-				setImage(uri)
-			}
+			await importAsset(result.assets[0])
 		}
 	}
 
@@ -90,13 +101,7 @@ export default function ImagePicker({
 		)
 
 		if (!result.canceled) {
-			const uri = await persistImage(result.assets[0].uri)
-			if (multiple && setImages && images) {
-				const combined = [...images, uri].slice(0, max ?? 4)
-				setImages(combined)
-			} else {
-				setImage(uri)
-			}
+			await importAsset(result.assets[0])
 		}
 	}
 
@@ -167,7 +172,10 @@ export default function ImagePicker({
 						iconLeft="trash"
 						variant="danger"
 						iconSize={18}
-						onPress={() => setImage(null)}
+						onPress={async () => {
+							await imageService.deleteImage(image)
+							setImage(null)
+						}}
 						style={{
 							position: "absolute",
 							top: 0,
@@ -178,7 +186,7 @@ export default function ImagePicker({
 						}}
 					/>
 					<ImageViewer
-						imgSource={{ uri: image }}
+						imgSource={{ uri: imageService.getImageUri(image) }}
 						contentFit="contain"
 						style={{ width: 300, height: 240 }}
 					/>

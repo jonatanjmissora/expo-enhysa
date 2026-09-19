@@ -1,5 +1,14 @@
 # Plan: Sistema de imágenes local — EnHySa
 
+> **Estado: implementado (Fases 1–8).** Solo queda la Fase 9 (Backup/Restore) para más adelante.
+>
+> Desvíos respecto del plan original:
+> - **Fase 6** se resolvió con **reset** de tablas (no migración de URIs).
+> - Se **mantuvieron los nombres** de campos de imagen (`imagenes`, `logo`, `matriculaImg`, `firmaImg`, `empresaLogo`, `imagenesCalibracion`); ahora guardan **imageIds**.
+> - La **imagen de usuario** (`users.userImage`) también se integró al sistema.
+>
+> Ver el detalle por fase en la sección 26.
+
 ## Objetivo
 
 Implementar un sistema centralizado para gestionar las imágenes de EnHySa.
@@ -1083,184 +1092,92 @@ src/
 
 # 26. Orden de implementación
 
-## Fase 0 — Prueba de viabilidad HEIC (bloqueante)
+> **Estado: Fases 1–8 completadas.** Solo queda la Fase 9 (Backup/Restore) para más adelante.
 
-Antes de construir todo el sistema, validar que se puede **decodificar HEIC y guardar JPEG**:
+## Fase 0 — Prueba de viabilidad HEIC ✅
 
-* Instalar `expo-image-manipulator`.
-* Tomar/elegir una foto **HEIC** de un Android nuevo (API 28+).
-* Normalizar (resize + JPEG) y comprobar:
-  * que decodifica sin error,
-  * **orientación correcta (EXIF)**,
-  * dimensiones y peso resultantes.
-* Probar también JPEG y PNG.
+- `expo-image-manipulator` instalado.
+- HEIC/HEIF decodificado y guardado como JPEG (probado en device Android).
+- Pantalla de prueba: `/debug/images`.
 
-Si esta prueba falla, replantear el normalizer **antes** de continuar con el resto.
+## Fase 1 — Tabla `images` ✅
 
-## Fase 1 — Tabla `images`
-
-* Crear schema (con `userId` y `updatedAt`).
-* Crear migración SQLite.
-* Ejecutar `CREATE TABLE`.
-* Crear `ImageRepository`.
-* Probar CRUD.
+- `src/db/schema/images.ts` (con `userId` y `updatedAt`).
+- `src/repositories/image.repository.ts` (`create` / `getById` / `getAllByUserId` / `exists` / `update` / `delete`).
+- Registrada en `src/db/client.ts`.
 
 ---
 
-## Fase 2 — ImageStorage
+## Fase 2 — ImageStorage ✅
 
-* Crear directorio privado `images/`.
-* Implementar generación de nombre mediante UUID.
-* Implementar guardado.
-* Implementar lectura.
-* Implementar existencia.
-* Implementar eliminación.
+- `src/media/image-storage.ts`.
+- Directorio `Paths.document/images/`.
+- `saveImageFromBase64`, `saveImageFromUri`, `getImageUri`, `imageExists`, `getImageSize`, `deleteImage`, `deleteImageFileByUri`, `listImageFiles`.
 
 ---
 
-## Fase 3 — ImageNormalizer
+## Fase 3 — ImageNormalizer ✅
 
-* Integrar herramienta de Expo para manipulación de imágenes.
-* Probar JPEG.
-* Probar PNG.
-* Probar HEIC/HEIF.
-* Aplicar resize máximo.
-* Aplicar JPEG quality `0.88`.
-* Comprobar orientación.
-* Comprobar dimensiones resultantes.
-* Comprobar tamaño final.
+- `src/media/image-normalizer.ts`.
+- `MAX_DIMENSION = 3000`, `JPEG_QUALITY = 0.88`.
+- HEIC/HEIF/JPEG/PNG/WEBP → JPEG; resize sin agrandar; orientación por decoder nativo.
 
 ---
 
-## Fase 4 — ImageService
+## Fase 4 — ImageService ✅
 
-Crear el flujo:
-
-```text
-URI
- ↓
-normalize
- ↓
-UUID
- ↓
-storage
- ↓
-images repository
- ↓
-imageId
-```
-
-Probar con imágenes reales.
+- `src/media/image-service.ts`.
+- `importImage` (URI → normalize → UUID → storage → `images`) y `deleteImage` (archivo + registro).
 
 ---
 
-## Fase 5 — Integración con ImagePicker
+## Fase 5 — Integración con ImagePicker ✅
 
-Cambiar:
-
-```text
-ImagePicker → URI → SQLite
-```
-
-por:
-
-```text
-ImagePicker → ImageService → imageId → SQLite
-```
-
-Probar cámara y galería.
+- `ImagePicker` importa vía `ImageService` y guarda `imageId`.
+- Todas las pantallas muestran con `getImageUri` (instrumento, área, localizada, empresa, técnico, informe, presupuesto).
+- Imagen de usuario (`users.userImage`) también integrada.
+- **Borrado en cascada**: borrar informe/área/localizada borra sus imágenes.
 
 ---
 
-## Fase 6 — Migración de datos existentes
+## Fase 6 — Migración de datos existentes ✅ (vía reset)
 
-Implementar temporalmente:
-
-```text
-legacy URI
- ↓
-normalizer
- ↓
-storage
- ↓
-images
- ↓
-imageId
-```
-
-Ejecutar sobre los datos de los testers.
-
-Comprobar:
-
-* cantidad de imágenes
-* archivos físicos
-* referencias SQLite
-* imágenes HEIC
-* imágenes JPEG
-* informes existentes
-* apertura de los informes
+- **Desvío:** en vez de migrar URIs → imageIds, se hizo **reset** una sola vez (`user_version` en `src/db/client.ts`): se dropean las tablas de negocio y se recrean. Los datos de prueba se pierden (elegido para simplificar).
 
 ---
 
-## Fase 7 — Eliminar dependencia de URIs antiguas
+## Fase 7 — Eliminar dependencia de URIs antiguas ✅
 
-Una vez comprobada la migración:
-
-* eliminar columnas `imagenUri`
-* actualizar repositories
-* actualizar queries
-* actualizar componentes
-* eliminar código legacy
+- Eliminado `src/pdf/assets.ts` (`toBase64` / `toDataUri` legacy).
+- Presupuesto usa `imageIdToDataUri`.
+- **Desvío:** se mantuvieron los nombres de campos (`imagenes`, `logo`, `matriculaImg`, `firmaImg`, `empresaLogo`, `imagenesCalibracion`), pero ahora guardan **imageIds**.
 
 ---
 
-## Fase 8 — Integración PDF
+## Fase 8 — Integración PDF ✅
 
-Cambiar:
-
-```text
-URI → Base64
-```
-
-por:
-
-```text
-imageId
- ↓
-ImageStorage
- ↓
-JPEG
- ↓
-Base64
- ↓
-PDF
-```
-
-Probar PDF A4 con:
-
-* imagen pequeña
-* imagen vertical
-* imagen horizontal
-* imagen cercana a 3000 px
-* múltiples imágenes
-* varias páginas
-* fotografías provenientes de HEIC
+- `src/media/image-base64.ts` (`imageIdToBase64`, `imageIdToDataUri`, `imageIdsToDataUris`).
+- Informe de iluminación y presupuesto resuelven `imageId → base64 → HTML → PDF`.
 
 ---
 
-## Fase 9 — Integración Backup
+## Fase 9 — Integración Backup (pendiente)
 
 Implementar posteriormente:
 
 ```text
 imageId
- ↓
+  ↓
 ImageStorage
- ↓
+  ↓
 backup/images/*.jpg
 ```
 
 El backup deberá incluir las imágenes que realmente pertenecen a los datos respaldados.
+
+Incluye el **Restore** (sección 23): `database.json` + `images/` → SQLite + `ImageStorage`, manteniendo los `imageId` estables.
+
+La **nube** (sincronización) queda fuera de alcance por ahora.
 
 ---
 

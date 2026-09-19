@@ -6,11 +6,7 @@ import Button from "../Button"
 import { theme } from "@/constants/theme"
 import { router } from "expo-router"
 
-export default function ToolsAndServices({
-	scrollTo,
-}: {
-	scrollTo: (section: string) => void
-}) {
+export default function ToolsAndServices() {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 	return (

@@ -1,6 +1,18 @@
 import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
 import { CREATE_INFORMES_ILUMINACION_TABLE } from "../db/schema/informes-iluminacion"
+import { imageService } from "../media/image-service"
+
+function parseStringArray(value: string): string[] {
+	try {
+		const parsed = JSON.parse(value)
+		return Array.isArray(parsed)
+			? parsed.filter((item): item is string => typeof item === "string")
+			: []
+	} catch {
+		return []
+	}
+}
 
 export type InformesIluminacionType = {
 	empresaId: string
@@ -215,6 +227,22 @@ export const informesIluminacionRepository = {
 
 		const db = await getDatabase()
 
+		const areas = await db.getAllAsync<{ imagenes: string }>(
+			`SELECT imagenes FROM areas_iluminacion WHERE reportId = ?`,
+			id
+		)
+		const localizadas = await db.getAllAsync<{ imagenes: string }>(
+			`SELECT imagenes FROM localizadas_iluminacion WHERE reportId = ?`,
+			id
+		)
+
+		const imageIds = [
+			...areas.flatMap(area => parseStringArray(area.imagenes)),
+			...localizadas.flatMap(localizada =>
+				parseStringArray(localizada.imagenes)
+			),
+		]
+
 		await db.withTransactionAsync(async () => {
 			await db.runAsync(`DELETE FROM areas_iluminacion WHERE reportId = ?`, id)
 			await db.runAsync(
@@ -223,5 +251,9 @@ export const informesIluminacionRepository = {
 			)
 			await db.runAsync(`DELETE FROM informes_iluminacion WHERE id = ?`, id)
 		})
+
+		for (const imageId of imageIds) {
+			await imageService.deleteImage(imageId)
+		}
 	},
 }

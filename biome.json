@@ -15,6 +15,7 @@
 			"!assets",
 			"!**/.expo",
 			"!**/.opencode",
+			"!**/.kilo",
 			"!plan-tecnico.md",
 			"!AGENTS.md",
 			"!**/*.d.ts"

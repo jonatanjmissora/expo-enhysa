@@ -1,11 +1,11 @@
+import { getImageUri } from "@/src/media/image-storage"
 import { theme } from "@/constants/theme"
 import { router } from "expo-router"
-import { Text, Pressable, View, ColorValue } from "react-native"
+import { Text, Pressable, View } from "react-native"
 import { EmpresaType } from "@/src/repositories/empresa.repository"
 import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import ImageViewer from "../ImageViewer"
 import { Ionicons } from "@expo/vector-icons"
-import { LinearGradient } from "expo-linear-gradient"
 
 export default function InformeCard({
 	informe,
@@ -51,7 +51,7 @@ export default function InformeCard({
 				/>
 			)}
 			<ImageViewer
-				imgSource={{ uri: empresa.logo }}
+				imgSource={{ uri: getImageUri(empresa.logo) }}
 				style={{
 					width: 80,
 					aspectRatio: 4 / 3,
@@ -159,7 +159,7 @@ export default function InformeCard({
 // 					colors={["transparent", theme.grayPressed]}
 // 				>
 // 					<ImageViewer
-// 						imgSource={{ uri: empresa.logo }}
+// 						imgSource={{ uri: getImageUri(empresa.logo) }}
 // 						contentFit="cover"
 // 						style={{
 // 							width: "80%",

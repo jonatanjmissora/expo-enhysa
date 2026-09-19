@@ -18,8 +18,22 @@ const NAV_ITEMS = [
 	{ id: "2", label: "Inicio", to: "hero" },
 	{ id: "3", label: "Mi Perfil", to: "/perfil" },
 	{ id: "4", label: "Suscripción", to: "/suscripcion" },
-	{ id: "5", label: "Base de datos", to: "/debug/db" },
 	{ id: "6", label: "Preguntas frecuentes", to: "/herramientas/faq" },
+]
+
+const DEBUG_ITEMS: {
+	id: string
+	label: string
+	icon: keyof typeof Ionicons.glyphMap
+	to: string
+}[] = [
+	{ id: "db", label: "Base de datos", icon: "server-outline", to: "/debug/db" },
+	{
+		id: "images",
+		label: "Imágenes",
+		icon: "image-outline",
+		to: "/debug/images",
+	},
 ]
 
 const CONTACTOS = [
@@ -107,6 +121,19 @@ export default function Footer({
 					<Text style={styles.navText}>Soporte técnico</Text>
 				</Pressable>
 				{soporte && <Contactos />}
+			</View>
+
+			<View style={styles.debugRow}>
+				{DEBUG_ITEMS.map(item => (
+					<Pressable
+						key={item.id}
+						onPress={() => router.push(item.to)}
+						style={styles.debugItem}
+					>
+						<Ionicons name={item.icon} size={20} color="#e2e8f0" />
+						<Text style={styles.debugText}>{item.label}</Text>
+					</Pressable>
+				))}
 			</View>
 
 			<Text style={styles.copy}>
@@ -220,6 +247,26 @@ const styles = StyleSheet.create({
 	navText: {
 		color: "#e2e8f0",
 		fontSize: 18,
+	},
+	debugRow: {
+		flexDirection: "row",
+		gap: 12,
+	},
+	debugItem: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: 8,
+		paddingVertical: 12,
+		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: "rgba(226, 232, 240, 0.2)",
+		backgroundColor: "rgba(226, 232, 240, 0.06)",
+	},
+	debugText: {
+		color: "#e2e8f0",
+		fontSize: 14,
 	},
 	contactosContainer: {
 		marginTop: 8,

@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import { theme } from "@/constants/theme"
 import { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { router } from "expo-router"
@@ -113,7 +114,7 @@ function AreaMiniCard({
 			})}
 		>
 			<ImageViewer
-				imgSource={{ uri: areaIluminacion.imagenes[0] }}
+				imgSource={{ uri: getImageUri(areaIluminacion.imagenes[0]) }}
 				contentFit="cover"
 				style={{
 					height: fontSize === 14 ? "170%" : "160%",

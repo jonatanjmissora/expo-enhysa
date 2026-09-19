@@ -1,3 +1,5 @@
+import { imageService } from "@/src/media/image-service"
+import { getImageUri } from "@/src/media/image-storage"
 import Button from "@/components/Button"
 import ImagePicker from "@/components/ImagePicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
@@ -258,11 +260,12 @@ function InstrumentoEditForm({
 							iconLeft="trash"
 							variant="danger"
 							iconSize={18}
-							onPress={() =>
+							onPress={() => {
+								void imageService.deleteImage(img)
 								setImagenesCalibracion(prev =>
 									prev.filter((_, idx) => idx !== i)
 								)
-							}
+							}}
 							style={{
 								position: "absolute",
 								top: 0,
@@ -273,7 +276,7 @@ function InstrumentoEditForm({
 							}}
 						/>
 						<ImageViewer
-							imgSource={{ uri: img }}
+							imgSource={{ uri: getImageUri(img) }}
 							style={{ width: 300, aspectRatio: 4 / 3 }}
 						/>
 					</View>
@@ -321,9 +324,10 @@ function InstrumentoEditForm({
 							iconLeft="trash"
 							variant="danger"
 							iconSize={18}
-							onPress={() =>
+							onPress={() => {
+								void imageService.deleteImage(img)
 								setImagenes(prev => prev.filter((_, idx) => idx !== i))
-							}
+							}}
 							style={{
 								position: "absolute",
 								top: 0,
@@ -334,7 +338,7 @@ function InstrumentoEditForm({
 							}}
 						/>
 						<ImageViewer
-							imgSource={{ uri: img }}
+							imgSource={{ uri: getImageUri(img) }}
 							style={{ width: 300, aspectRatio: 4 / 3 }}
 						/>
 					</View>

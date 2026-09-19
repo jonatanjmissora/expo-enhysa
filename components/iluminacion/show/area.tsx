@@ -1,3 +1,4 @@
+import { getImageUri } from "@/src/media/image-storage"
 import { View, Text, ScrollView } from "react-native"
 import { theme } from "@/constants/theme"
 import ImageViewer from "@/components/ImageViewer"
@@ -123,7 +124,7 @@ export default function AreaShow({
 								{imagenes.map((img, i) => (
 									<ImageViewer
 										key={i}
-										imgSource={{ uri: img }}
+										imgSource={{ uri: getImageUri(img) }}
 										style={{ width: 200, aspectRatio: 4 / 3, borderRadius: 4 }}
 									/>
 								))}
