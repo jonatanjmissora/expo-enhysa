@@ -7,6 +7,7 @@ import { CREATE_AREAS_ILUMINACION_TABLE } from "@/src/db/schema/areas-iluminacio
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "@/src/db/schema/localizadas-iluminacion"
 import { CREATE_USERS_TABLE } from "@/src/db/schema/users"
 import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
+import { apiHealth } from "@/src/api/client"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import {
@@ -52,6 +53,17 @@ export default function DebugDB() {
 	const [selectedTable, setSelectedTable] = useState<string | null>(null)
 	const [rows, setRows] = useState<TableRow[]>([])
 	const [rowCount, setRowCount] = useState<Record<string, number>>({})
+	const [health, setHealth] = useState<string | null>(null)
+
+	const checkBackend = useCallback(async () => {
+		setHealth("probando...")
+		try {
+			const result = await apiHealth()
+			setHealth(`ok: ${result.ok} · db: ${result.db}`)
+		} catch (e) {
+			setHealth(e instanceof Error ? e.message : String(e))
+		}
+	}, [])
 
 	const loadTables = useCallback(async () => {
 		const db = await getDatabase()
@@ -176,6 +188,29 @@ export default function DebugDB() {
 				{tables.length} tablas ·{" "}
 				{Object.values(rowCount).reduce((a, b) => a + b, 0)} registros total
 			</Text>
+
+			<Pressable
+				onPress={checkBackend}
+				style={{
+					backgroundColor: "#007AFF",
+					paddingVertical: 12,
+					borderRadius: 8,
+					alignItems: "center",
+					marginBottom: 8,
+				}}
+			>
+				<Text style={{ color: "#fff", fontWeight: "700" }}>Probar backend</Text>
+			</Pressable>
+			{health && (
+				<Text
+					style={{
+						color: health.startsWith("ok") ? "#16a34a" : "#e63946",
+						marginBottom: 16,
+					}}
+				>
+					{health}
+				</Text>
+			)}
 
 			{TABLE_NAMES.map(tableName => (
 				<View key={tableName} style={tableCard}>
