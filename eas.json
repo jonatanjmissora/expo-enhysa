@@ -11,13 +11,21 @@
 			"distribution": "internal",
 			"node": "22.19.0",
 			"pnpm": "12.3.4",
+			"env": {
+				"EXPO_PUBLIC_API_URL": "https://expo-enhysa-backend.vercel.app",
+				"EXPO_PUBLIC_API_TOKEN": "c2bbe4d58da66a824b4e73f1e0564281960d0ee5c6376aa1c18297721be05562"
+			},
 			"android": {
 				"buildType": "apk"
 			}
 		},
 		"production": {
 			"node": "22.19.0",
-			"pnpm": "12.3.4"
+			"pnpm": "12.3.4",
+			"env": {
+				"EXPO_PUBLIC_API_URL": "https://expo-enhysa-backend.vercel.app",
+				"EXPO_PUBLIC_API_TOKEN": "c2bbe4d58da66a824b4e73f1e0564281960d0ee5c6376aa1c18297721be05562"
+			}
 		}
 	}
 }
