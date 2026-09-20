@@ -90,6 +90,14 @@ async function findImageUsage(imageId: string): Promise<Usage[]> {
 		usages.push({ table: "empresas", id: row.id, label: row.razonSocial })
 	}
 
+	const users = await db.getAllAsync<{ id: string; email: string }>(
+		"SELECT id, email FROM users WHERE userImage = ?",
+		imageId
+	)
+	for (const row of users) {
+		usages.push({ table: "users", id: row.id, label: row.email })
+	}
+
 	return usages
 }
 

@@ -212,13 +212,13 @@ function FirmaBoxContent({
 						gap: 6,
 					}}
 				>
-					<Text style={{ color: "#fff", fontWeight: "600" }}>Guardar</Text>
+					<Text style={{ color: "#fff", fontWeight: "600" }}>Aceptar</Text>
 				</Pressable>
 			</View>
 
 			{image && (
 				<Text style={{ color: "#94a3b8", fontSize: 12, textAlign: "center" }}>
-					Firma guardada
+					Firma lista. Guardá el técnico para confirmar.
 				</Text>
 			)}
 		</View>
