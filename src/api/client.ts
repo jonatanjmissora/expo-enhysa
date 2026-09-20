@@ -34,3 +34,28 @@ export async function apiFetch<T>(
 export function apiHealth(): Promise<HealthResponse> {
 	return apiFetch<HealthResponse>("/health")
 }
+
+export type PreferenceResponse = {
+	init_point: string
+	preferenceId: string
+}
+
+export type CreditsResponse = {
+	credits: number
+}
+
+export function apiCreatePreference(
+	planId: string,
+	userId: string
+): Promise<PreferenceResponse> {
+	return apiFetch<PreferenceResponse>("/preference", {
+		method: "POST",
+		body: JSON.stringify({ planId, userId }),
+	})
+}
+
+export function apiGetCredits(userId: string): Promise<CreditsResponse> {
+	return apiFetch<CreditsResponse>(
+		`/credits?userId=${encodeURIComponent(userId)}`
+	)
+}

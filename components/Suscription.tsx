@@ -88,6 +88,7 @@ export default function SuscriptionPlans({ from }: { from?: string }) {
 }
 
 interface PlanProps {
+	id: string
 	title: string
 	price: number
 	subtitle: string
@@ -96,7 +97,15 @@ interface PlanProps {
 	from?: string
 }
 
-function Plan({ title, price, subtitle, benefits, index, from }: PlanProps) {
+function Plan({
+	id,
+	title,
+	price,
+	subtitle,
+	benefits,
+	index,
+	from,
+}: PlanProps) {
 	const router = useRouter()
 
 	return (
@@ -167,7 +176,7 @@ function Plan({ title, price, subtitle, benefits, index, from }: PlanProps) {
 					onPress={() =>
 						router.push({
 							pathname: "/checkout",
-							params: { plan: title, ...(from ? { from } : {}) },
+							params: { plan: id, ...(from ? { from } : {}) },
 						})
 					}
 					style={{
@@ -272,7 +281,7 @@ function CombinedPlan({ plan, anual, setAnual, from }: CombinedPlanProps) {
 				onPress={() =>
 					router.push({
 						pathname: "/checkout",
-						params: { plan: plan.title, ...(from ? { from } : {}) },
+						params: { plan: plan.id, ...(from ? { from } : {}) },
 					})
 				}
 				style={{

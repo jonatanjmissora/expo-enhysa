@@ -158,6 +158,7 @@ export type ProtocolosType = (typeof PROTOCOLOS)[number]
 
 export const PLANS = [
 	{
+		id: "gratis",
 		title: "Gratis",
 		price: 0,
 		credits: 0,
@@ -170,8 +171,10 @@ export const PLANS = [
 		],
 	},
 	{
+		id: "por-informe",
 		title: "Por Informe",
-		price: 18000,
+		// price: 18000,
+		price: 18,
 		credits: 1,
 		subtitle: "Paga solo lo que consumes.",
 		benefits: [
@@ -184,8 +187,10 @@ export const PLANS = [
 		],
 	},
 	{
+		id: "mensual",
 		title: "Mensual",
-		price: 55000,
+		// price: 55000,
+		price: 55,
 		credits: 7,
 		subtitle: "Accede a todo.",
 		benefits: [
@@ -197,8 +202,10 @@ export const PLANS = [
 		],
 	},
 	{
+		id: "anual",
 		title: "Anual",
-		price: 560000,
+		// price: 560000,
+		price: 560,
 		credits: 100,
 		subtitle: "Accede a todo.",
 		benefits: [

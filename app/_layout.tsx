@@ -31,6 +31,7 @@ export default function RootLayout() {
 						/>
 						<Stack.Screen name="debug/db" options={{ title: "SQLite Debug" }} />
 						<Stack.Screen name="debug/images" options={{ title: "Imágenes" }} />
+						<Stack.Screen name="pago" options={{ headerShown: false }} />
 					</Stack>
 				</SafeAreaProvider>
 			</SessionProvider>

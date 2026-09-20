@@ -107,6 +107,7 @@ export default function InicioLayout() {
 					),
 				}}
 			/>
+			<Tabs.Screen name="checkout" options={{ href: null }} />
 		</Tabs>
 	)
 }
