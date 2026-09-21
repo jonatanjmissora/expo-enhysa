@@ -1,10 +1,15 @@
 import SuscriptionPlans from "@/components/Suscription"
 import { ScrollView, Text, useWindowDimensions, View } from "react-native"
 import ViewWithLogo from "@/components/ViewWithLogo"
+import { useCredits } from "@/src/query/hooks/use-credits"
+import { useSession } from "@/src/session/session-context"
+import { theme } from "@/constants/theme"
 
 export default function Suscripcion() {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
+	const { isRegistered } = useSession()
+	const { data: credits } = useCredits()
 
 	return (
 		<ViewWithLogo>
@@ -23,6 +28,20 @@ export default function Suscripcion() {
 						Suscripciones
 					</Text>
 				</View>
+
+				{isRegistered && (
+					<Text
+						style={{
+							color: theme.orange,
+							fontSize: 16,
+							fontWeight: "600",
+							marginBottom: 24,
+							textAlign: isNarrow ? "center" : "left",
+						}}
+					>
+						Créditos disponibles: {credits ?? 0}
+					</Text>
+				)}
 
 				<Text
 					style={{

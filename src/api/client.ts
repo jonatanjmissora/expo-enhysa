@@ -59,3 +59,25 @@ export function apiGetCredits(userId: string): Promise<CreditsResponse> {
 		`/credits?userId=${encodeURIComponent(userId)}`
 	)
 }
+
+export type CreditHistoryEntry = {
+	id: string
+	user_id: string
+	type: string
+	credits: number
+	report_id: string | null
+	payment_id: string | null
+	created_at: string
+}
+
+export type CreditHistoryResponse = {
+	history: CreditHistoryEntry[]
+}
+
+export function apiGetCreditHistory(
+	userId: string
+): Promise<CreditHistoryResponse> {
+	return apiFetch<CreditHistoryResponse>(
+		`/credit-history?userId=${encodeURIComponent(userId)}`
+	)
+}

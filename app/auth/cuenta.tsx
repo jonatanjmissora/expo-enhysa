@@ -11,10 +11,10 @@ import { useSession } from "@/src/session/session-context"
 import { LOCAL_USER_ID } from "@/src/session/session.service"
 import { imageService } from "@/src/media/image-service"
 import { getImageUri } from "@/src/media/image-storage"
-import { syncCredits } from "@/src/payments/checkout"
-import { useFocusEffect, useRouter } from "expo-router"
+import { useCredits } from "@/src/query/hooks/use-credits"
+import { useRouter } from "expo-router"
 import * as ExpoImagePicker from "expo-image-picker"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
 	Alert,
 	Modal,
@@ -29,29 +29,9 @@ export default function Cuenta() {
 	const router = useRouter()
 	const { activeUserId } = useSession()
 	const [user, setUser] = useState<UserType | null>(null)
-	const [credits, setCredits] = useState<number | null>(null)
+	const { data: credits } = useCredits()
 	const { data: informes, isLoading: isLoadingInformes } =
 		useInformesIluminacion()
-
-	useFocusEffect(
-		useCallback(() => {
-			if (activeUserId === LOCAL_USER_ID) {
-				setCredits(null)
-				return
-			}
-			let active = true
-			syncCredits(activeUserId)
-				.then(c => {
-					if (active) setCredits(c)
-				})
-				.catch(() => {
-					if (active) setCredits(null)
-				})
-			return () => {
-				active = false
-			}
-		}, [activeUserId])
-	)
 
 	useEffect(() => {
 		let active = true
