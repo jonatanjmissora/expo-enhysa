@@ -33,6 +33,7 @@ export function buildInformeIluminacionHtml(
 				tecnico: data.tecnico,
 				pageNumber: index + 1,
 				totalPages,
+				showWatermark: !data.informe.creditConsumed,
 			})
 		)
 		.join("")

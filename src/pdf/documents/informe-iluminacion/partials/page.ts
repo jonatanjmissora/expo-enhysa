@@ -1,6 +1,7 @@
 import { escapeHtml } from "@/src/pdf/primitives"
 import type { PdfEmpresa, PdfTecnico } from "../types"
 import { membreteInferior, membreteSuperior } from "./membrete"
+import { renderWatermark } from "../watermark"
 
 export type PageBody = {
 	body: string
@@ -13,6 +14,7 @@ export type RenderPageOptions = PageBody & {
 	tecnico: PdfTecnico
 	pageNumber: number
 	totalPages: number
+	showWatermark: boolean
 }
 
 export function renderPage({
@@ -23,6 +25,7 @@ export function renderPage({
 	tecnico,
 	pageNumber,
 	totalPages,
+	showWatermark,
 }: RenderPageOptions): string {
 	const anexoLabel = anexo
 		? `<div class="anexo-label">${escapeHtml(anexo)}</div>`
@@ -31,6 +34,7 @@ export function renderPage({
 
 	return `
 		<section class="${pageClass}">
+			${showWatermark ? renderWatermark() : ""}
 			${membreteSuperior(empresa)}
 			<div class="page-body">
 				${anexoLabel}

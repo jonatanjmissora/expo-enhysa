@@ -1,3 +1,5 @@
+import { watermarkStyles } from "./watermark"
+
 export const reportColors = {
 	text: "#111111",
 	soft: "#333333",
@@ -368,6 +370,8 @@ export const reportStyles = `
 .margin-vertical-80 {
 	margin: 80px 0
 	}
+
+${watermarkStyles}
 
 	/* Preview en pantalla (WebView) */
 	@media screen {

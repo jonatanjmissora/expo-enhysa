@@ -1,6 +1,7 @@
 import Button from "@/components/Button"
 import InformeHeaderContent from "@/components/InformeHeader"
 import { theme } from "@/constants/theme"
+import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native"
 import { WebView } from "react-native-webview"
@@ -116,6 +117,7 @@ function PdfPreview({
 	informe: InformesIluminacionType
 	tipo: InformeIluminacionPdfTipo
 }) {
+	const router = useRouter()
 	const { data: empresa, isLoading: isLoadingEmpresa } = useEmpresaById(
 		informe.empresaId
 	)
@@ -250,21 +252,34 @@ function PdfPreview({
 				)}
 			</View>
 
-			<View style={{ flexDirection: "row", gap: 12 }}>
-				<Button
-					text={generating ? "Generando..." : "Compartir"}
-					disabled={generating || !html}
-					onPress={handleShare}
-					style={{ flex: 1 }}
-				/>
-				<Button
-					variant="secondary"
-					text="Guardar"
-					disabled={generating || !html}
-					onPress={handleSave}
-					style={{ flex: 1 }}
-				/>
-			</View>
+			{informe.creditConsumed ? (
+				<View style={{ flexDirection: "row", gap: 12 }}>
+					<Button
+						text={generating ? "Generando..." : "Compartir"}
+						disabled={generating || !html}
+						onPress={handleShare}
+						style={{ flex: 1 }}
+					/>
+					<Button
+						variant="secondary"
+						text="Guardar"
+						disabled={generating || !html}
+						onPress={handleSave}
+						style={{ flex: 1 }}
+					/>
+				</View>
+			) : (
+				<View style={{ gap: 10, alignItems: "center" }}>
+					<Text style={{ color: "#ccc", textAlign: "center" }}>
+						Aun no posees creditos para desbloquear este pdf..
+					</Text>
+					<Button
+						text="Adquirir Crédito"
+						onPress={() => router.push("/suscripcion")}
+						style={{ width: 250 }}
+					/>
+				</View>
+			)}
 		</View>
 	)
 }
