@@ -81,3 +81,18 @@ export function apiGetCreditHistory(
 		`/credit-history?userId=${encodeURIComponent(userId)}`
 	)
 }
+
+export type ConsumeCreditResponse = {
+	credits: number
+	alreadyConsumed: boolean
+}
+
+export function apiConsumeCredit(
+	userId: string,
+	reportId: string
+): Promise<ConsumeCreditResponse> {
+	return apiFetch<ConsumeCreditResponse>("/consume", {
+		method: "POST",
+		body: JSON.stringify({ userId, reportId }),
+	})
+}

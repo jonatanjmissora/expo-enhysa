@@ -1,6 +1,10 @@
 import Button from "@/components/Button"
 import InformeHeaderContent from "@/components/InformeHeader"
 import { theme } from "@/constants/theme"
+import { consumeCredit } from "@/src/credits/consume"
+import { useCredits } from "@/src/query/hooks/use-credits"
+import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
+import { useUserId } from "@/src/session/session-context"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native"
@@ -118,6 +122,9 @@ function PdfPreview({
 	tipo: InformeIluminacionPdfTipo
 }) {
 	const router = useRouter()
+	const userId = useUserId()
+	const { data: credits } = useCredits()
+	const updateInforme = useUpdateInformeIluminacion()
 	const { data: empresa, isLoading: isLoadingEmpresa } = useEmpresaById(
 		informe.empresaId
 	)
@@ -135,6 +142,7 @@ function PdfPreview({
 	const [html, setHtml] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
 	const [generating, setGenerating] = useState(false)
+	const [unlocking, setUnlocking] = useState(false)
 
 	const isLoading =
 		isLoadingEmpresa ||
@@ -216,6 +224,27 @@ function PdfPreview({
 		}
 	}
 
+	const handleUnlock = async () => {
+		setUnlocking(true)
+		try {
+			await consumeCredit(userId, informe.id)
+			await updateInforme.mutateAsync({
+				id: informe.id,
+				input: {
+					creditConsumed: true,
+					creditConsumedAt: new Date().toISOString(),
+				},
+			})
+		} catch (e) {
+			Alert.alert(
+				"Error",
+				e instanceof Error ? e.message : "No se pudo desbloquear el PDF"
+			)
+		} finally {
+			setUnlocking(false)
+		}
+	}
+
 	const message = notFound
 		? "No se encontró la empresa, el técnico o el instrumento del informe"
 		: error
@@ -266,6 +295,17 @@ function PdfPreview({
 						disabled={generating || !html}
 						onPress={handleSave}
 						style={{ flex: 1 }}
+					/>
+				</View>
+			) : (credits ?? 0) >= 1 ? (
+				<View style={{ gap: 10, alignItems: "center" }}>
+					<Button
+						text={
+							unlocking ? "Desbloqueando..." : "Desbloquear PDF (1 crédito)"
+						}
+						disabled={unlocking}
+						onPress={handleUnlock}
+						style={{ width: 280 }}
 					/>
 				</View>
 			) : (
