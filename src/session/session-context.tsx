@@ -5,17 +5,19 @@ import {
 	useEffect,
 	useState,
 } from "react"
+import { signOut as authSignOut } from "../auth/auth.service"
 import { queryClient } from "../query/query-client"
 import {
-	getUserId,
+	initSession,
 	LOCAL_USER_ID,
-	setActiveUser as persistActiveUser,
+	setSession as persistSession,
 } from "./session.service"
 
 type SessionContextValue = {
 	activeUserId: string
 	isRegistered: boolean
-	setActiveUser: (userId: string) => Promise<void>
+	setSession: (userId: string, token: string) => Promise<void>
+	signOut: () => Promise<void>
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null)
@@ -25,7 +27,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		let active = true
-		getUserId().then(id => {
+		initSession().then(id => {
 			if (active) {
 				setActiveUserIdState(id)
 			}
@@ -39,10 +41,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 		return null
 	}
 
-	const setActiveUser = async (userId: string) => {
-		await persistActiveUser(userId)
+	const setSession = async (userId: string, token: string) => {
+		await persistSession(userId, token)
 		queryClient.clear()
 		setActiveUserIdState(userId)
+	}
+
+	const signOut = async () => {
+		await authSignOut()
+		queryClient.clear()
+		setActiveUserIdState(LOCAL_USER_ID)
 	}
 
 	return (
@@ -50,7 +58,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 			value={{
 				activeUserId,
 				isRegistered: activeUserId !== LOCAL_USER_ID,
-				setActiveUser,
+				setSession,
+				signOut,
 			}}
 		>
 			{children}

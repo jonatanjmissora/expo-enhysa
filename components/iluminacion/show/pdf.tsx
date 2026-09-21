@@ -5,7 +5,7 @@ import { consumeCredit } from "@/src/credits/consume"
 import { useCredits } from "@/src/query/hooks/use-credits"
 import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { useUserId } from "@/src/session/session-context"
-import { useRouter } from "expo-router"
+import { usePathname, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native"
 import { WebView } from "react-native-webview"
@@ -122,6 +122,7 @@ function PdfPreview({
 	tipo: InformeIluminacionPdfTipo
 }) {
 	const router = useRouter()
+	const pathname = usePathname()
 	const userId = useUserId()
 	const { data: credits } = useCredits()
 	const updateInforme = useUpdateInformeIluminacion()
@@ -284,12 +285,14 @@ function PdfPreview({
 			{informe.creditConsumed ? (
 				<View style={{ flexDirection: "row", gap: 12 }}>
 					<Button
+						size="small"
 						text={generating ? "Generando..." : "Compartir"}
 						disabled={generating || !html}
 						onPress={handleShare}
 						style={{ flex: 1 }}
 					/>
 					<Button
+						size="small"
 						variant="secondary"
 						text="Guardar"
 						disabled={generating || !html}
@@ -303,6 +306,7 @@ function PdfPreview({
 						text={
 							unlocking ? "Desbloqueando..." : "Desbloquear PDF (1 crédito)"
 						}
+						size="small"
 						disabled={unlocking}
 						onPress={handleUnlock}
 						style={{ width: 280 }}
@@ -314,8 +318,14 @@ function PdfPreview({
 						Aun no posees creditos para desbloquear este pdf..
 					</Text>
 					<Button
+						size="small"
 						text="Adquirir Crédito"
-						onPress={() => router.push("/suscripcion")}
+						onPress={() =>
+							router.push({
+								pathname: "/suscripcion",
+								params: { from: pathname },
+							})
+						}
 						style={{ width: 250 }}
 					/>
 				</View>

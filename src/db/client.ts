@@ -69,28 +69,35 @@ async function migrateDatabase(database: SQLite.SQLiteDatabase) {
 	}
 }
 
-const SCHEMA_VERSION = 1
+const SCHEMA_VERSION = 2
 
 /**
- * Reset único (etapa tester): las tablas de negocio guardaban URIs de imagen.
- * Con el nuevo sistema de imágenes esas columnas pasan a guardar imageIds, así
- * que se limpian los datos viejos una sola vez.
+ * Resets únicos (etapa tester):
+ * - v1: las tablas de negocio guardaban URIs de imagen; ahora guardan imageIds.
+ * - v2: la auth pasó a la nube; se resetean las cuentas locales (el `users`
+ *   local queda solo como espejo del usuario de la nube).
  */
-async function resetLegacyImageData(database: SQLite.SQLiteDatabase) {
+async function runOneTimeResets(database: SQLite.SQLiteDatabase) {
 	const row = await database.getFirstAsync<{ user_version: number }>(
 		"PRAGMA user_version"
 	)
 	const version = row?.user_version ?? 0
 	if (version >= SCHEMA_VERSION) return
 
-	for (const table of [
-		"empresas",
-		"tecnicos",
-		"instrumentos",
-		"areas_iluminacion",
-		"localizadas_iluminacion",
-	]) {
-		await database.execAsync(`DROP TABLE IF EXISTS ${table}`)
+	if (version < 1) {
+		for (const table of [
+			"empresas",
+			"tecnicos",
+			"instrumentos",
+			"areas_iluminacion",
+			"localizadas_iluminacion",
+		]) {
+			await database.execAsync(`DROP TABLE IF EXISTS ${table}`)
+		}
+	}
+
+	if (version < 2) {
+		await database.execAsync("DROP TABLE IF EXISTS users")
 	}
 
 	await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`)
@@ -98,7 +105,7 @@ async function resetLegacyImageData(database: SQLite.SQLiteDatabase) {
 
 async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await migrateDatabase(database)
-	await resetLegacyImageData(database)
+	await runOneTimeResets(database)
 	await database.execAsync(CREATE_USERS_TABLE)
 	await database.execAsync(CREATE_TECNICOS_TABLE)
 	await database.execAsync(CREATE_EMPRESAS_TABLE)
@@ -117,9 +124,6 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await ensureUpdatedAtColumn(database, "tecnicos")
 	await ensureUpdatedAtColumn(database, "empresas")
 	await ensureUpdatedAtColumn(database, "instrumentos")
-
-	await ensureColumn(database, "users", "name", "TEXT")
-	await ensureColumn(database, "users", "userImage", "TEXT")
 }
 
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {

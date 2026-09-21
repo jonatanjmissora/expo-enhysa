@@ -1,7 +1,11 @@
+import { ApiError, apiLogin, apiLogout, apiRegister } from "../api/client"
 import { getDatabase } from "../db/client"
 import { type UserType, userRepository } from "../repositories/user.repository"
-import { getUserId, LOCAL_USER_ID } from "../session/session.service"
-import { hashPassword, verifyPassword } from "./password"
+import {
+	clearSession,
+	getUserId,
+	LOCAL_USER_ID,
+} from "../session/session.service"
 
 const DATA_TABLES = [
 	"informes_iluminacion",
@@ -11,6 +15,11 @@ const DATA_TABLES = [
 	"empresas",
 	"instrumentos",
 ] as const
+
+export type AuthResult = {
+	user: UserType
+	token: string
+}
 
 export function normalizeEmail(email: string): string {
 	return email.trim().toLowerCase()
@@ -46,29 +55,33 @@ export class RegisterError extends Error {
 export async function register(
 	email: string,
 	password: string
-): Promise<UserType> {
+): Promise<AuthResult> {
 	const normalizedEmail = normalizeEmail(email)
 
-	const existing = await userRepository.getByEmail(normalizedEmail)
-	if (existing) {
-		throw new RegisterError(
-			"EMAIL_EXISTS",
-			"Ya existe una cuenta con ese email"
-		)
+	let response: Awaited<ReturnType<typeof apiRegister>>
+	try {
+		response = await apiRegister(normalizedEmail, password)
+	} catch (e) {
+		if (
+			e instanceof ApiError &&
+			(e.status === 409 || e.code === "email_exists")
+		) {
+			throw new RegisterError(
+				"EMAIL_EXISTS",
+				"Ya existe una cuenta con ese email"
+			)
+		}
+		throw e
 	}
 
-	const passwordHash = await hashPassword(password)
-	const user = await userRepository.create({
-		email: normalizedEmail,
-		passwordHash,
-	})
+	const user = await userRepository.upsertFromCloud(response.user)
 
 	const activeUserId = await getUserId()
 	if (activeUserId === LOCAL_USER_ID) {
 		await migrateUserData(LOCAL_USER_ID, user.id)
 	}
 
-	return user
+	return { user, token: response.token }
 }
 
 export class LoginError extends Error {
@@ -84,23 +97,30 @@ export class LoginError extends Error {
 export async function login(
 	email: string,
 	password: string
-): Promise<UserType> {
+): Promise<AuthResult> {
 	const normalizedEmail = normalizeEmail(email)
 
-	const user = await userRepository.getByEmail(normalizedEmail)
-	if (!user) {
-		throw new LoginError(
-			"EMAIL_NOT_FOUND",
-			"Email inexistente, registrese primero"
-		)
+	let response: Awaited<ReturnType<typeof apiLogin>>
+	try {
+		response = await apiLogin(normalizedEmail, password)
+	} catch (e) {
+		if (e instanceof ApiError) {
+			if (e.code === "email_not_found") {
+				throw new LoginError(
+					"EMAIL_NOT_FOUND",
+					"Email inexistente, registrese primero"
+				)
+			}
+			if (e.code === "invalid_password") {
+				throw new LoginError("INVALID_PASSWORD", "Contraseña incorrecta")
+			}
+		}
+		throw e
 	}
 
-	const valid = await verifyPassword(password, user.passwordHash)
-	if (!valid) {
-		throw new LoginError("INVALID_PASSWORD", "Contraseña incorrecta")
-	}
+	const user = await userRepository.upsertFromCloud(response.user)
 
-	return user
+	return { user, token: response.token }
 }
 
 export async function getActiveUser(): Promise<UserType | null> {
@@ -110,4 +130,13 @@ export async function getActiveUser(): Promise<UserType | null> {
 	}
 
 	return userRepository.getById(activeUserId)
+}
+
+export async function signOut(): Promise<void> {
+	try {
+		await apiLogout()
+	} catch {
+		// Si falla la red igual limpiamos la sesión local.
+	}
+	await clearSession()
 }

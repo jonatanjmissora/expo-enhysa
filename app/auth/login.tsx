@@ -2,8 +2,7 @@ import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import { login } from "@/src/auth/auth.service"
-import type { UserType } from "@/src/repositories/user.repository"
+import { type AuthResult, login } from "@/src/auth/auth.service"
 import { defaultLogin, loginFormValidator } from "@/src/db/schema/users"
 import { useSession } from "@/src/session/session-context"
 import { useForm } from "@tanstack/react-form"
@@ -22,14 +21,14 @@ const FIELDS = [
 		key: "password",
 		label: "Contraseña",
 		placeholder: "••••••",
-		secure: true,
+		secure: false,
 	},
 ] as const
 
 export default function Login() {
 	const router = useRouter()
 	const { from } = useLocalSearchParams<{ from?: string }>()
-	const { setActiveUser } = useSession()
+	const { setSession } = useSession()
 	const [error, setError] = useState<string | null>(null)
 
 	const fromParam = Array.isArray(from) ? from[0] : from
@@ -51,15 +50,15 @@ export default function Login() {
 		validators: { onSubmit: loginFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
-			let user: UserType
+			let result: AuthResult
 			try {
-				user = await login(value.email, value.password)
+				result = await login(value.email, value.password)
 			} catch (e) {
 				setError(e instanceof Error ? e.message : "No se pudo iniciar sesión")
 				return
 			}
 			try {
-				await setActiveUser(user.id)
+				await setSession(result.user.id, result.token)
 			} catch {
 				Alert.alert("No se pudo guardar la sesión", "Volvé a ingresar.")
 				return

@@ -4,15 +4,36 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { useCredits } from "@/src/query/hooks/use-credits"
 import { useSession } from "@/src/session/session-context"
 import { theme } from "@/constants/theme"
+import Button from "@/components/Button"
+import { router, useLocalSearchParams } from "expo-router"
 
 export default function Suscripcion() {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 	const { isRegistered } = useSession()
 	const { data: credits } = useCredits()
+	const { from } = useLocalSearchParams<{ from?: string }>()
 
 	return (
 		<ViewWithLogo>
+			<Button
+				variant="ghost"
+				iconLeft="chevron-back"
+				text="Volver"
+				onPress={() => {
+					if (from) {
+						router.setParams({ from: "" })
+						router.push(from)
+					} else {
+						router.back()
+					}
+				}}
+				style={{
+					alignSelf: "flex-start",
+					paddingHorizontal: 20,
+					paddingVertical: 0,
+				}}
+			/>
 			<ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
 				<View style={{ marginTop: 40, flexDirection: "column", gap: 10 }}>
 					<Text

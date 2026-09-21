@@ -27,7 +27,7 @@ import {
 
 export default function Cuenta() {
 	const router = useRouter()
-	const { activeUserId } = useSession()
+	const { activeUserId, isRegistered, signOut } = useSession()
 	const [user, setUser] = useState<UserType | null>(null)
 	const { data: credits } = useCredits()
 	const { data: informes, isLoading: isLoadingInformes } =
@@ -49,6 +49,20 @@ export default function Cuenta() {
 			active = false
 		}
 	}, [activeUserId])
+
+	const handleSignOut = () => {
+		Alert.alert("Cerrar sesión", "¿Querés cerrar la sesión actual?", [
+			{ text: "Cancelar", style: "cancel" },
+			{
+				text: "Cerrar sesión",
+				style: "destructive",
+				onPress: async () => {
+					await signOut()
+					router.replace("/")
+				},
+			},
+		])
+	}
 
 	return (
 		<ViewWithLogo>
@@ -171,9 +185,9 @@ export default function Cuenta() {
 
 							<Button
 								variant="secondary"
-								text="Comprar Créditos"
+								text="Adquirir Créditos"
 								size="xsmall"
-								onPress={() => {}}
+								onPress={() => router.push("/suscripcion?from=/auth/cuenta")}
 								style={{ width: "50%", marginHorizontal: "auto" }}
 							/>
 						</>
@@ -192,6 +206,14 @@ export default function Cuenta() {
 						size="small"
 						onPress={() => router.push("/auth/register")}
 					/>
+					{isRegistered && (
+						<Button
+							variant="ghost"
+							text="Cerrar sesión"
+							size="small"
+							onPress={handleSignOut}
+						/>
+					)}
 				</View>
 			</ScrollView>
 		</ViewWithLogo>

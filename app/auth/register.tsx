@@ -2,8 +2,7 @@ import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import { register } from "@/src/auth/auth.service"
-import type { UserType } from "@/src/repositories/user.repository"
+import { type AuthResult, register } from "@/src/auth/auth.service"
 import { defaultRegister, registerFormValidator } from "@/src/db/schema/users"
 import { useSession } from "@/src/session/session-context"
 import { useForm } from "@tanstack/react-form"
@@ -22,20 +21,20 @@ const FIELDS = [
 		key: "password",
 		label: "Contraseña",
 		placeholder: "Mínimo 6 caracteres",
-		secure: true,
+		secure: false,
 	},
 	{
 		key: "confirmPassword",
 		label: "Confirmar contraseña",
 		placeholder: "Repetí la contraseña",
-		secure: true,
+		secure: false,
 	},
 ] as const
 
 export default function Register() {
 	const router = useRouter()
 	const { from } = useLocalSearchParams<{ from?: string }>()
-	const { setActiveUser } = useSession()
+	const { setSession } = useSession()
 	const [error, setError] = useState<string | null>(null)
 
 	const fromParam = Array.isArray(from) ? from[0] : from
@@ -57,15 +56,15 @@ export default function Register() {
 		validators: { onSubmit: registerFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
-			let user: UserType
+			let result: AuthResult
 			try {
-				user = await register(value.email, value.password)
+				result = await register(value.email, value.password)
 			} catch (e) {
 				setError(e instanceof Error ? e.message : "No se pudo crear la cuenta")
 				return
 			}
 			try {
-				await setActiveUser(user.id)
+				await setSession(result.user.id, result.token)
 			} catch {
 				Alert.alert("No se pudo guardar la sesión", "Volvé a ingresar.")
 				return

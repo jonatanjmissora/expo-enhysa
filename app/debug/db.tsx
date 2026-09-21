@@ -7,6 +7,9 @@ import { CREATE_AREAS_ILUMINACION_TABLE } from "@/src/db/schema/areas-iluminacio
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "@/src/db/schema/localizadas-iluminacion"
 import { CREATE_USERS_TABLE } from "@/src/db/schema/users"
 import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
+import { CREATE_USER_CREDITS_TABLE } from "@/src/db/schema/user-credits"
+import { CREATE_CREDIT_HISTORY_TABLE } from "@/src/db/schema/credit-history"
+import { CREATE_PENDING_PAYMENTS_TABLE } from "@/src/db/schema/pending-payments"
 import { apiHealth } from "@/src/api/client"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
@@ -35,7 +38,24 @@ const TABLE_NAMES = [
 	"areas_iluminacion",
 	"localizadas_iluminacion",
 	"images",
+	"user_credits",
+	"credit_history",
+	"pending_payments",
 ]
+
+const PRIMARY_KEYS: Record<string, string> = {
+	users: "id",
+	tecnicos: "id",
+	empresas: "id",
+	instrumentos: "id",
+	informes_iluminacion: "id",
+	areas_iluminacion: "id",
+	localizadas_iluminacion: "id",
+	images: "id",
+	user_credits: "userId",
+	credit_history: "id",
+	pending_payments: "preferenceId",
+}
 
 const TABLE_SCHEMAS: Record<string, string> = {
 	users: CREATE_USERS_TABLE,
@@ -46,6 +66,9 @@ const TABLE_SCHEMAS: Record<string, string> = {
 	areas_iluminacion: CREATE_AREAS_ILUMINACION_TABLE,
 	localizadas_iluminacion: CREATE_LOCALIZADAS_ILUMINACION_TABLE,
 	images: CREATE_IMAGES_TABLE,
+	user_credits: CREATE_USER_CREDITS_TABLE,
+	credit_history: CREATE_CREDIT_HISTORY_TABLE,
+	pending_payments: CREATE_PENDING_PAYMENTS_TABLE,
 }
 
 export default function DebugDB() {
@@ -103,7 +126,8 @@ export default function DebugDB() {
 
 	const deleteRow = useCallback(
 		async (tableName: string, row: TableRow) => {
-			const id = row.id as string
+			const pk = PRIMARY_KEYS[tableName] ?? "id"
+			const id = row[pk] as string | undefined
 			if (!id) return
 
 			Alert.alert("Eliminar", `¿Eliminar registro ${id.slice(0, 8)}...?`, [
@@ -130,7 +154,10 @@ export default function DebugDB() {
 								)
 							})
 						} else {
-							await db.runAsync(`DELETE FROM "${tableName}" WHERE id = ?`, id)
+							await db.runAsync(
+								`DELETE FROM "${tableName}" WHERE ${pk} = ?`,
+								id
+							)
 						}
 
 						await loadTables()

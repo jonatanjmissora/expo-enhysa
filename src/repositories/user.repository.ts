@@ -1,33 +1,31 @@
-import { randomUUID } from "expo-crypto"
 import { getDatabase } from "../db/client"
 import { CREATE_USERS_TABLE } from "../db/schema/users"
 
 export type UserType = {
 	id: string
 	email: string
-	passwordHash: string
 	name: string | null
 	userImage: string | null
 	createdAt: string
 	updatedAt: string
 }
 
-export type CreateUserInput = {
-	email: string
-	passwordHash: string
-}
-
 export type UpdateUserInput = {
 	email?: string
-	passwordHash?: string
 	name?: string | null
 	userImage?: string | null
+}
+
+export type CloudUserInput = {
+	id: string
+	email: string
+	name: string | null
+	userImage: string | null
 }
 
 const SELECT_COLUMNS = `
 	id,
 	email,
-	passwordHash,
 	name,
 	userImage,
 	createdAt,
@@ -40,32 +38,42 @@ async function initializeUsersTable() {
 }
 
 export const userRepository = {
-	async create(input: CreateUserInput): Promise<UserType> {
+	/**
+	 * Espejo local del usuario de la nube. En el primer alta crea la fila; si
+	 * ya existe, actualiza solo los campos que la nube provee (COALESCE), para
+	 * no pisar un `name`/`userImage` local con un null de la nube.
+	 */
+	async upsertFromCloud(input: CloudUserInput): Promise<UserType> {
 		await initializeUsersTable()
 
 		const db = await getDatabase()
-		const id = randomUUID()
 		const now = new Date().toISOString()
 
 		await db.runAsync(
 			`
-				INSERT INTO users (id, email, passwordHash, createdAt, updatedAt)
-				VALUES (?, ?, ?, ?, ?)
+				INSERT INTO users (id, email, name, userImage, createdAt, updatedAt)
+				VALUES (?, ?, ?, ?, ?, ?)
+				ON CONFLICT(id) DO UPDATE SET
+					email = excluded.email,
+					name = COALESCE(excluded.name, users.name),
+					userImage = COALESCE(excluded.userImage, users.userImage),
+					updatedAt = excluded.updatedAt
 			`,
-			id,
+			input.id,
 			input.email,
-			input.passwordHash,
+			input.name,
+			input.userImage,
 			now,
 			now
 		)
 
 		const user = await db.getFirstAsync<UserType>(
 			`SELECT ${SELECT_COLUMNS} FROM users WHERE id = ?`,
-			id
+			input.id
 		)
 
 		if (!user) {
-			throw new Error("No se pudo recuperar el usuario creado")
+			throw new Error("No se pudo recuperar el usuario")
 		}
 
 		return user
@@ -78,18 +86,6 @@ export const userRepository = {
 		const user = await db.getFirstAsync<UserType>(
 			`SELECT ${SELECT_COLUMNS} FROM users WHERE id = ?`,
 			id
-		)
-
-		return user ?? null
-	},
-
-	async getByEmail(email: string): Promise<UserType | null> {
-		await initializeUsersTable()
-
-		const db = await getDatabase()
-		const user = await db.getFirstAsync<UserType>(
-			`SELECT ${SELECT_COLUMNS} FROM users WHERE email = ?`,
-			email
 		)
 
 		return user ?? null
@@ -118,14 +114,12 @@ export const userRepository = {
 			`
 				UPDATE users SET
 					email = ?,
-					passwordHash = ?,
 					name = ?,
 					userImage = ?,
 					updatedAt = ?
 				WHERE id = ?
 			`,
 			user.email,
-			user.passwordHash,
 			user.name,
 			user.userImage,
 			user.updatedAt,

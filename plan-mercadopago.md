@@ -42,8 +42,9 @@ Esto es un **cambio fundacional**: la app pasa de **100% local** a **híbrida
 - **Solo usuarios registrados** (con `userId` válido) pueden comprar.
   **`user-1` NO compra**. Se usa un **id de dispositivo único** para asociar la
   compra.
-- **Híbrido local-first**: compras online (nube manda), consumo offline (local,
-  luego se empuja).
+- **Server-authoritative**: **compras y consumo online**. La **nube es la fuente
+  de verdad** del saldo. El consumo requiere conexión (evita el doble gasto entre
+  dispositivos). La app refleja (espeja) el saldo de la nube.
 - Tablas nuevas: `user_credits`, `credit_history`, `pending_payments`.
 - **Sin marca de agua por ahora** (el foco de esta etapa es compra de créditos +
   sync).
@@ -192,16 +193,20 @@ pending_payments (
 - **Idempotencia**: `credit_history.id` único (compra: derivado de `paymentId`;
   consumo: derivado de `reportId`), y `pending_payments` por `preference_id`.
 
-### 4.2. Sync local ↔ nube (ledger)
+### 4.2. Sync local ↔ nube
 
-Como el historial es append-only y cada movimiento tiene `id` único, la sync es
-**unir historiales por `id`** (idempotente, sin conflictos de saldo):
+La **nube es la fuente de verdad**. El ledger vive en la nube; la app lo
+**espeja** (baja) para mostrar el saldo y el historial.
 
-- **Compra** (nube → local): el webhook inserta el movimiento en la nube; la app
-  lo baja y lo inserta en local.
-- **Consumo** (local → nube): la app inserta el movimiento en local; luego lo
-  **empuja** a la nube (encolado si está offline).
-- **Saldo** se recalcula de la suma; `user_credits` se mantiene como caché.
+- **Compra**: webhook → nube (ledger) → la app baja.
+- **Consumo**: la app pide `POST /unlock` → la nube valida, descuenta atómico e
+  inserta el consumo (idempotente por `reportId`) → la app baja el nuevo saldo y
+  marca `creditConsumed`.
+- **Sin cola offline**: el consumo requiere conexión (server-authoritative).
+
+> Por qué online: si el consumo fuera offline, un mismo usuario en 2 dispositivos
+> podría desbloquear 2 informes con 1 solo crédito (doble gasto). Con la nube como
+> autoridad, el descuento atómico lo impide.
 
 ---
 
@@ -227,9 +232,10 @@ Como el historial es append-only y cada movimiento tiene `id` único, la sync es
 - El informe ya tiene `creditConsumed` / `creditConsumedAt`
   (`src/db/schema/informes-iluminacion.ts`).
 - El PDF se genera **con marca de agua** si `!creditConsumed`.
-- **"Desbloquear (1 crédito)"** → consume 1 crédito local → `creditConsumed =
-  true` → se encola el consumo para la nube → el PDF se regenera sin marca de
-  agua.
+- **"Desbloquear (1 crédito)"** → `POST /unlock` (online) → la nube descuenta
+  atómico e idempotente (por `reportId`) → la app marca `creditConsumed = true` y
+  baja el saldo → el PDF se regenera sin marca de agua.
+- **Requiere conexión** (server-authoritative).
 - Una sola vez por informe.
 
 ---
@@ -248,7 +254,7 @@ Como el historial es append-only y cada movimiento tiene `id` único, la sync es
 
 ### Fase 3 — Créditos y sync (local + nube)
 - Tablas locales `user_credits`, `credit_history`, `pending_payments`.
-- Sync del ledger (bajar compras, empujar consumos).
+- Sync del ledger (**bajar** de la nube; el local es espejo).
 - Mostrar saldo en `/suscripcion`.
 
 ### Fase 4 — Desbloqueo / marca de agua
@@ -305,4 +311,7 @@ Como el historial es append-only y cada movimiento tiene `id` único, la sync es
 - [ ] La app refleja el saldo actualizado (sync del ledger).
 - [ ] Un informe sin crédito consumido muestra marca de agua.
 - [ ] Desbloquear consume 1 crédito (una sola vez) y quita la marca de agua.
-- [ ] Consumo offline se encola y se empuja al volver la conexión.
+- [ ] El consumo es **online** (server-authoritative): sin doble gasto entre
+      dispositivos.
+- [ ] Desbloquear el mismo informe dos veces no vuelve a consumir crédito
+      (idempotente por `reportId`).
