@@ -1,5 +1,6 @@
 import Button from "@/components/Button"
 import ImageViewer from "@/components/ImageViewer"
+import ModalLogoutConfirm from "@/components/ModalLogoutConfirm"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
@@ -29,6 +30,7 @@ export default function Cuenta() {
 	const router = useRouter()
 	const { activeUserId, isRegistered, signOut } = useSession()
 	const [user, setUser] = useState<UserType | null>(null)
+	const [logoutVisible, setLogoutVisible] = useState(false)
 	const { data: credits } = useCredits()
 	const { data: informes, isLoading: isLoadingInformes } =
 		useInformesIluminacion()
@@ -51,17 +53,13 @@ export default function Cuenta() {
 	}, [activeUserId])
 
 	const handleSignOut = () => {
-		Alert.alert("Cerrar sesión", "¿Querés cerrar la sesión actual?", [
-			{ text: "Cancelar", style: "cancel" },
-			{
-				text: "Cerrar sesión",
-				style: "destructive",
-				onPress: async () => {
-					await signOut()
-					router.replace("/")
-				},
-			},
-		])
+		setLogoutVisible(true)
+	}
+
+	const confirmSignOut = async () => {
+		setLogoutVisible(false)
+		await signOut()
+		router.replace("/")
 	}
 
 	return (
@@ -216,6 +214,14 @@ export default function Cuenta() {
 					)}
 				</View>
 			</ScrollView>
+
+			<ModalLogoutConfirm
+				visible={logoutVisible}
+				title="Cerrar sesión"
+				message="¿Querés cerrar la sesión actual?"
+				onClose={() => setLogoutVisible(false)}
+				onConfirm={confirmSignOut}
+			/>
 		</ViewWithLogo>
 	)
 }

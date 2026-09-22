@@ -156,22 +156,7 @@ function Plan({
 				))}
 			</View>
 
-			{index === 0 ? (
-				<Pressable
-					onPress={() => router.push("/")}
-					style={{
-						width: "100%",
-						backgroundColor: theme.green,
-						paddingVertical: 14,
-						borderRadius: 6,
-						alignItems: "center",
-					}}
-				>
-					<Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
-						Prueba Gratis
-					</Text>
-				</Pressable>
-			) : (
+			{index === 0 ? null : (
 				<Pressable
 					onPress={() =>
 						router.push({

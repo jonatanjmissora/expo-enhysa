@@ -1,5 +1,7 @@
+import ImageViewer from "@/components/ImageViewer"
 import { usePathname, useRouter } from "expo-router"
 import { useEffect, useRef } from "react"
+import logo from "@/assets/images/logo2.png"
 import {
 	Animated,
 	Pressable,
@@ -53,26 +55,25 @@ export default function NotFound() {
 					gap: 24,
 				}}
 			>
-				<Text
+				<ImageViewer
+					imgSource={logo}
 					style={{
-						fontSize: 64,
-						fontWeight: "800",
-						color: "#e2711d",
-						letterSpacing: 2,
+						width: isNarrow ? 150 : 200,
+						height: isNarrow ? 150 : 200,
+						resizeMode: "contain",
 					}}
-				>
-					404
-				</Text>
+				/>
 
 				<Text
 					style={{
-						fontSize: isNarrow ? 20 : 24,
+						fontSize: isNarrow ? 24 : 28,
 						fontWeight: "700",
-						color: "#fff",
+						color: "#e2711d",
+						letterSpacing: 1.2,
 						textAlign: "center",
 					}}
 				>
-					Página no encontrada
+					¡Página no encontrada, lo sentimos!
 				</Text>
 
 				<Text
@@ -83,8 +84,7 @@ export default function NotFound() {
 						maxWidth: 320,
 					}}
 				>
-					La ruta que buscas no existe o fue movida. Revisá la dirección e
-					intentá de nuevo.
+					Ha ocurrido un error inesperado y nos encontramos en un camino sin paisaje. Te recomiendo volver y comenzar de nuevo!!
 				</Text>
 
 				<Text
@@ -138,32 +138,7 @@ export default function NotFound() {
 					</Text>
 				</Pressable>
 
-				<Pressable
-					onPress={() => router.back()}
-					style={({ pressed }) => ({
-						flex: 1,
-						backgroundColor: pressed ? "#222" : "#1a1a1a",
-						borderRadius: 10,
-						paddingVertical: 8,
-						paddingHorizontal: 24,
-						minHeight: 52,
-						alignItems: "center",
-						justifyContent: "center",
-						borderWidth: 1,
-						borderColor: "#333",
-					})}
-				>
-					<Text
-						style={{
-							color: "#fff",
-							fontSize: 16,
-							fontWeight: "600",
-							textAlign: "center",
-						}}
-					>
-						Volver atrás
-					</Text>
-				</Pressable>
+				
 			</Animated.View>
 		</View>
 	)

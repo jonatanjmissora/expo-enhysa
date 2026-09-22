@@ -23,8 +23,10 @@ export default function Index() {
 - alquiler
 - mi primer informe
 - si el user-1 crea informe, y luego se quiere loguear para desbloquear informe, pero ya tenia cuenta en la nube, que hacemos?
-o seguimos con lo que se guardo en user-1 o eliminamos lo que teniamos hecho y traemos de la nube.
+-- o seguimos con lo que se guardo en user-1 y eliminamos nube.
+-- o eliminamos lo que teniamos hecho y traemos de la nube.
 actualizo foto o nombre en local, no se sube a la nube
+- si el usuario logueado tiene informes, y se desloguea, y con user-1 crea nuevos datos, cuando se loguea, que hacemos?
 
 Diseo general de tanstack query + sincronizacion
 
