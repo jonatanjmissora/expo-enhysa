@@ -64,7 +64,9 @@ export default function Recientes() {
 			<Button
 				variant="ghost"
 				text="Mi primer Informe"
-				onPress={() => {}}
+				onPress={() =>
+					router.push("/herramientas/iluminacion/mi-primer-informe")
+				}
 				style={{
 					alignSelf: "flex-end",
 					marginVertical: 20,

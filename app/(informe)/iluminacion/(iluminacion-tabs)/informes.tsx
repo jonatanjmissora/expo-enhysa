@@ -65,7 +65,9 @@ export default function Informes() {
 				<Button
 					variant="ghost"
 					text="Mi primer Informe"
-					onPress={() => {}}
+					onPress={() =>
+						router.push("/herramientas/iluminacion/mi-primer-informe")
+					}
 					style={{
 						alignSelf: "flex-end",
 						marginVertical: 20,

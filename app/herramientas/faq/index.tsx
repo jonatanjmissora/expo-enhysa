@@ -184,6 +184,22 @@ const FAQ_ITEMS: FaqEntry[] = [
 		),
 	},
 	{
+		id: "online-offline",
+		question: "¿Puede la aplicación utilizarse de manera offline?",
+		answer: () => (
+			<>
+				<Text style={styles.paragraph}>
+					La aplicacion tiene funcionalidad offline para cargar datos y generar
+					informes. Sin embargo, se requiere una conexion a internet para
+					registrarse, sincronizar datos con la nube y adquirir o consumir
+					créditos. Para el resto de las funcionalidades, el profesional puede
+					hacer uso de las herramientas, cargar datos, tomar mediciones y
+					visualizar los PDF.
+				</Text>
+			</>
+		),
+	},
+	{
 		id: "soporte",
 		question: "¿Tengo soporte técnico?",
 		answer: () => (
