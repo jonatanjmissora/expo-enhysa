@@ -27,6 +27,7 @@ export default function Index() {
 -- o eliminamos lo que teniamos hecho y traemos de la nube.
 actualizo foto o nombre en local, no se sube a la nube
 - si el usuario logueado tiene informes, y se desloguea, y con user-1 crea nuevos datos, cuando se loguea, que hacemos?
+- aclarar que lo que se puede hacer online y offline
 
 Diseo general de tanstack query + sincronizacion
 
