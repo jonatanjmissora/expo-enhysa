@@ -118,6 +118,8 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await ensureUpdatedAtColumn(database, "tecnicos")
 	await ensureUpdatedAtColumn(database, "empresas")
 	await ensureUpdatedAtColumn(database, "instrumentos")
+
+	await ensureColumn(database, "users", "passwordHash", "TEXT")
 }
 
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {

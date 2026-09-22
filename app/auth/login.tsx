@@ -63,6 +63,12 @@ export default function Login() {
 				Alert.alert("No se pudo guardar la sesión", "Volvé a ingresar.")
 				return
 			}
+			if (result.offline) {
+				Alert.alert(
+					"Ingresaste sin conexión",
+					"Podés seguir trabajando con los datos locales. Los créditos y la sincronización estarán disponibles cuando recuperes la conexión."
+				)
+			}
 			goToOrigin()
 		},
 		onSubmitInvalid: () => {

@@ -6,6 +6,7 @@ export type UserType = {
 	email: string
 	name: string | null
 	userImage: string | null
+	passwordHash: string | null
 	createdAt: string
 	updatedAt: string
 }
@@ -28,6 +29,7 @@ const SELECT_COLUMNS = `
 	email,
 	name,
 	userImage,
+	passwordHash,
 	createdAt,
 	updatedAt
 `
@@ -43,7 +45,10 @@ export const userRepository = {
 	 * ya existe, actualiza solo los campos que la nube provee (COALESCE), para
 	 * no pisar un `name`/`userImage` local con un null de la nube.
 	 */
-	async upsertFromCloud(input: CloudUserInput): Promise<UserType> {
+	async upsertFromCloud(
+		input: CloudUserInput,
+		passwordHash?: string | null
+	): Promise<UserType> {
 		await initializeUsersTable()
 
 		const db = await getDatabase()
@@ -51,18 +56,20 @@ export const userRepository = {
 
 		await db.runAsync(
 			`
-				INSERT INTO users (id, email, name, userImage, createdAt, updatedAt)
-				VALUES (?, ?, ?, ?, ?, ?)
+				INSERT INTO users (id, email, name, userImage, passwordHash, createdAt, updatedAt)
+				VALUES (?, ?, ?, ?, ?, ?, ?)
 				ON CONFLICT(id) DO UPDATE SET
 					email = excluded.email,
 					name = COALESCE(excluded.name, users.name),
 					userImage = COALESCE(excluded.userImage, users.userImage),
+					passwordHash = COALESCE(excluded.passwordHash, users.passwordHash),
 					updatedAt = excluded.updatedAt
 			`,
 			input.id,
 			input.email,
 			input.name,
 			input.userImage,
+			passwordHash ?? null,
 			now,
 			now
 		)
@@ -77,6 +84,18 @@ export const userRepository = {
 		}
 
 		return user
+	},
+
+	async getByEmail(email: string): Promise<UserType | null> {
+		await initializeUsersTable()
+
+		const db = await getDatabase()
+		const user = await db.getFirstAsync<UserType>(
+			`SELECT ${SELECT_COLUMNS} FROM users WHERE email = ? LIMIT 1`,
+			email
+		)
+
+		return user ?? null
 	},
 
 	async getById(id: string): Promise<UserType | null> {

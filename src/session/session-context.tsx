@@ -16,7 +16,7 @@ import {
 type SessionContextValue = {
 	activeUserId: string
 	isRegistered: boolean
-	setSession: (userId: string, token: string) => Promise<void>
+	setSession: (userId: string, token: string | null) => Promise<void>
 	signOut: () => Promise<void>
 }
 
@@ -41,7 +41,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 		return null
 	}
 
-	const setSession = async (userId: string, token: string) => {
+	const setSession = async (userId: string, token: string | null) => {
 		await persistSession(userId, token)
 		queryClient.clear()
 		setActiveUserIdState(userId)

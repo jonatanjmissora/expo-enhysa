@@ -6,6 +6,7 @@ import {
 	getUserId,
 	LOCAL_USER_ID,
 } from "../session/session.service"
+import { hashPassword, verifyPassword } from "./password"
 
 const DATA_TABLES = [
 	"informes_iluminacion",
@@ -18,7 +19,9 @@ const DATA_TABLES = [
 
 export type AuthResult = {
 	user: UserType
-	token: string
+	token: string | null
+	/** true cuando se ingresó validando contra el hash local (sin sesión de nube). */
+	offline: boolean
 }
 
 export function normalizeEmail(email: string): string {
@@ -74,20 +77,24 @@ export async function register(
 		throw e
 	}
 
-	const user = await userRepository.upsertFromCloud(response.user)
+	const passwordHash = await hashPassword(password)
+	const user = await userRepository.upsertFromCloud(response.user, passwordHash)
 
 	const activeUserId = await getUserId()
 	if (activeUserId === LOCAL_USER_ID) {
 		await migrateUserData(LOCAL_USER_ID, user.id)
 	}
 
-	return { user, token: response.token }
+	return { user, token: response.token, offline: false }
 }
 
 export class LoginError extends Error {
-	readonly code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD"
+	readonly code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD" | "OFFLINE"
 
-	constructor(code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD", message: string) {
+	constructor(
+		code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD" | "OFFLINE",
+		message: string
+	) {
 		super(message)
 		this.name = "LoginError"
 		this.code = code
@@ -115,12 +122,34 @@ export async function login(
 				throw new LoginError("INVALID_PASSWORD", "Contraseña incorrecta")
 			}
 		}
-		throw e
+
+		// Sin conexión (o error de servidor): validar contra el hash local.
+		const localUser = await verifyLocalLogin(normalizedEmail, password)
+		if (localUser) {
+			return { user: localUser, token: null, offline: true }
+		}
+
+		throw new LoginError(
+			"OFFLINE",
+			"Sin conexión. No pudimos validar tus credenciales locales."
+		)
 	}
 
-	const user = await userRepository.upsertFromCloud(response.user)
+	const passwordHash = await hashPassword(password)
+	const user = await userRepository.upsertFromCloud(response.user, passwordHash)
 
-	return { user, token: response.token }
+	return { user, token: response.token, offline: false }
+}
+
+async function verifyLocalLogin(
+	email: string,
+	password: string
+): Promise<UserType | null> {
+	const user = await userRepository.getByEmail(email)
+	if (!user?.passwordHash) return null
+
+	const ok = await verifyPassword(password, user.passwordHash)
+	return ok ? user : null
 }
 
 export async function getActiveUser(): Promise<UserType | null> {
