@@ -1,23 +1,43 @@
 import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { theme } from "@/constants/theme"
-import { syncCredits } from "@/src/payments/checkout"
+import { useCredits } from "@/src/query/hooks/use-credits"
 import { useSession } from "@/src/session/session-context"
-import { useRouter } from "expo-router"
-import { useEffect, useState } from "react"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { Text, View } from "react-native"
+
+type Result = "success" | "failure" | "pending" | "unknown"
+
+const MESSAGES: Record<Result, { title: string; text: string }> = {
+	success: {
+		title: "¡Pago exitoso!",
+		text: "Tus créditos ya están disponibles.",
+	},
+	failure: {
+		title: "El pago no se completó",
+		text: "No se realizó ningún cobro. Podés intentarlo de nuevo.",
+	},
+	pending: {
+		title: "Pago pendiente",
+		text: "Cuando se acredite el pago, se sumarán tus créditos.",
+	},
+	unknown: {
+		title: "Pago procesado",
+		text: "Si no ves tus créditos en unos minutos, volvé a entrar.",
+	},
+}
 
 export default function Pago() {
 	const router = useRouter()
-	const { activeUserId, isRegistered } = useSession()
-	const [credits, setCredits] = useState<number | null>(null)
+	const { result } = useLocalSearchParams<{ result?: string }>()
+	const { isRegistered } = useSession()
+	const { data: credits } = useCredits()
 
-	useEffect(() => {
-		if (!isRegistered) return
-		syncCredits(activeUserId)
-			.then(setCredits)
-			.catch(() => setCredits(null))
-	}, [activeUserId, isRegistered])
+	const key: Result =
+		result === "success" || result === "failure" || result === "pending"
+			? result
+			: "unknown"
+	const message = MESSAGES[key]
 
 	return (
 		<ViewWithLogo>
@@ -30,24 +50,30 @@ export default function Pago() {
 					padding: 24,
 				}}
 			>
-				<Text style={{ color: "#ddd", fontSize: 24, fontWeight: "700" }}>
-					Pago procesado
+				<Text
+					style={{
+						color: "#ddd",
+						fontSize: 24,
+						fontWeight: "700",
+						textAlign: "center",
+					}}
+				>
+					{message.title}
 				</Text>
 				<Text style={{ color: "#aaa", fontSize: 15, textAlign: "center" }}>
-					Tu pago se está acreditando. Si no ves tus créditos en unos minutos,
-					volvé a entrar.
+					{message.text}
 				</Text>
 
-				{isRegistered && (
+				{isRegistered && key === "success" && (
 					<Text
 						style={{ color: theme.orange, fontSize: 16, fontWeight: "600" }}
 					>
-						Créditos disponibles: {credits === null ? "…" : credits}
+						Créditos disponibles: {credits ?? 0}
 					</Text>
 				)}
 
 				<Button
-					text="Volver a Suscripción"
+					text={key === "failure" ? "Reintentar" : "Volver a Suscripción"}
 					onPress={() => router.dismissTo("/(inicio)/suscripcion")}
 				/>
 			</View>
