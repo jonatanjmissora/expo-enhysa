@@ -1,10 +1,12 @@
 import Button from "@/components/Button"
 import InformeHeaderContent from "@/components/InformeHeader"
 import { theme } from "@/constants/theme"
-import { consumeCredit } from "@/src/credits/consume"
+import { apiConsumeCredit } from "@/src/api/client"
 import { useCredits } from "@/src/query/hooks/use-credits"
 import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
+import { creditKeys } from "@/src/query/keys/credit.keys"
 import { useUserId } from "@/src/session/session-context"
+import { useQueryClient } from "@tanstack/react-query"
 import { usePathname, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native"
@@ -123,6 +125,7 @@ function PdfPreview({
 }) {
 	const router = useRouter()
 	const pathname = usePathname()
+	const qc = useQueryClient()
 	const userId = useUserId()
 	const { data: credits } = useCredits()
 	const updateInforme = useUpdateInformeIluminacion()
@@ -228,7 +231,7 @@ function PdfPreview({
 	const handleUnlock = async () => {
 		setUnlocking(true)
 		try {
-			await consumeCredit(userId, informe.id)
+			await apiConsumeCredit(userId, informe.id)
 			await updateInforme.mutateAsync({
 				id: informe.id,
 				input: {
@@ -236,6 +239,7 @@ function PdfPreview({
 					creditConsumedAt: new Date().toISOString(),
 				},
 			})
+			qc.invalidateQueries({ queryKey: creditKeys.all })
 		} catch (e) {
 			Alert.alert(
 				"Error",
