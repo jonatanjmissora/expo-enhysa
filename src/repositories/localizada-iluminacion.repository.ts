@@ -1,4 +1,5 @@
 import { randomUUID } from "expo-crypto"
+import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import {
 	CREATE_LOCALIZADAS_ILUMINACION_TABLE,
@@ -89,6 +90,7 @@ export const localizadaIluminacionRepository = {
 	async create(
 		input: CreateLocalizadaIluminacionInput
 	): Promise<LocalizadaIluminacionType> {
+		await assertWritable(input.userId)
 		await initializeLocalizadasIluminacionTable()
 
 		const db = await getDatabase()

@@ -1,4 +1,5 @@
 import { randomUUID } from "expo-crypto"
+import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import {
 	CREATE_TECNICOS_TABLE,
@@ -51,6 +52,7 @@ async function initializeTecnicosTable() {
 
 export const tecnicoRepository = {
 	async create(input: CreateTecnicoInput): Promise<TecnicoType> {
+		await assertWritable(input.userId)
 		await initializeTecnicosTable()
 
 		const db = await getDatabase()

@@ -45,10 +45,11 @@ export default function Hero({
 			<Text
 				style={{
 					color: "#ddd",
-					fontSize: 32,
+					fontWeight: 600,
+					fontSize: 30,
 					textAlign: "center",
 					fontFamily: "system-ui",
-					letterSpacing: 1.5,
+					letterSpacing: 1.3,
 				}}
 			>
 				Selecciona tu nuevo informe.

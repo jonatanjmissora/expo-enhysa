@@ -5,8 +5,10 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import { theme } from "@/constants/theme"
 import { Pressable, View } from "react-native"
 import { randomUUID } from "expo-crypto"
+import { useDataLockGuard } from "@/src/session/use-data-lock"
 
 export default function TabLayout() {
+	const guardCreate = useDataLockGuard()
 	return (
 		<Tabs
 			screenOptions={{
@@ -40,14 +42,16 @@ export default function TabLayout() {
 					tabBarButton: () => (
 						<Pressable
 							accessibilityRole="button"
-							onPress={() => {
-								const id = randomUUID()
-								router.push({
-									pathname:
-										"/(informe)/iluminacion/[id]/CRUD/general/general-nuevo",
-									params: { id },
+							onPress={() =>
+								guardCreate(() => {
+									const id = randomUUID()
+									router.push({
+										pathname:
+											"/(informe)/iluminacion/[id]/CRUD/general/general-nuevo",
+										params: { id },
+									})
 								})
-							}}
+							}
 							style={{
 								flex: 1,
 								alignItems: "center",

@@ -5,6 +5,7 @@ import { theme } from "@/constants/theme"
 import { PLANS } from "@/constants"
 import { startCheckout } from "@/src/payments/checkout"
 import { useSession } from "@/src/session/session-context"
+import { isOffline, useIsOffline } from "@/src/utils/network"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
 import { ScrollView, Text, View } from "react-native"
@@ -18,10 +19,19 @@ export default function Checkout() {
 
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const offline = useIsOffline()
 
 	const handlePay = async () => {
 		if (!plan) return
 		setError(null)
+
+		if (await isOffline()) {
+			setError(
+				"No tenés conexión a internet. No se pueden comprar créditos estando offline. Conectate y volvé a intentar."
+			)
+			return
+		}
+
 		setLoading(true)
 		try {
 			await startCheckout(plan.id, activeUserId)
@@ -91,8 +101,15 @@ export default function Checkout() {
 						<Button
 							text={loading ? "Redirigiendo a MP..." : "Pagar con Mercado Pago"}
 							onPress={handlePay}
-							disabled={loading}
+							disabled={loading || offline}
 						/>
+
+						{offline && (
+							<Text style={{ color: theme.orange, textAlign: "center" }}>
+								No tenés conexión a internet. No se pueden comprar créditos
+								estando offline.
+							</Text>
+						)}
 
 						{error && (
 							<Text style={{ color: "#fc4444", textAlign: "center" }}>

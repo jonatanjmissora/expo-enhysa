@@ -6,6 +6,7 @@ import { useCredits } from "@/src/query/hooks/use-credits"
 import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { creditKeys } from "@/src/query/keys/credit.keys"
 import { useUserId } from "@/src/session/session-context"
+import { useIsOffline } from "@/src/utils/network"
 import { useQueryClient } from "@tanstack/react-query"
 import { usePathname, useRouter } from "expo-router"
 import { useEffect, useState } from "react"
@@ -147,6 +148,7 @@ function PdfPreview({
 	const [error, setError] = useState<string | null>(null)
 	const [generating, setGenerating] = useState(false)
 	const [unlocking, setUnlocking] = useState(false)
+	const offline = useIsOffline()
 
 	const isLoading =
 		isLoadingEmpresa ||
@@ -311,10 +313,16 @@ function PdfPreview({
 							unlocking ? "Desbloqueando..." : "Desbloquear PDF (1 crédito)"
 						}
 						size="small"
-						disabled={unlocking}
+						disabled={unlocking || offline}
 						onPress={handleUnlock}
 						style={{ width: 280 }}
 					/>
+					{offline && (
+						<Text style={{ color: theme.orange, textAlign: "center" }}>
+							No tenés conexión a internet. No se puede desbloquear el PDF
+							estando offline.
+						</Text>
+					)}
 				</View>
 			) : (
 				<View style={{ gap: 10, alignItems: "center" }}>

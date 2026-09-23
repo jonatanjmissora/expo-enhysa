@@ -1,0 +1,7 @@
+export const CREATE_USER_CREDITS_TABLE = `
+	CREATE TABLE IF NOT EXISTS user_credits (
+		userId TEXT PRIMARY KEY NOT NULL,
+		credits INTEGER NOT NULL DEFAULT 0,
+		updatedAt TEXT NOT NULL DEFAULT ''
+	);
+`

@@ -15,6 +15,7 @@ const DATA_TABLES = [
 	"tecnicos",
 	"empresas",
 	"instrumentos",
+	"images",
 ] as const
 
 export type AuthResult = {
@@ -43,6 +44,17 @@ async function migrateUserData(
 			)
 		}
 	})
+}
+
+/**
+ * Devuelve `true` si corresponde migrar los datos de `user-1` hacia el usuario
+ * que recién inició sesión: solo cuando el activo es `user-1` y todavía no hay
+ * ninguna cuenta registrada en el dispositivo (primera sesión).
+ */
+async function shouldMigrateLocal(): Promise<boolean> {
+	const activeUserId = await getUserId()
+	if (activeUserId !== LOCAL_USER_ID) return false
+	return !(await userRepository.hasAny())
 }
 
 export class RegisterError extends Error {
@@ -78,10 +90,10 @@ export async function register(
 	}
 
 	const passwordHash = await hashPassword(password)
+	const migrate = await shouldMigrateLocal()
 	const user = await userRepository.upsertFromCloud(response.user, passwordHash)
 
-	const activeUserId = await getUserId()
-	if (activeUserId === LOCAL_USER_ID) {
+	if (migrate) {
 		await migrateUserData(LOCAL_USER_ID, user.id)
 	}
 
@@ -89,12 +101,9 @@ export async function register(
 }
 
 export class LoginError extends Error {
-	readonly code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD" | "OFFLINE"
+	readonly code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD"
 
-	constructor(
-		code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD" | "OFFLINE",
-		message: string
-	) {
+	constructor(code: "EMAIL_NOT_FOUND" | "INVALID_PASSWORD", message: string) {
 		super(message)
 		this.name = "LoginError"
 		this.code = code
@@ -130,13 +139,18 @@ export async function login(
 		}
 
 		throw new LoginError(
-			"OFFLINE",
-			"Sin conexión. No pudimos validar tus credenciales locales."
+			"INVALID_PASSWORD",
+			"Credenciales incorrectas, vuelva a intentar"
 		)
 	}
 
 	const passwordHash = await hashPassword(password)
+	const migrate = await shouldMigrateLocal()
 	const user = await userRepository.upsertFromCloud(response.user, passwordHash)
+
+	if (migrate) {
+		await migrateUserData(LOCAL_USER_ID, user.id)
+	}
 
 	return { user, token: response.token, offline: false }
 }

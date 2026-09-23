@@ -5,6 +5,7 @@ import { theme } from "@/constants/theme"
 import { type EmpresaType } from "@/src/repositories/empresa.repository"
 import { type InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { TecnicoType } from "@/src/repositories/tecnico.repository"
+import { handleDataSaveError } from "@/src/auth/data-guard"
 import { useCreateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { useForm } from "@tanstack/react-form"
 import { router } from "expo-router"
@@ -57,9 +58,7 @@ export default function IluminacionGeneralFormContent({
 					params: { id: informeId },
 				})
 			} catch (e) {
-				setError(
-					e instanceof Error ? e.message : "No se pudo guardar el informe"
-				)
+				handleDataSaveError(e, setError)
 			}
 		},
 		onSubmitInvalid: () => {

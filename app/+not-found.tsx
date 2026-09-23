@@ -84,7 +84,8 @@ export default function NotFound() {
 						maxWidth: 320,
 					}}
 				>
-					Ha ocurrido un error inesperado y nos encontramos en un camino sin paisaje. Te recomiendo volver y comenzar de nuevo!!
+					Ha ocurrido un error inesperado y nos encontramos en una ruta sin
+					salida. Te recomiendo volver y comenzar de nuevo!!
 				</Text>
 
 				<Text
@@ -137,8 +138,6 @@ export default function NotFound() {
 						Ir al inicio
 					</Text>
 				</Pressable>
-
-				
 			</Animated.View>
 		</View>
 	)

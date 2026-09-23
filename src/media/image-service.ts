@@ -1,4 +1,5 @@
 import { randomUUID } from "expo-crypto"
+import { assertWritable } from "../auth/data-guard"
 import { imageRepository } from "../repositories/image.repository"
 import { normalizeImage } from "./image-normalizer"
 import {
@@ -37,6 +38,7 @@ export const imageService = {
 		sourceUri: string,
 		options: ImportImageOptions
 	): Promise<ImportedImage> {
+		await assertWritable(options.userId)
 		const normalized = await normalizeImage(sourceUri, {
 			width: options.width,
 			height: options.height,

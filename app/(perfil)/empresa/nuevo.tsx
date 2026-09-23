@@ -3,6 +3,7 @@ import ImagePicker from "@/components/ImagePicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
+import { handleDataSaveError } from "@/src/auth/data-guard"
 import { useCreateEmpresa } from "@/src/query/hooks/use-empresa"
 import type { CreateEmpresaInput } from "@/src/repositories/empresa.repository"
 import { useRouter } from "expo-router"
@@ -67,9 +68,7 @@ function EmpresaNuevoForm() {
 				} satisfies Omit<CreateEmpresaInput, "userId">)
 				router.dismissTo("/(inicio)/perfil?header=empresa")
 			} catch (e) {
-				setError(
-					e instanceof Error ? e.message : "No se pudo guardar la empresa"
-				)
+				handleDataSaveError(e, setError)
 			}
 		},
 		onSubmitInvalid: () => {

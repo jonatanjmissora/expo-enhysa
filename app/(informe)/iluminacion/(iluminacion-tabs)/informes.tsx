@@ -5,8 +5,10 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { randomUUID } from "expo-crypto"
 import { router } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
+import { useDataLockGuard } from "@/src/session/use-data-lock"
 
 export default function Informes() {
+	const guardCreate = useDataLockGuard()
 	return (
 		<ViewWithLogo>
 			<Button
@@ -46,14 +48,16 @@ export default function Informes() {
 					<Button
 						iconLeft="add-sharp"
 						text="Nuevo Informe"
-						onPress={() => {
-							const id = randomUUID()
-							router.push({
-								pathname:
-									"/(informe)/iluminacion/[id]/CRUD/general/general-nuevo",
-								params: { id },
+						onPress={() =>
+							guardCreate(() => {
+								const id = randomUUID()
+								router.push({
+									pathname:
+										"/(informe)/iluminacion/[id]/CRUD/general/general-nuevo",
+									params: { id },
+								})
 							})
-						}}
+						}
 						style={{
 							marginHorizontal: "auto",
 							marginVertical: 12,

@@ -5,6 +5,7 @@ import ImagePicker from "@/components/ImagePicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
+import { handleDataSaveError } from "@/src/auth/data-guard"
 import { useCreateInstrumento } from "@/src/query/hooks/use-instrumento"
 import type { CreateInstrumentoInput } from "@/src/repositories/instrumento.repository"
 import { useRouter } from "expo-router"
@@ -73,9 +74,7 @@ function InstrumentoNuevoForm() {
 				} satisfies Omit<CreateInstrumentoInput, "userId">)
 				router.dismissTo("/(inicio)/perfil?header=instrumento")
 			} catch (e) {
-				setError(
-					e instanceof Error ? e.message : "No se pudo guardar el instrumento"
-				)
+				handleDataSaveError(e, setError)
 			}
 		},
 		onSubmitInvalid: () => {

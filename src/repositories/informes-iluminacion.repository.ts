@@ -1,4 +1,5 @@
 import { randomUUID } from "expo-crypto"
+import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_INFORMES_ILUMINACION_TABLE } from "../db/schema/informes-iluminacion"
 import { imageService } from "../media/image-service"
@@ -70,6 +71,7 @@ export const informesIluminacionRepository = {
 	async create(
 		input: CreateInformesIluminacionInput
 	): Promise<InformesIluminacionType> {
+		await assertWritable(input.userId)
 		await initializeInformesIluminacionTable()
 
 		const db = await getDatabase()

@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useFocusEffect } from "expo-router"
 import { useCallback } from "react"
-import { apiGetCredits } from "@/src/api/client"
+import { ApiError, apiGetCredits } from "@/src/api/client"
+import { userCreditsRepository } from "@/src/repositories/user-credits.repository"
 import { useUserId } from "@/src/session/session-context"
 import { LOCAL_USER_ID } from "@/src/session/session.service"
 import { creditKeys } from "../keys/credit.keys"
@@ -11,6 +12,9 @@ import { creditKeys } from "../keys/credit.keys"
  * se pega a `GET /credits` y queda cacheado en memoria (React Query) para que
  * cualquier componente lo lea sin volver a consultar.
  *
+ * Además guarda el saldo en un espejo local de solo lectura: si no hay conexión
+ * (error de red), devuelve el último saldo conocido en vez de 0.
+ *
  * Sin comportamiento de foco: sirve para el sync global al arrancar/loguear.
  */
 export function useCreditsQuery() {
@@ -19,7 +23,18 @@ export function useCreditsQuery() {
 
 	return useQuery({
 		queryKey: creditKeys.byUserId(userId),
-		queryFn: () => apiGetCredits(userId).then(r => r.credits),
+		queryFn: async () => {
+			try {
+				const { credits } = await apiGetCredits(userId)
+				await userCreditsRepository.set(userId, credits)
+				return credits
+			} catch (e) {
+				// Error de servidor (401/500...): lo dejamos subir.
+				if (e instanceof ApiError) throw e
+				// Sin conexión: último saldo conocido.
+				return (await userCreditsRepository.get(userId)) ?? 0
+			}
+		},
 		enabled,
 	})
 }

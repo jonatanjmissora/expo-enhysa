@@ -18,8 +18,6 @@ export default function Index() {
 
 - sync con database
 
-- mercadopago  ( PRUEBA )
-
 - reanimated ?
 
 - iconos hero
@@ -28,12 +26,29 @@ export default function Index() {
 
 - mi primer informe
 
-- si el user-1 crea informe, y luego se quiere loguear para desbloquear informe, pero ya tenia cuenta en la nube, que hacemos?
--- o seguimos con lo que se guardo en user-1 y eliminamos nube.
--- o eliminamos lo que teniamos hecho y traemos de la nube.
-actualizo foto o nombre en local, no se sube a la nube
+en expo-go:
+- usuario nunca registrado (user-1), 
+       - cargo todos los datos con user-1, verificar las tablas locales. ✅
+       - verificar que la tabla users de local, este vacia.✅
 
-- si el usuario logueado tiene informes, y se desloguea, y con user-1 crea nuevos datos, cuando se loguea, que hacemos?
+- usuario registrado por primera vez, 
+       - check user id cambie de user-1 a userId de la nube en todas sus tablas locales.✅
+       - datos en perfil e informes existen de user-1. ✅
+       - verificar que la tabla users en local tenga usuario.✅
+
+- logout 
+       - verifico que no haya datos en perfil, ya que pasaron a userId de la nube. Verificar /debug/db.
+       - si intento guardar datos, me arroja cartel de que hay usuario registrado, que me loguee para utilizarlos.
+
+- login:
+       - offline, pruebo los mensajes de error
+       - online, pruebo los mensajes de error.
+
+- register con el mismo mail, checkear.
+- offline, register? ver que pasa.
+- credit cuando estoy offline, muestra el ultimo total que trajimos de la nube.
+
+- en la apk, probar los mismos pasos
 
 
 

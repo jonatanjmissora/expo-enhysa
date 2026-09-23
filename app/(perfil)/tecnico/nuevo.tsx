@@ -4,6 +4,7 @@ import FirmaPicker from "@/components/perfil/FirmaPicker"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
+import { handleDataSaveError } from "@/src/auth/data-guard"
 import { useCreateTecnico } from "@/src/query/hooks/use-tecnico"
 import type { CreateTecnicoInput } from "@/src/repositories/tecnico.repository"
 import { useRouter } from "expo-router"
@@ -72,9 +73,7 @@ function TecnicoNuevoForm() {
 				} satisfies Omit<CreateTecnicoInput, "userId">)
 				router.dismissTo("/(inicio)/perfil")
 			} catch (e) {
-				setError(
-					e instanceof Error ? e.message : "No se pudo guardar el técnico"
-				)
+				handleDataSaveError(e, setError)
 			}
 		},
 		onSubmitInvalid: () => {

@@ -2,6 +2,7 @@ import { getImageUri } from "@/src/media/image-storage"
 import Button from "@/components/Button"
 import { router } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
+import { useDataLockGuard } from "@/src/session/use-data-lock"
 import { theme } from "@/constants/theme"
 import { useEmpresas } from "@/src/query/hooks/use-empresa"
 import type { EmpresaType } from "@/src/repositories/empresa.repository"
@@ -9,6 +10,7 @@ import ImageViewer from "../ImageViewer"
 
 export default function Empresas() {
 	const { data: empresas, isLoading } = useEmpresas()
+	const guardCreate = useDataLockGuard()
 
 	if (isLoading) {
 		return (
@@ -35,12 +37,19 @@ export default function Empresas() {
 					gap: 22,
 				}}
 			>
-				<Text style={{ color: "#94a3b8", fontSize: 18, fontStyle: "italic" }}>
+				<Text
+					style={{
+						color: "#94a3b8",
+						fontSize: 16,
+						fontStyle: "italic",
+						textAlign: "center",
+					}}
+				>
 					Aún no tenés empresas cargadas.
 				</Text>
 				<Button
 					text="Crear empresa"
-					onPress={() => router.push("/empresa/nuevo")}
+					onPress={() => guardCreate(() => router.push("/empresa/nuevo"))}
 				/>
 			</View>
 		)
@@ -73,7 +82,7 @@ export default function Empresas() {
 				style={{
 					opacity: 0.75,
 				}}
-				onPress={() => router.push("/empresa/nuevo")}
+				onPress={() => guardCreate(() => router.push("/empresa/nuevo"))}
 			/>
 		</ScrollView>
 	)

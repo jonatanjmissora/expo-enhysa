@@ -5,9 +5,12 @@ import {
 	useEffect,
 	useState,
 } from "react"
+import { setOnUnauthorized } from "../api/client"
 import { signOut as authSignOut } from "../auth/auth.service"
 import { queryClient } from "../query/query-client"
+import { userRepository } from "../repositories/user.repository"
 import {
+	clearSession,
 	initSession,
 	LOCAL_USER_ID,
 	setSession as persistSession,
@@ -16,6 +19,10 @@ import {
 type SessionContextValue = {
 	activeUserId: string
 	isRegistered: boolean
+	/** ¿Hay al menos una cuenta registrada en este dispositivo? */
+	hasRegistered: boolean
+	/** `true` cuando no se pueden escribir datos (user-1 + cuenta registrada). */
+	dataLocked: boolean
 	setSession: (userId: string, token: string | null) => Promise<void>
 	signOut: () => Promise<void>
 }
@@ -24,17 +31,33 @@ const SessionContext = createContext<SessionContextValue | null>(null)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
 	const [activeUserId, setActiveUserIdState] = useState<string | null>(null)
+	const [hasRegistered, setHasRegistered] = useState(false)
 
 	useEffect(() => {
 		let active = true
-		initSession().then(id => {
-			if (active) {
-				setActiveUserIdState(id)
-			}
-		})
+		;(async () => {
+			const id = await initSession()
+			const hasAny = await userRepository.hasAny()
+			if (!active) return
+			setActiveUserIdState(id)
+			setHasRegistered(hasAny)
+		})()
 		return () => {
 			active = false
 		}
+	}, [])
+
+	// Si un endpoint con sesión responde 401, la sesión expiró: volvemos a
+	// `user-1` (sin llamar a la API, para no entrar en loop).
+	useEffect(() => {
+		setOnUnauthorized(() => {
+			void (async () => {
+				await clearSession()
+				queryClient.clear()
+				setActiveUserIdState(LOCAL_USER_ID)
+			})()
+		})
+		return () => setOnUnauthorized(null)
 	}, [])
 
 	if (activeUserId === null) {
@@ -45,12 +68,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 		await persistSession(userId, token)
 		queryClient.clear()
 		setActiveUserIdState(userId)
+		setHasRegistered(await userRepository.hasAny())
 	}
 
 	const signOut = async () => {
 		await authSignOut()
 		queryClient.clear()
 		setActiveUserIdState(LOCAL_USER_ID)
+		setHasRegistered(await userRepository.hasAny())
 	}
 
 	return (
@@ -58,6 +83,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 			value={{
 				activeUserId,
 				isRegistered: activeUserId !== LOCAL_USER_ID,
+				hasRegistered,
+				dataLocked: activeUserId === LOCAL_USER_ID && hasRegistered,
 				setSession,
 				signOut,
 			}}

@@ -7,6 +7,7 @@ import { CREATE_INFORMES_ILUMINACION_TABLE } from "./schema/informes-iluminacion
 import { CREATE_AREAS_ILUMINACION_TABLE } from "./schema/areas-iluminacion"
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "./schema/localizadas-iluminacion"
 import { CREATE_IMAGES_TABLE } from "./schema/images"
+import { CREATE_USER_CREDITS_TABLE } from "./schema/user-credits"
 
 const DATABASE_NAME = "app.db"
 
@@ -111,6 +112,7 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await database.execAsync(CREATE_AREAS_ILUMINACION_TABLE)
 	await database.execAsync(CREATE_LOCALIZADAS_ILUMINACION_TABLE)
 	await database.execAsync(CREATE_IMAGES_TABLE)
+	await database.execAsync(CREATE_USER_CREDITS_TABLE)
 
 	await ensureUpdatedAtColumn(database, "informes_iluminacion")
 	await ensureUpdatedAtColumn(database, "areas_iluminacion")

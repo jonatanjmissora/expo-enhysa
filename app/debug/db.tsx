@@ -7,6 +7,7 @@ import { CREATE_AREAS_ILUMINACION_TABLE } from "@/src/db/schema/areas-iluminacio
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "@/src/db/schema/localizadas-iluminacion"
 import { CREATE_USERS_TABLE } from "@/src/db/schema/users"
 import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
+import { CREATE_USER_CREDITS_TABLE } from "@/src/db/schema/user-credits"
 import { apiHealth } from "@/src/api/client"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
@@ -35,6 +36,7 @@ const TABLE_NAMES = [
 	"areas_iluminacion",
 	"localizadas_iluminacion",
 	"images",
+	"user_credits",
 ]
 
 const PRIMARY_KEYS: Record<string, string> = {
@@ -46,6 +48,7 @@ const PRIMARY_KEYS: Record<string, string> = {
 	areas_iluminacion: "id",
 	localizadas_iluminacion: "id",
 	images: "id",
+	user_credits: "userId",
 }
 
 const TABLE_SCHEMAS: Record<string, string> = {
@@ -57,6 +60,7 @@ const TABLE_SCHEMAS: Record<string, string> = {
 	areas_iluminacion: CREATE_AREAS_ILUMINACION_TABLE,
 	localizadas_iluminacion: CREATE_LOCALIZADAS_ILUMINACION_TABLE,
 	images: CREATE_IMAGES_TABLE,
+	user_credits: CREATE_USER_CREDITS_TABLE,
 }
 
 export default function DebugDB() {
@@ -197,7 +201,7 @@ export default function DebugDB() {
 	)
 
 	return (
-		<ScrollView style={container} contentContainerStyle={{ marginBottom: 100 }}>
+		<ScrollView style={container} contentContainerStyle={{ paddingBottom: 150 }}>
 			<Text style={title}>SQLite Debug</Text>
 			<Text style={subtitle}>
 				{tables.length} tablas ·{" "}

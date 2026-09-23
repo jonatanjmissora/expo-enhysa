@@ -1,3 +1,4 @@
+import { handleDataSaveError } from "@/src/auth/data-guard"
 import { imageService } from "@/src/media/image-service"
 import { getImageUri } from "@/src/media/image-storage"
 import { View, Text, ScrollView, TextInput, Pressable } from "react-native"
@@ -57,9 +58,7 @@ export default function IluminacionShowLocalizadaNuevoContent() {
 					},
 				})
 			} catch (e) {
-				setError(
-					e instanceof Error ? e.message : "No se pudo crear la localizada"
-				)
+				handleDataSaveError(e, setError)
 			}
 		},
 		onSubmitInvalid: () => {

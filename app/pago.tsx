@@ -41,6 +41,18 @@ export default function Pago() {
 
 	return (
 		<ViewWithLogo>
+			<Button
+				variant="ghost"
+				iconLeft="chevron-back"
+				text="Volver"
+				style={{
+					alignSelf: "flex-start",
+					paddingHorizontal: 20,
+					opacity: 0.85,
+					padding: 4,
+				}}
+				onPress={() => router.back()}
+			/>
 			<View
 				style={{
 					flex: 1,

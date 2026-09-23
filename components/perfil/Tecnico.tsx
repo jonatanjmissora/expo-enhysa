@@ -6,6 +6,7 @@ import type { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 import { Text, View } from "react-native"
+import { useDataLockGuard } from "@/src/session/use-data-lock"
 import ImageViewer from "../ImageViewer"
 import ModalDeleteConfirm from "../ModalDeleteConfirm"
 import PictureNotFound from "../PictureNotFound"
@@ -22,6 +23,7 @@ const FIELDS = [
 export default function Tecnico() {
 	const { data: tecnico, isLoading } = useTecnico()
 	const router = useRouter()
+	const guardCreate = useDataLockGuard()
 
 	if (isLoading) {
 		return (
@@ -47,12 +49,19 @@ export default function Tecnico() {
 					gap: 22,
 				}}
 			>
-				<Text style={{ color: "#94a3b8", fontSize: 18, fontStyle: "italic" }}>
+				<Text
+					style={{
+						color: "#94a3b8",
+						fontSize: 16,
+						fontStyle: "italic",
+						textAlign: "center",
+					}}
+				>
 					Aún no tenés un técnico cargado.
 				</Text>
 				<Button
 					text="Crear técnico"
-					onPress={() => router.push("/tecnico/nuevo")}
+					onPress={() => guardCreate(() => router.push("/tecnico/nuevo"))}
 				/>
 			</View>
 		)

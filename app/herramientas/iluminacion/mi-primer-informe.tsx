@@ -14,6 +14,7 @@ import perfilEmpresa from "../../../assets/images/empresa.webp"
 import perfilInstrumento from "../../../assets/images/instrumento.webp"
 import informes2 from "../../../assets/images/informes2.webp"
 import general from "../../../assets/images/general.webp"
+import medicion from "../../../assets/images/medicion.webp"
 import { theme } from "@/constants/theme"
 import Header from "@/components/Header"
 import { Ionicons } from "@expo/vector-icons"
@@ -71,6 +72,7 @@ export default function MiPrimerInforme() {
 				</Text>
 
 				<ImageViewerContainer imgSource={inicio} />
+
 				<Text style={styles.textStyle}>
 					En perfil completaremos los formularios y adjuntaremos las imagenes
 					correspondientes.
@@ -86,6 +88,7 @@ export default function MiPrimerInforme() {
 					<ImageViewerContainer imgSource={perfilEmpresa} />
 					<ImageViewerContainer imgSource={perfilInstrumento} />
 				</View>
+
 				<Text style={styles.textStyle}>
 					Volvemos a inicio con la barra inferior{" "}
 					<Ionicons name="home-outline" size={14} color={theme.orange} />
@@ -100,6 +103,7 @@ export default function MiPrimerInforme() {
 					de la pantalla principal.
 				</Text>
 				<ImageViewerContainer imgSource={inicio} />
+
 				<View
 					style={{
 						flexDirection: "row",
@@ -143,13 +147,14 @@ export default function MiPrimerInforme() {
 						para realizar nuestro primer informe de iluminacion.
 					</Text>
 				</View>
-
 				<ImageViewerContainer imgSource={informes2} />
+
 				<Text style={styles.textStyle}>
 					Los formularios estan divididos en 3 secciones importantes:
 					Informacion "General", seccion "Mediciones" y "Conclusiones" finales
 					del informe.
 				</Text>
+
 				<ImageViewerContainer imgSource={general} />
 				<Text style={styles.textStyle}>
 					<Text
@@ -163,9 +168,11 @@ export default function MiPrimerInforme() {
 					</Text>{" "}
 					seleccionaremos una empresa e instrumentos de entre los que hayamos
 					cargado previamente en nuestro Perfil. Ademas de ciertos datos
-					relacionados al informe, como ser condiciones climaticas del dia de la
-					medicion.
+					relacionados al informe, como ser condiciones climaticas en el dia de
+					la medicion.
 				</Text>
+
+				<ImageViewerContainer imgSource={medicion} />
 			</ScrollView>
 		</View>
 	)

@@ -8,6 +8,13 @@ export function setApiSessionToken(token: string | null) {
 	sessionToken = token
 }
 
+let onUnauthorized: (() => void) | null = null
+
+/** La capa de sesión registra qué hacer ante un 401 (sesión expirada). */
+export function setOnUnauthorized(handler: (() => void) | null) {
+	onUnauthorized = handler
+}
+
 export class ApiError extends Error {
 	readonly status: number
 	readonly code: string | null
@@ -28,6 +35,8 @@ export async function apiFetch<T>(
 		throw new Error("Falta EXPO_PUBLIC_API_URL")
 	}
 
+	const requestHadSession = Boolean(sessionToken)
+
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${API_TOKEN}`,
@@ -40,6 +49,9 @@ export async function apiFetch<T>(
 	const response = await fetch(`${API_URL}${path}`, { ...options, headers })
 
 	if (!response.ok) {
+		if (response.status === 401 && requestHadSession) {
+			onUnauthorized?.()
+		}
 		const text = await response.text().catch(() => "")
 		let code: string | null = null
 		try {

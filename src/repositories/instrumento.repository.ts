@@ -1,4 +1,5 @@
 import { randomUUID } from "expo-crypto"
+import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_INSTRUMENTOS_TABLE } from "../db/schema/instrumentos"
 
@@ -32,6 +33,7 @@ async function initializeInstrumentosTable() {
 
 export const instrumentoRepository = {
 	async create(input: CreateInstrumentoInput): Promise<InstrumentoType> {
+		await assertWritable(input.userId)
 		await initializeInstrumentosTable()
 
 		const db = await getDatabase()

@@ -5,10 +5,12 @@ import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
 import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { router } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
+import { useDataLockGuard } from "@/src/session/use-data-lock"
 import ImageViewer from "../ImageViewer"
 
 export default function Instrumentos() {
 	const { data: instrumentos, isLoading } = useInstrumentos()
+	const guardCreate = useDataLockGuard()
 
 	if (isLoading) {
 		return (
@@ -35,12 +37,19 @@ export default function Instrumentos() {
 					gap: 22,
 				}}
 			>
-				<Text style={{ color: "#94a3b8", fontSize: 18, fontStyle: "italic" }}>
+				<Text
+					style={{
+						color: "#94a3b8",
+						fontSize: 16,
+						fontStyle: "italic",
+						textAlign: "center",
+					}}
+				>
 					Aún no tenés instrumentos cargados.
 				</Text>
 				<Button
 					text="Crear instrumento"
-					onPress={() => router.push("/instrumento/nuevo")}
+					onPress={() => guardCreate(() => router.push("/instrumento/nuevo"))}
 				/>
 			</View>
 		)
@@ -75,7 +84,7 @@ export default function Instrumentos() {
 				style={{
 					opacity: 0.75,
 				}}
-				onPress={() => router.push("/instrumento/nuevo")}
+				onPress={() => guardCreate(() => router.push("/instrumento/nuevo"))}
 			/>
 		</ScrollView>
 	)

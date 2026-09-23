@@ -1,4 +1,5 @@
 import { randomUUID } from "expo-crypto"
+import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_EMPRESAS_TABLE } from "../db/schema/empresas"
 
@@ -34,6 +35,7 @@ async function initializeEmpresasTable() {
 
 export const empresaRepository = {
 	async create(input: CreateEmpresaInput): Promise<EmpresaType> {
+		await assertWritable(input.userId)
 		await initializeEmpresasTable()
 
 		const db = await getDatabase()

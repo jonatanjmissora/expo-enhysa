@@ -110,6 +110,18 @@ export const userRepository = {
 		return user ?? null
 	},
 
+	/** ¿Existe al menos un usuario registrado en este dispositivo? */
+	async hasAny(): Promise<boolean> {
+		await initializeUsersTable()
+
+		const db = await getDatabase()
+		const row = await db.getFirstAsync<{ cnt: number }>(
+			`SELECT COUNT(*) AS cnt FROM users`
+		)
+
+		return (row?.cnt ?? 0) > 0
+	},
+
 	async update(id: string, input: UpdateUserInput): Promise<UserType> {
 		await initializeUsersTable()
 
