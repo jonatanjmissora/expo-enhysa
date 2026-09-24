@@ -13,7 +13,7 @@ import { ScrollView, Text, View } from "react-native"
 export default function Checkout() {
 	const { plan: planParam } = useLocalSearchParams<{ plan: string }>()
 	const router = useRouter()
-	const { activeUserId, isRegistered } = useSession()
+	const { isRegistered } = useSession()
 
 	const plan = PLANS.find(p => p.id === planParam)
 
@@ -34,7 +34,7 @@ export default function Checkout() {
 
 		setLoading(true)
 		try {
-			await startCheckout(plan.id, activeUserId)
+			await startCheckout(plan.id)
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "No se pudo iniciar el pago")
 		} finally {

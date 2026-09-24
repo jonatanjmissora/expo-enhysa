@@ -139,19 +139,16 @@ export type CreditsResponse = {
 }
 
 export function apiCreatePreference(
-	planId: string,
-	userId: string
+	planId: string
 ): Promise<PreferenceResponse> {
 	return apiFetch<PreferenceResponse>("/preference", {
 		method: "POST",
-		body: JSON.stringify({ planId, userId }),
+		body: JSON.stringify({ planId }),
 	})
 }
 
-export function apiGetCredits(userId: string): Promise<CreditsResponse> {
-	return apiFetch<CreditsResponse>(
-		`/credits?userId=${encodeURIComponent(userId)}`
-	)
+export function apiGetCredits(): Promise<CreditsResponse> {
+	return apiFetch<CreditsResponse>("/credits")
 }
 
 export type CreditHistoryEntry = {
@@ -182,11 +179,10 @@ export type ConsumeCreditResponse = {
 }
 
 export function apiConsumeCredit(
-	userId: string,
 	reportId: string
 ): Promise<ConsumeCreditResponse> {
 	return apiFetch<ConsumeCreditResponse>("/consume", {
 		method: "POST",
-		body: JSON.stringify({ userId, reportId }),
+		body: JSON.stringify({ reportId }),
 	})
 }

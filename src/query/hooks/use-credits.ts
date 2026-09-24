@@ -25,7 +25,7 @@ export function useCreditsQuery() {
 		queryKey: creditKeys.byUserId(userId),
 		queryFn: async () => {
 			try {
-				const { credits } = await apiGetCredits(userId)
+				const { credits } = await apiGetCredits()
 				await userCreditsRepository.set(userId, credits)
 				return credits
 			} catch (e) {

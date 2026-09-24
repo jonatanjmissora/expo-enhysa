@@ -24,7 +24,7 @@ export default function Index() {
 
 - alquiler
 
-- mi primer informe
+- desbloquear pdf
 
 en expo-go:
 - usuario nunca registrado (user-1), 
@@ -50,6 +50,15 @@ en expo-go:
 - credit cuando estoy offline, muestra el ultimo total que trajimos de la nube.
 
 - en la apk, probar los mismos pasos
+
+- dni para recordar si cambias credenciales.
+
+- pdf para el navegador?
+
+- datos de prueba para generar pdf? en user-1 o video explicativo
+
+- preguntas frecuentes, tengo repetida lo de offline
+
 
 
 

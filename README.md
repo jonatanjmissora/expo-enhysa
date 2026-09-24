@@ -26,6 +26,10 @@
       pnpm exec biome check "app/(informe)/iluminacion/[id]/(informe-tabs)/_layout.tsx"
 
 
+# eliminar worktree de kilo
+
+      git worktree remove .kilo/worktrees/<nombre> --force
+
 
 # Welcome to your Expo app 👋
 

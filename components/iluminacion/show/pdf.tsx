@@ -5,7 +5,6 @@ import { apiConsumeCredit } from "@/src/api/client"
 import { useCredits } from "@/src/query/hooks/use-credits"
 import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { creditKeys } from "@/src/query/keys/credit.keys"
-import { useUserId } from "@/src/session/session-context"
 import { useIsOffline } from "@/src/utils/network"
 import { useQueryClient } from "@tanstack/react-query"
 import { usePathname, useRouter } from "expo-router"
@@ -127,7 +126,6 @@ function PdfPreview({
 	const router = useRouter()
 	const pathname = usePathname()
 	const qc = useQueryClient()
-	const userId = useUserId()
 	const { data: credits } = useCredits()
 	const updateInforme = useUpdateInformeIluminacion()
 	const { data: empresa, isLoading: isLoadingEmpresa } = useEmpresaById(
@@ -233,7 +231,7 @@ function PdfPreview({
 	const handleUnlock = async () => {
 		setUnlocking(true)
 		try {
-			await apiConsumeCredit(userId, informe.id)
+			await apiConsumeCredit(informe.id)
 			await updateInforme.mutateAsync({
 				id: informe.id,
 				input: {
