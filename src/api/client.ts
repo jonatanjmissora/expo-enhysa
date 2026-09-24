@@ -115,6 +115,16 @@ export function apiMe(): Promise<{ user: CloudUser }> {
 	return apiFetch<{ user: CloudUser }>("/me")
 }
 
+export function apiUpdateMe(input: {
+	name: string | null
+	userImage: string | null
+}): Promise<{ user: CloudUser }> {
+	return apiFetch<{ user: CloudUser }>("/me", {
+		method: "PATCH",
+		body: JSON.stringify(input),
+	})
+}
+
 export function apiLogout(): Promise<{ ok: boolean }> {
 	return apiFetch<{ ok: boolean }>("/logout", { method: "POST" })
 }

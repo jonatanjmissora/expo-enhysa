@@ -157,6 +157,9 @@ export default function Login() {
 								params: fromParam ? { from: fromParam } : undefined,
 							})
 						}
+						textStyle={{
+							textDecorationLine: "underline",
+						}}
 					/>
 				</View>
 			</ScrollView>

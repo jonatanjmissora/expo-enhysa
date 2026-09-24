@@ -5,8 +5,11 @@ import Button from "../Button"
 import InformesList from "./InformesList"
 import { router } from "expo-router"
 import { randomUUID } from "expo-crypto"
+import { useDataLockGuard } from "@/src/session/use-data-lock"
 
 export default function Recientes() {
+	const guardCreate = useDataLockGuard()
+
 	return (
 		<View
 			style={{
@@ -46,11 +49,13 @@ export default function Recientes() {
 					iconLeft="add-sharp"
 					text="Nuevo Informe"
 					onPress={() => {
-						const id = randomUUID()
-						router.push({
-							pathname:
-								"/(informe)/iluminacion/[id]/CRUD/general/general-nuevo",
-							params: { id },
+						guardCreate(() => {
+							const id = randomUUID()
+							router.push({
+								pathname:
+									"/(informe)/iluminacion/[id]/CRUD/general/general-nuevo",
+								params: { id },
+							})
 						})
 					}}
 					style={{

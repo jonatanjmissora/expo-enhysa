@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { updateUserCloud } from "@/src/auth/auth.service"
 import {
 	type UpdateUserInput,
 	userRepository,
@@ -18,8 +19,17 @@ export function useActiveUser() {
 export function useUpdateUser() {
 	const qc = useQueryClient()
 	return useMutation({
-		mutationFn: ({ id, input }: { id: string; input: UpdateUserInput }) =>
-			userRepository.update(id, input),
+		mutationFn: async ({
+			id,
+			input,
+		}: {
+			id: string
+			input: UpdateUserInput
+		}) => {
+			const user = await userRepository.update(id, input)
+			await updateUserCloud({ name: user.name, userImage: user.userImage })
+			return user
+		},
 		onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
 	})
 }

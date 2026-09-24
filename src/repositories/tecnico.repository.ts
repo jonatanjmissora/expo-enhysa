@@ -18,6 +18,7 @@ export type TecnicoType = {
 	empresaLogo: string | null
 	dni: number | null
 	userId: string
+	updatedAt: string
 }
 
 export type CreateTecnicoInput = {
@@ -58,6 +59,7 @@ export const tecnicoRepository = {
 		const db = await getDatabase()
 
 		const id = randomUUID()
+		const updatedAt = new Date().toISOString()
 
 		await db.runAsync(
 			`
@@ -72,9 +74,10 @@ export const tecnicoRepository = {
 					firmaImg,
 					empresaLogo,
 					dni,
-					userId
+					userId,
+					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.nombre,
@@ -86,7 +89,8 @@ export const tecnicoRepository = {
 			input.firmaImg,
 			input.empresaLogo ?? null,
 			input.dni ?? null,
-			input.userId
+			input.userId,
+			updatedAt
 		)
 
 		const tecnico = await db.getFirstAsync<TecnicoType>(
@@ -102,7 +106,8 @@ export const tecnicoRepository = {
 					firmaImg,
 					empresaLogo,
 					dni,
-					userId
+					userId,
+					updatedAt
 				FROM tecnicos
 				WHERE id = ?
 			`,
@@ -134,7 +139,8 @@ export const tecnicoRepository = {
 					firmaImg,
 					empresaLogo,
 					dni,
-					userId
+					userId,
+					updatedAt
 				FROM tecnicos
 				WHERE id = ?
 			`,
@@ -162,7 +168,8 @@ export const tecnicoRepository = {
 					firmaImg,
 					empresaLogo,
 					dni,
-					userId
+					userId,
+					updatedAt
 				FROM tecnicos
 				WHERE userId = ?
 				LIMIT 1
@@ -203,6 +210,7 @@ export const tecnicoRepository = {
 			empresaLogo: input.empresaLogo ?? existing.empresaLogo,
 			dni: input.dni ?? existing.dni,
 			userId: input.userId ?? existing.userId,
+			updatedAt: new Date().toISOString(),
 		}
 
 		await db.runAsync(
@@ -217,7 +225,8 @@ export const tecnicoRepository = {
 					firmaImg = ?,
 					empresaLogo = ?,
 					dni = ?,
-					userId = ?
+					userId = ?,
+					updatedAt = ?
 				WHERE id = ?
 			`,
 			tecnico.nombre,
@@ -230,6 +239,7 @@ export const tecnicoRepository = {
 			tecnico.empresaLogo ?? null,
 			tecnico.dni ?? null,
 			tecnico.userId,
+			tecnico.updatedAt,
 			id
 		)
 

@@ -45,7 +45,7 @@ export default function Checkout() {
 	return (
 		<ViewWithLogo>
 			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 }}>
-				<VolverBtn title="Orden de Compra" href="/(inicio)/suscripcion" />
+				<VolverBtn title="Orden de Compra" href="/" />
 
 				{!plan ? (
 					<View style={{ alignItems: "center", gap: 16, marginTop: 60 }}>

@@ -5,6 +5,7 @@ import { theme } from "@/constants/theme"
 import { type AuthResult, register } from "@/src/auth/auth.service"
 import { defaultRegister, registerFormValidator } from "@/src/db/schema/users"
 import { useSession } from "@/src/session/session-context"
+import { useOnlineGuard } from "@/src/utils/network"
 import { useForm } from "@tanstack/react-form"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
@@ -36,6 +37,7 @@ export default function Register() {
 	const { from } = useLocalSearchParams<{ from?: string }>()
 	const { setSession } = useSession()
 	const [error, setError] = useState<string | null>(null)
+	const checkOnline = useOnlineGuard()
 
 	const fromParam = Array.isArray(from) ? from[0] : from
 
@@ -56,6 +58,12 @@ export default function Register() {
 		validators: { onSubmit: registerFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
+			if (
+				!(await checkOnline(
+					"No se puede registrar una cuenta estando offline."
+				))
+			)
+				return
 			let result: AuthResult
 			try {
 				result = await register(value.email, value.password)
@@ -157,6 +165,7 @@ export default function Register() {
 								params: fromParam ? { from: fromParam } : undefined,
 							})
 						}
+						textStyle={{ textDecorationLine: "underline" }}
 					/>
 				</View>
 			</ScrollView>

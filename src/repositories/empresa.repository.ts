@@ -14,6 +14,7 @@ export type EmpresaType = {
 	horarios: string
 	logo: string
 	userId: string
+	updatedAt: string
 }
 
 export type CreateEmpresaInput = {
@@ -41,6 +42,7 @@ export const empresaRepository = {
 		const db = await getDatabase()
 
 		const id = randomUUID()
+		const updatedAt = new Date().toISOString()
 
 		await db.runAsync(
 			`
@@ -54,9 +56,10 @@ export const empresaRepository = {
 					codigoPostal,
 					horarios,
 					logo,
-					userId
+					userId,
+					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.cuit,
@@ -67,7 +70,8 @@ export const empresaRepository = {
 			input.codigoPostal,
 			input.horarios,
 			input.logo,
-			input.userId
+			input.userId,
+			updatedAt
 		)
 
 		const empresa = await db.getFirstAsync<EmpresaType>(
@@ -82,7 +86,8 @@ export const empresaRepository = {
 					codigoPostal,
 					horarios,
 					logo,
-					userId
+					userId,
+					updatedAt
 				FROM empresas
 				WHERE id = ?
 			`,
@@ -113,7 +118,8 @@ export const empresaRepository = {
 					codigoPostal,
 					horarios,
 					logo,
-					userId
+					userId,
+					updatedAt
 				FROM empresas
 				WHERE id = ?
 			`,
@@ -140,7 +146,8 @@ export const empresaRepository = {
 					codigoPostal,
 					horarios,
 					logo,
-					userId
+					userId,
+					updatedAt
 				FROM empresas
 				WHERE userId = ?
 				LIMIT 1
@@ -168,7 +175,8 @@ export const empresaRepository = {
 					codigoPostal,
 					horarios,
 					logo,
-					userId
+					userId,
+					updatedAt
 				FROM empresas
 				WHERE userId = ?
 			`,
@@ -197,6 +205,7 @@ export const empresaRepository = {
 		const empresa = {
 			...existing,
 			...input,
+			updatedAt: new Date().toISOString(),
 		}
 
 		await db.runAsync(
@@ -210,7 +219,8 @@ export const empresaRepository = {
 					codigoPostal = ?,
 					horarios = ?,
 					logo = ?,
-					userId = ?
+					userId = ?,
+					updatedAt = ?
 				WHERE id = ?
 			`,
 			empresa.cuit,
@@ -222,6 +232,7 @@ export const empresaRepository = {
 			empresa.horarios,
 			empresa.logo,
 			empresa.userId,
+			empresa.updatedAt,
 			id
 		)
 

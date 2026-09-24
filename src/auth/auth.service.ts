@@ -1,5 +1,12 @@
-import { ApiError, apiLogin, apiLogout, apiRegister } from "../api/client"
+import {
+	ApiError,
+	apiLogin,
+	apiLogout,
+	apiRegister,
+	apiUpdateMe,
+} from "../api/client"
 import { getDatabase } from "../db/client"
+import { deleteImage as deleteImageFile } from "../media/image-storage"
 import { type UserType, userRepository } from "../repositories/user.repository"
 import {
 	clearSession,
@@ -57,6 +64,26 @@ async function shouldMigrateLocal(): Promise<boolean> {
 	return !(await userRepository.hasAny())
 }
 
+/** Elimina datos huérfanos de `user-1` una vez que hay cuenta registrada. */
+async function cleanupUser1Data(): Promise<void> {
+	const db = await getDatabase()
+
+	const orphanImages = await db.getAllAsync<{ id: string }>(
+		`SELECT id FROM images WHERE userId = ?`,
+		LOCAL_USER_ID
+	)
+
+	await db.withTransactionAsync(async () => {
+		for (const table of DATA_TABLES) {
+			await db.runAsync(`DELETE FROM ${table} WHERE userId = ?`, LOCAL_USER_ID)
+		}
+	})
+
+	for (const { id } of orphanImages) {
+		deleteImageFile(id)
+	}
+}
+
 export class RegisterError extends Error {
 	readonly code: "EMAIL_EXISTS"
 
@@ -96,6 +123,7 @@ export async function register(
 	if (migrate) {
 		await migrateUserData(LOCAL_USER_ID, user.id)
 	}
+	await cleanupUser1Data()
 
 	return { user, token: response.token, offline: false }
 }
@@ -151,6 +179,7 @@ export async function login(
 	if (migrate) {
 		await migrateUserData(LOCAL_USER_ID, user.id)
 	}
+	await cleanupUser1Data()
 
 	return { user, token: response.token, offline: false }
 }
@@ -182,4 +211,16 @@ export async function signOut(): Promise<void> {
 		// Si falla la red igual limpiamos la sesión local.
 	}
 	await clearSession()
+}
+
+/** Sincroniza nombre/imagen del usuario con la nube (best-effort). */
+export async function updateUserCloud(input: {
+	name: string | null
+	userImage: string | null
+}): Promise<void> {
+	try {
+		await apiUpdateMe(input)
+	} catch {
+		// Sin conexión: queda pendiente; no bloquea el guardado local.
+	}
 }

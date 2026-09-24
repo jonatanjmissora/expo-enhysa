@@ -13,6 +13,7 @@ export type InstrumentoType = {
 	imagenesCalibracion: string
 	imagenes: string
 	userId: string
+	updatedAt: string
 }
 
 export type CreateInstrumentoInput = {
@@ -39,6 +40,7 @@ export const instrumentoRepository = {
 		const db = await getDatabase()
 
 		const id = randomUUID()
+		const updatedAt = new Date().toISOString()
 
 		await db.runAsync(
 			`
@@ -51,9 +53,10 @@ export const instrumentoRepository = {
 					fechaCalibracion,
 					imagenesCalibracion,
 					imagenes,
-					userId
+					userId,
+					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.nombre,
@@ -63,7 +66,8 @@ export const instrumentoRepository = {
 			input.fechaCalibracion,
 			input.imagenesCalibracion,
 			input.imagenes,
-			input.userId
+			input.userId,
+			updatedAt
 		)
 
 		const instrumento = await db.getFirstAsync<InstrumentoType>(
@@ -77,7 +81,8 @@ export const instrumentoRepository = {
 					fechaCalibracion,
 					imagenesCalibracion,
 					imagenes,
-					userId
+					userId,
+					updatedAt
 				FROM instrumentos
 				WHERE id = ?
 			`,
@@ -107,7 +112,8 @@ export const instrumentoRepository = {
 					fechaCalibracion,
 					imagenesCalibracion,
 					imagenes,
-					userId
+					userId,
+					updatedAt
 				FROM instrumentos
 				WHERE id = ?
 			`,
@@ -133,7 +139,8 @@ export const instrumentoRepository = {
 					fechaCalibracion,
 					imagenesCalibracion,
 					imagenes,
-					userId
+					userId,
+					updatedAt
 				FROM instrumentos
 				WHERE userId = ?
 				LIMIT 1
@@ -160,7 +167,8 @@ export const instrumentoRepository = {
 					fechaCalibracion,
 					imagenesCalibracion,
 					imagenes,
-					userId
+					userId,
+					updatedAt
 				FROM instrumentos
 				WHERE userId = ?
 			`,
@@ -189,6 +197,7 @@ export const instrumentoRepository = {
 		const instrumento = {
 			...existing,
 			...input,
+			updatedAt: new Date().toISOString(),
 		}
 
 		await db.runAsync(
@@ -201,7 +210,8 @@ export const instrumentoRepository = {
 					fechaCalibracion = ?,
 					imagenesCalibracion = ?,
 					imagenes = ?,
-					userId = ?
+					userId = ?,
+					updatedAt = ?
 				WHERE id = ?
 			`,
 			instrumento.nombre,
@@ -212,6 +222,7 @@ export const instrumentoRepository = {
 			instrumento.imagenesCalibracion,
 			instrumento.imagenes,
 			instrumento.userId,
+			instrumento.updatedAt,
 			id
 		)
 

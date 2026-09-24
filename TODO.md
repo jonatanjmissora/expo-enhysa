@@ -37,15 +37,16 @@ en expo-go:
        - verificar que la tabla users en local tenga usuario.✅
 
 - logout 
-       - verifico que no haya datos en perfil, ya que pasaron a userId de la nube. Verificar /debug/db.
-       - si intento guardar datos, me arroja cartel de que hay usuario registrado, que me loguee para utilizarlos.
+       - verifico que no haya datos en perfil, ya que pasaron a userId de la nube. Verificar /debug/db.✅
+       - si intento guardar datos, me arroja cartel de que hay usuario registrado, que me loguee para utilizarlos.✅
 
 - login:
-       - offline, pruebo los mensajes de error
-       - online, pruebo los mensajes de error.
+       - offline, pruebo los mensajes de error✅
+       - online, pruebo los mensajes de error.✅
 
-- register con el mismo mail, checkear.
-- offline, register? ver que pasa.
+- register con el mismo mail, checkear.✅
+- offline, register.✅ 
+
 - credit cuando estoy offline, muestra el ultimo total que trajimos de la nube.
 
 - en la apk, probar los mismos pasos
