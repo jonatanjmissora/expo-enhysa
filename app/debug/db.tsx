@@ -8,6 +8,7 @@ import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "@/src/db/schema/localizada
 import { CREATE_USERS_TABLE } from "@/src/db/schema/users"
 import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
 import { CREATE_USER_CREDITS_TABLE } from "@/src/db/schema/user-credits"
+import { CREATE_SYNC_QUEUE_TABLE } from "@/src/db/schema/sync-queue"
 import { apiHealth } from "@/src/api/client"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
@@ -37,6 +38,7 @@ const TABLE_NAMES = [
 	"localizadas_iluminacion",
 	"images",
 	"user_credits",
+	"sync_queue",
 ]
 
 const PRIMARY_KEYS: Record<string, string> = {
@@ -49,6 +51,7 @@ const PRIMARY_KEYS: Record<string, string> = {
 	localizadas_iluminacion: "id",
 	images: "id",
 	user_credits: "userId",
+	sync_queue: "id",
 }
 
 const TABLE_SCHEMAS: Record<string, string> = {
@@ -61,6 +64,7 @@ const TABLE_SCHEMAS: Record<string, string> = {
 	localizadas_iluminacion: CREATE_LOCALIZADAS_ILUMINACION_TABLE,
 	images: CREATE_IMAGES_TABLE,
 	user_credits: CREATE_USER_CREDITS_TABLE,
+	sync_queue: CREATE_SYNC_QUEUE_TABLE,
 }
 
 export default function DebugDB() {
@@ -201,7 +205,10 @@ export default function DebugDB() {
 	)
 
 	return (
-		<ScrollView style={container} contentContainerStyle={{ paddingBottom: 150 }}>
+		<ScrollView
+			style={container}
+			contentContainerStyle={{ paddingBottom: 150 }}
+		>
 			<Text style={title}>SQLite Debug</Text>
 			<Text style={subtitle}>
 				{tables.length} tablas ·{" "}

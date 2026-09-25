@@ -147,7 +147,10 @@ const FAQ_ITEMS: FaqEntry[] = [
 					Sí. Podés completar tu perfil y confeccionar informes sin conexión, ya
 					que la información se guarda localmente en tu dispositivo. La conexión
 					a internet solo es necesaria para adquirir créditos, desbloquear
-					informes y comunicarte con el soporte técnico.
+					informes, sincronizar con la nube y comunicarte con el soporte
+					técnico. Para el resto de las funcionalidades, el profesional puede
+					hacer uso de las herramientas, cargar datos, tomar mediciones y
+					visualizar los PDF.
 				</Text>
 			</>
 		),
@@ -184,17 +187,15 @@ const FAQ_ITEMS: FaqEntry[] = [
 		),
 	},
 	{
-		id: "online-offline",
-		question: "¿Puede la aplicación utilizarse de manera offline?",
+		id: "eliminar-informe",
+		question: "¿Cómo elimino un informe?",
 		answer: () => (
 			<>
 				<Text style={styles.paragraph}>
-					La aplicacion tiene funcionalidad offline para cargar datos y generar
-					informes. Sin embargo, se requiere una conexion a internet para
-					registrarse, sincronizar datos con la nube y adquirir o consumir
-					créditos. Para el resto de las funcionalidades, el profesional puede
-					hacer uso de las herramientas, cargar datos, tomar mediciones y
-					visualizar los PDF.
+					Para poder eliminar un informe completo, lo hacemos desde el menú del
+					informe, dentro de la pestaña "General". No solo elimina el informe,
+					sino todas las mediciones e imagenes asociadas al mismo. La
+					eliminacion es definitiva y no se puede deshacer.
 				</Text>
 			</>
 		),

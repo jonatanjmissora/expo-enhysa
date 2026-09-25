@@ -8,6 +8,7 @@ import { CREATE_AREAS_ILUMINACION_TABLE } from "./schema/areas-iluminacion"
 import { CREATE_LOCALIZADAS_ILUMINACION_TABLE } from "./schema/localizadas-iluminacion"
 import { CREATE_IMAGES_TABLE } from "./schema/images"
 import { CREATE_USER_CREDITS_TABLE } from "./schema/user-credits"
+import { CREATE_SYNC_QUEUE_TABLE } from "./schema/sync-queue"
 
 const DATABASE_NAME = "app.db"
 
@@ -67,13 +68,15 @@ async function migrateDatabase(database: SQLite.SQLiteDatabase) {
 	}
 }
 
-const SCHEMA_VERSION = 2
+const SCHEMA_VERSION = 3
 
 /**
  * Resets únicos (etapa tester):
  * - v1: las tablas de negocio guardaban URIs de imagen; ahora guardan imageIds.
  * - v2: la auth pasó a la nube; se resetean las cuentas locales (el `users`
  *   local queda solo como espejo del usuario de la nube).
+ * - v3: el ledger de créditos pasó a ser solo de nube; se borran las tablas
+ *   locales viejas `credit_history` / `pending_payments`.
  */
 async function runOneTimeResets(database: SQLite.SQLiteDatabase) {
 	const row = await database.getFirstAsync<{ user_version: number }>(
@@ -98,6 +101,11 @@ async function runOneTimeResets(database: SQLite.SQLiteDatabase) {
 		await database.execAsync("DROP TABLE IF EXISTS users")
 	}
 
+	if (version < 3) {
+		await database.execAsync("DROP TABLE IF EXISTS credit_history")
+		await database.execAsync("DROP TABLE IF EXISTS pending_payments")
+	}
+
 	await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`)
 }
 
@@ -113,6 +121,7 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await database.execAsync(CREATE_LOCALIZADAS_ILUMINACION_TABLE)
 	await database.execAsync(CREATE_IMAGES_TABLE)
 	await database.execAsync(CREATE_USER_CREDITS_TABLE)
+	await database.execAsync(CREATE_SYNC_QUEUE_TABLE)
 
 	await ensureUpdatedAtColumn(database, "informes_iluminacion")
 	await ensureUpdatedAtColumn(database, "areas_iluminacion")

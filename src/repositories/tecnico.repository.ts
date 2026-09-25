@@ -5,6 +5,7 @@ import {
 	CREATE_TECNICOS_TABLE,
 	MIGRATE_TECNICOS_EMPRESA,
 } from "../db/schema/tecnicos"
+import { syncQueueRepository } from "./sync-queue.repository"
 
 export type TecnicoType = {
 	id: string
@@ -118,6 +119,8 @@ export const tecnicoRepository = {
 			throw new Error("No se pudo recuperar el técnico creado")
 		}
 
+		await syncQueueRepository.enqueue(input.userId, "tecnicos", id, "upsert")
+
 		return tecnico
 	},
 
@@ -185,7 +188,16 @@ export const tecnicoRepository = {
 
 		const db = await getDatabase()
 
+		const row = await db.getFirstAsync<{ userId: string }>(
+			`SELECT userId FROM tecnicos WHERE id = ?`,
+			id
+		)
+
 		await db.runAsync(`DELETE FROM tecnicos WHERE id = ?`, id)
+
+		if (row?.userId) {
+			await syncQueueRepository.enqueue(row.userId, "tecnicos", id, "delete")
+		}
 	},
 
 	async update(
@@ -242,6 +254,8 @@ export const tecnicoRepository = {
 			tecnico.updatedAt,
 			id
 		)
+
+		await syncQueueRepository.enqueue(tecnico.userId, "tecnicos", id, "upsert")
 
 		return tecnico
 	},

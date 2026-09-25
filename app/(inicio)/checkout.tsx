@@ -44,9 +44,38 @@ export default function Checkout() {
 
 	return (
 		<ViewWithLogo>
+			<View
+				style={{
+					flexDirection: "row",
+					alignItems: "center",
+					gap: 10,
+					justifyContent: "space-between",
+				}}
+			>
+				<Button
+					variant="ghost"
+					iconLeft="chevron-back"
+					text="Volver"
+					style={{
+						alignSelf: "flex-start",
+						paddingHorizontal: 20,
+						opacity: 0.85,
+						padding: 4,
+					}}
+					onPress={() => router.push("/(inicio)/suscripcion")}
+				/>
+				<Text
+					style={{
+						fontSize: 20,
+						fontWeight: "bold",
+						marginRight: 40,
+						color: "#ccc",
+					}}
+				>
+					Orden de Compra
+				</Text>
+			</View>
 			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 }}>
-				<VolverBtn title="Orden de Compra" href="/" />
-
 				{!plan ? (
 					<View style={{ alignItems: "center", gap: 16, marginTop: 60 }}>
 						<Text style={{ color: "#ddd", fontSize: 22, fontWeight: "700" }}>

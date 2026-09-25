@@ -24,6 +24,7 @@ import {
 	ScrollView,
 	View,
 	Pressable,
+	ActivityIndicator,
 } from "react-native"
 
 export default function Cuenta() {
@@ -445,15 +446,27 @@ function ImageEdit({ user }: { user: UserType }) {
 								size="small"
 								onPress={removeDraft}
 							/>
-							<Button
-								iconLeft="checkmark"
-								iconSize={26}
-								iconColor={theme.green}
-								variant="ghost"
-								size="small"
-								disabled={saving}
-								onPress={handleOk}
-							/>
+							{saving ? (
+								<View
+									style={{
+										flex: 1,
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<ActivityIndicator color={theme.orange} />
+								</View>
+							) : (
+								<Button
+									iconLeft="checkmark"
+									iconSize={26}
+									iconColor={theme.green}
+									variant="ghost"
+									size="small"
+									disabled={saving}
+									onPress={handleOk}
+								/>
+							)}
 						</View>
 
 						{error && (
@@ -528,6 +541,7 @@ function NameEdit({ user }: { user: UserType }) {
 					onPress={handleEdit}
 					size="xsmall"
 					style={{
+						backgroundColor: theme.orangeAlpha,
 						borderColor: theme.orangeAlpha,
 						borderWidth: 1,
 						borderRadius: 10,

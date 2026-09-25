@@ -24,7 +24,7 @@ export default function Header() {
 			}}
 		>
 			<Pressable
-				onPress={() => router.push("/")}
+				onPress={() => router.navigate("/")}
 				style={{
 					height: 70,
 					flexDirection: "row",
@@ -57,7 +57,7 @@ function Avatar() {
 	const from = pathname.startsWith("/auth") ? undefined : pathname
 	const params = from ? { from } : undefined
 	const goToAuth = () => {
-		router.push(
+		router.navigate(
 			isRegistered
 				? { pathname: "/auth/cuenta", params }
 				: { pathname: "/auth/login", params }

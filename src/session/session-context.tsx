@@ -5,6 +5,7 @@ import {
 	useEffect,
 	useState,
 } from "react"
+import { Alert } from "react-native"
 import { setOnUnauthorized } from "../api/client"
 import { signOut as authSignOut } from "../auth/auth.service"
 import { queryClient } from "../query/query-client"
@@ -48,13 +49,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 	}, [])
 
 	// Si un endpoint con sesión responde 401, la sesión expiró: volvemos a
-	// `user-1` (sin llamar a la API, para no entrar en loop).
+	// `user-1` (sin llamar a la API, para no entrar en loop) y avisamos.
 	useEffect(() => {
-		setOnUnauthorized(() => {
+		setOnUnauthorized(reason => {
 			void (async () => {
 				await clearSession()
 				queryClient.clear()
 				setActiveUserIdState(LOCAL_USER_ID)
+
+				if (reason === "no_session") {
+					Alert.alert(
+						"No estás conectado",
+						"No estás conectado a tu cuenta. Iniciá sesión para continuar."
+					)
+				} else {
+					Alert.alert(
+						"Sesión expirada",
+						"Tu sesión expiró. Iniciá sesión de nuevo para continuar."
+					)
+				}
 			})()
 		})
 		return () => setOnUnauthorized(null)

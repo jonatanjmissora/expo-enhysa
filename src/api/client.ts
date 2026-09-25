@@ -8,10 +8,14 @@ export function setApiSessionToken(token: string | null) {
 	sessionToken = token
 }
 
-let onUnauthorized: (() => void) | null = null
+type UnauthorizedReason = "no_session" | "invalid_session"
 
-/** La capa de sesión registra qué hacer ante un 401 (sesión expirada). */
-export function setOnUnauthorized(handler: (() => void) | null) {
+let onUnauthorized: ((reason: UnauthorizedReason) => void) | null = null
+
+/** La capa de sesión registra qué hacer ante un 401 de sesión. */
+export function setOnUnauthorized(
+	handler: ((reason: UnauthorizedReason) => void) | null
+) {
 	onUnauthorized = handler
 }
 
@@ -35,8 +39,6 @@ export async function apiFetch<T>(
 		throw new Error("Falta EXPO_PUBLIC_API_URL")
 	}
 
-	const requestHadSession = Boolean(sessionToken)
-
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${API_TOKEN}`,
@@ -49,9 +51,6 @@ export async function apiFetch<T>(
 	const response = await fetch(`${API_URL}${path}`, { ...options, headers })
 
 	if (!response.ok) {
-		if (response.status === 401 && requestHadSession) {
-			onUnauthorized?.()
-		}
 		const text = await response.text().catch(() => "")
 		let code: string | null = null
 		try {
@@ -59,6 +58,14 @@ export async function apiFetch<T>(
 		} catch {
 			code = null
 		}
+
+		if (
+			response.status === 401 &&
+			(code === "no_session" || code === "invalid_session")
+		) {
+			onUnauthorized?.(code)
+		}
+
 		throw new ApiError(
 			response.status,
 			code,
@@ -149,28 +156,6 @@ export function apiCreatePreference(
 
 export function apiGetCredits(): Promise<CreditsResponse> {
 	return apiFetch<CreditsResponse>("/credits")
-}
-
-export type CreditHistoryEntry = {
-	id: string
-	user_id: string
-	type: string
-	credits: number
-	report_id: string | null
-	payment_id: string | null
-	created_at: string
-}
-
-export type CreditHistoryResponse = {
-	history: CreditHistoryEntry[]
-}
-
-export function apiGetCreditHistory(
-	userId: string
-): Promise<CreditHistoryResponse> {
-	return apiFetch<CreditHistoryResponse>(
-		`/credit-history?userId=${encodeURIComponent(userId)}`
-	)
 }
 
 export type ConsumeCreditResponse = {
