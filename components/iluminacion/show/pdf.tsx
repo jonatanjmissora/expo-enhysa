@@ -251,7 +251,7 @@ function PdfPreview({
 	}
 
 	const message = notFound
-		? "No se encontró la empresa, el técnico o el instrumento del informe"
+		? "Verifique su perfil. Técnico, empresa o instrumento asociado al informe no existe"
 		: error
 
 	return (
@@ -267,7 +267,16 @@ function PdfPreview({
 					<View
 						style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
 					>
-						<Text style={{ color: "#fc4444", textAlign: "center" }}>
+						<Text
+							style={{
+								color: "#fc4444",
+								textAlign: "center",
+								fontStyle: "italic",
+								fontSize: 18,
+								paddingHorizontal: 10,
+								lineHeight: 24,
+							}}
+						>
 							{message}
 						</Text>
 					</View>

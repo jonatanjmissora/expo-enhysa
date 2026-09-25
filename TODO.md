@@ -16,55 +16,30 @@ export default function Index() {
   )
 }
 
-- sync con database
+- sync con database (decidir si dejo los de local o los de la nube)
 
 - reanimated ?
+
+- datos de prueba para generar pdf? en user-1 o video explicativo
 
 - iconos hero
 
 - alquiler
 
-- desbloquear pdf
+- si elimino tecnico, el reporte queda roto, por mas que cree uno nuevo.
+- igual con la empresa o el instrumento asociado.
 
-en expo-go:
-- usuario nunca registrado (user-1), 
-       - cargo todos los datos con user-1, verificar las tablas locales. ✅
-       - verificar que la tabla users de local, este vacia.✅
+- eliminar fotos cuando se elimina entrada de la tabla que la utilizaba.
 
-- usuario registrado por primera vez, 
-       - check user id cambie de user-1 a userId de la nube en todas sus tablas locales.✅
-       - datos en perfil e informes existen de user-1. ✅
-       - verificar que la tabla users en local tenga usuario.✅
-
-- logout 
-       - verifico que no haya datos en perfil, ya que pasaron a userId de la nube. Verificar /debug/db.✅
-       - si intento guardar datos, me arroja cartel de que hay usuario registrado, que me loguee para utilizarlos.✅
-
-- login:
-       - offline, pruebo los mensajes de error✅
-       - online, pruebo los mensajes de error.✅
-
-- register con el mismo mail, checkear.✅
-- offline, register.✅ 
-
-- credit cuando estoy offline, muestra el ultimo total que trajimos de la nube.
-
-- en la apk, probar los mismos pasos
-
+opcionales:
 - dni para recordar si cambias credenciales.
-
 - pdf para el navegador?
 
-- datos de prueba para generar pdf? en user-1 o video explicativo
-
-- preguntas frecuentes, tengo repetida lo de offline
 
 
 
 
-
-
-Diseo general de tanstack query + sincronizacion
+Diseño general de tanstack query + sincronizacion
 
                  UI
                   │
