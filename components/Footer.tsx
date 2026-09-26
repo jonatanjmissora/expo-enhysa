@@ -29,6 +29,12 @@ const DEBUG_ITEMS: {
 }[] = [
 	{ id: "db", label: "Base de datos", icon: "server-outline", to: "/debug/db" },
 	{
+		id: "db-informes",
+		label: "Informes",
+		icon: "server",
+		to: "/debug/db-informes",
+	},
+	{
 		id: "images",
 		label: "Imágenes",
 		icon: "image-outline",
@@ -249,7 +255,6 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 	},
 	debugRow: {
-		flexDirection: "row",
 		gap: 12,
 	},
 	debugItem: {

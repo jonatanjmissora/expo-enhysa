@@ -2,6 +2,19 @@ import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_INSTRUMENTOS_TABLE } from "../db/schema/instrumentos"
+import { imageService } from "../media/image-service"
+import { syncQueueRepository } from "./sync-queue.repository"
+
+function parseImageIds(value: string): string[] {
+	try {
+		const parsed = JSON.parse(value)
+		return Array.isArray(parsed)
+			? parsed.filter((item): item is string => typeof item === "string")
+			: []
+	} catch {
+		return []
+	}
+}
 
 export type InstrumentoType = {
 	id: string
@@ -13,6 +26,7 @@ export type InstrumentoType = {
 	imagenesCalibracion: string
 	imagenes: string
 	userId: string
+	informeId: string | null
 	updatedAt: string
 }
 
@@ -54,9 +68,10 @@ export const instrumentoRepository = {
 					imagenesCalibracion,
 					imagenes,
 					userId,
+					informeId,
 					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.nombre,
@@ -67,6 +82,7 @@ export const instrumentoRepository = {
 			input.imagenesCalibracion,
 			input.imagenes,
 			input.userId,
+			null,
 			updatedAt
 		)
 
@@ -82,6 +98,7 @@ export const instrumentoRepository = {
 					imagenesCalibracion,
 					imagenes,
 					userId,
+					informeId,
 					updatedAt
 				FROM instrumentos
 				WHERE id = ?
@@ -113,6 +130,7 @@ export const instrumentoRepository = {
 					imagenesCalibracion,
 					imagenes,
 					userId,
+					informeId,
 					updatedAt
 				FROM instrumentos
 				WHERE id = ?
@@ -140,9 +158,10 @@ export const instrumentoRepository = {
 					imagenesCalibracion,
 					imagenes,
 					userId,
+					informeId,
 					updatedAt
 				FROM instrumentos
-				WHERE userId = ?
+				WHERE userId = ? AND informeId IS NULL
 				LIMIT 1
 			`,
 			userId
@@ -168,14 +187,91 @@ export const instrumentoRepository = {
 					imagenesCalibracion,
 					imagenes,
 					userId,
+					informeId,
 					updatedAt
 				FROM instrumentos
-				WHERE userId = ?
+				WHERE userId = ? AND informeId IS NULL
 			`,
 			userId
 		)
 
 		return instrumentos
+	},
+
+	/** Copia "congelada" de un instrumento vivo, asociada a un informe. */
+	async createStamp(
+		sourceId: string,
+		informeId: string
+	): Promise<InstrumentoType> {
+		const source = await this.getById(sourceId)
+		if (!source) {
+			throw new Error("No se encontró el instrumento a copiar")
+		}
+
+		await assertWritable(source.userId)
+		await initializeInstrumentosTable()
+
+		const db = await getDatabase()
+		const id = randomUUID()
+		const updatedAt = new Date().toISOString()
+
+		const imagenesCalibracion = JSON.stringify(
+			await imageService.copyImages(
+				parseImageIds(source.imagenesCalibracion),
+				source.userId
+			)
+		)
+		const imagenes = JSON.stringify(
+			await imageService.copyImages(
+				parseImageIds(source.imagenes),
+				source.userId
+			)
+		)
+
+		await db.runAsync(
+			`
+				INSERT INTO instrumentos (
+					id, nombre, marca, modelo, serie, fechaCalibracion,
+					imagenesCalibracion, imagenes, userId, informeId, updatedAt
+				)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			`,
+			id,
+			source.nombre,
+			source.marca,
+			source.modelo,
+			source.serie,
+			source.fechaCalibracion,
+			imagenesCalibracion,
+			imagenes,
+			source.userId,
+			informeId,
+			updatedAt
+		)
+
+		await syncQueueRepository.enqueue(
+			source.userId,
+			"instrumentos",
+			id,
+			"upsert"
+		)
+
+		const stamp = await db.getFirstAsync<InstrumentoType>(
+			`
+				SELECT
+					id, nombre, marca, modelo, serie, fechaCalibracion,
+					imagenesCalibracion, imagenes, userId, informeId, updatedAt
+				FROM instrumentos
+				WHERE id = ?
+			`,
+			id
+		)
+
+		if (!stamp) {
+			throw new Error("No se pudo recuperar la copia del instrumento")
+		}
+
+		return stamp
 	},
 
 	async update(

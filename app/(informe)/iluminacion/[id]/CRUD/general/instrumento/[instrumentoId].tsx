@@ -3,15 +3,21 @@ import VolverBtn from "@/components/VolverBtn"
 import InstrumentoEditForm from "@/components/perfil/InstrumentoEditForm"
 import { theme } from "@/constants/theme"
 import { useInstrumentoById } from "@/src/query/hooks/use-instrumento"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 
-export default function EditarInstrumento() {
-	const { instrumentoId } = useLocalSearchParams<{ instrumentoId: string }>()
+export default function InstrumentoStamp() {
+	const { id, instrumentoId } = useLocalSearchParams<{
+		id: string
+		instrumentoId: string
+	}>()
+	const { data: informe, isLoading: isLoadingInforme } =
+		useInformeIluminacionById(id)
 	const { data: instrumento, isLoading } = useInstrumentoById(instrumentoId)
 	const router = useRouter()
 
-	if (isLoading) {
+	if (isLoading || isLoadingInforme || !informe || !instrumento) {
 		return (
 			<View
 				style={{
@@ -21,25 +27,12 @@ export default function EditarInstrumento() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>Cargando instrumento…</Text>
+				<Text style={{ color: "#94a3b8" }}>Cargando…</Text>
 			</View>
 		)
 	}
 
-	if (!instrumento) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					backgroundColor: theme.safeAreaBG,
-				}}
-			>
-				<Text style={{ color: "#94a3b8" }}>No existe el instrumento</Text>
-			</View>
-		)
-	}
+	const locked = informe.creditConsumed
 
 	return (
 		<ViewWithLogo>
@@ -50,17 +43,19 @@ export default function EditarInstrumento() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn
-					title="Editar Instrumento"
-					href="/(inicio)/perfil"
-					header="instrumento"
-				/>
+				<VolverBtn title="Instrumento del informe" />
+
+				{locked && (
+					<Text style={{ color: theme.orange, textAlign: "center" }}>
+						El informe está desbloqueado: los datos del instrumento quedaron
+						congelados y no se pueden editar.
+					</Text>
+				)}
 
 				<InstrumentoEditForm
 					instrumento={instrumento}
-					onSaved={() =>
-						router.dismissTo("/(inicio)/perfil?header=instrumento")
-					}
+					disabled={locked}
+					onSaved={() => router.back()}
 				/>
 			</ScrollView>
 		</ViewWithLogo>

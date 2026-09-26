@@ -12,8 +12,6 @@ import {
 import Svg, { Polyline } from "react-native-svg"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import { imageService } from "@/src/media/image-service"
-import { useUserId } from "@/src/session/session-context"
 
 type Point = { x: number; y: number }
 
@@ -75,7 +73,6 @@ function FirmaBoxContent({
 	const boardRef = useRef<View>(null)
 	const offset = useRef({ x: 0, y: 0 })
 	const [strokes, setStrokes] = useState<Point[][]>([])
-	const userId = useUserId()
 
 	const handleLayout = () => {
 		boardRef.current?.measureInWindow((x, y) => {
@@ -121,8 +118,7 @@ function FirmaBoxContent({
 				format: "png",
 				quality: 1,
 			})
-			const imported = await imageService.importImage(tmpUri, { userId })
-			setImage(imported.imageId)
+			setImage(tmpUri)
 			setShowFirmaBox(false)
 		} catch (e) {
 			console.error("Error saving signature:", e)

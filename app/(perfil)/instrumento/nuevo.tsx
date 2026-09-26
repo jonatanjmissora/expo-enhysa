@@ -8,6 +8,7 @@ import { theme } from "@/constants/theme"
 import { handleDataSaveError } from "@/src/auth/data-guard"
 import { useCreateInstrumento } from "@/src/query/hooks/use-instrumento"
 import type { CreateInstrumentoInput } from "@/src/repositories/instrumento.repository"
+import { useUserId } from "@/src/session/session-context"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native"
@@ -51,6 +52,7 @@ export default function NuevoInstrumento() {
 function InstrumentoNuevoForm() {
 	const router = useRouter()
 	const createInstrumento = useCreateInstrumento()
+	const userId = useUserId()
 
 	const [error, setError] = useState<string | null>(null)
 	const [imagenesCalibracion, setImagenesCalibracion] = useState<string[]>([])
@@ -63,14 +65,24 @@ function InstrumentoNuevoForm() {
 		onSubmit: async ({ value }) => {
 			setError(null)
 			try {
+				const newCalibracion = await imageService.commitImages(
+					imagenesCalibracion,
+					[],
+					userId
+				)
+				const newImagenes = await imageService.commitImages(
+					imagenes,
+					[],
+					userId
+				)
 				await createInstrumento.mutateAsync({
 					nombre: value.nombre,
 					marca: value.marca,
 					modelo: value.modelo,
 					serie: value.serie,
 					fechaCalibracion: value.fechaCalibracion.toISOString(),
-					imagenesCalibracion: JSON.stringify(imagenesCalibracion),
-					imagenes: JSON.stringify(imagenes),
+					imagenesCalibracion: JSON.stringify(newCalibracion),
+					imagenes: JSON.stringify(newImagenes),
 				} satisfies Omit<CreateInstrumentoInput, "userId">)
 				router.dismissTo("/(inicio)/perfil?header=instrumento")
 			} catch (e) {

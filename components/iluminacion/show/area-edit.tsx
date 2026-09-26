@@ -24,6 +24,7 @@ import {
 	type AreaIluminacionType,
 } from "@/src/db/schema/areas-iluminacion"
 import { useUpdateAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
+import { useUserId } from "@/src/session/session-context"
 import { hasChanges } from "@/src/utils/hasChanges"
 import Formula from "../puntos/formula"
 
@@ -37,6 +38,7 @@ export default function IluminacionShowAreaEditContent({
 		areaIluminacion.imagenes ?? []
 	)
 	const updateArea = useUpdateAreaIluminacion()
+	const userId = useUserId()
 
 	const defaultValues = {
 		nombre: areaIluminacion.nombre,
@@ -69,11 +71,16 @@ export default function IluminacionShowAreaEditContent({
 				return
 			}
 			try {
+				const newImagenes = await imageService.commitImages(
+					imagenes,
+					areaIluminacion.imagenes ?? [],
+					userId
+				)
 				await updateArea.mutateAsync({
 					id: areaIluminacion.id,
 					input: {
 						...value,
-						imagenes,
+						imagenes: newImagenes,
 					},
 				})
 				router.push({

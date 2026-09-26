@@ -25,6 +25,7 @@ import DecimalInput from "@/components/DecimalInput"
 import TextArea from "@/components/TextArea"
 import ImagePicker from "@/components/ImagePicker"
 import { useCreateAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
+import { useUserId } from "@/src/session/session-context"
 import { randomUUID } from "expo-crypto"
 import Formula from "@/components/iluminacion/puntos/formula"
 
@@ -33,6 +34,7 @@ export default function IluminacionCRUDAreaNuevoContent() {
 	const [error, setError] = useState<string | null>(null)
 	const [imagenes, setImagenes] = useState<string[]>([])
 	const createArea = useCreateAreaIluminacion()
+	const userId = useUserId()
 
 	const form = useForm({
 		defaultValues: defaultAreaIluminacionPart1,
@@ -41,11 +43,16 @@ export default function IluminacionCRUDAreaNuevoContent() {
 			setError(null)
 			const areaId = randomUUID()
 			try {
+				const newImagenes = await imageService.commitImages(
+					imagenes,
+					[],
+					userId
+				)
 				await createArea.mutateAsync({
 					...value,
 					id: areaId,
 					reportId: id,
-					imagenes,
+					imagenes: newImagenes,
 					puntos: [],
 					timestamps: [],
 				})

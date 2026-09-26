@@ -34,7 +34,7 @@ export function useCreateInformeIluminacion() {
 	const userId = useUserId()
 	return useMutation({
 		mutationFn: (input: Omit<CreateInformesIluminacionInput, "userId">) =>
-			informesIluminacionRepository.create({ ...input, userId }),
+			informesIluminacionRepository.createWithStamps({ ...input, userId }),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
 	})

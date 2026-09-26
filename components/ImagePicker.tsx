@@ -2,8 +2,7 @@ import { Alert, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
 import * as ExpoImagePicker from "expo-image-picker"
 import Button from "./Button"
-import { imageService } from "@/src/media/image-service"
-import { useUserId } from "@/src/session/session-context"
+import { resolveImageSource } from "@/src/media/image-storage"
 
 export default function ImagePicker({
 	image,
@@ -14,6 +13,7 @@ export default function ImagePicker({
 	max,
 	allowsEditing = true,
 	aspect,
+	disabled = false,
 }: {
 	image: string | null
 	setImage: (value: string | null) => void
@@ -23,37 +23,20 @@ export default function ImagePicker({
 	max?: number
 	allowsEditing?: boolean
 	aspect?: [number, number]
+	disabled?: boolean
 }) {
-	const userId = useUserId()
 	const remaining = multiple && images && max ? max - images.length : undefined
 
-	const importAsset = async (asset: {
-		uri: string
-		width: number
-		height: number
-	}) => {
-		try {
-			const imported = await imageService.importImage(asset.uri, {
-				userId,
-				width: asset.width,
-				height: asset.height,
-			})
-
-			if (multiple && setImages && images) {
-				setImages([...images, imported.imageId].slice(0, max ?? 4))
-			} else {
-				if (image) await imageService.deleteImage(image)
-				setImage(imported.imageId)
-			}
-		} catch (e) {
-			Alert.alert(
-				"Error",
-				e instanceof Error ? e.message : "No se pudo importar la imagen"
-			)
+	const importAsset = (asset: { uri: string }) => {
+		if (multiple && setImages && images) {
+			setImages([...images, asset.uri].slice(0, max ?? 4))
+		} else {
+			setImage(asset.uri)
 		}
 	}
 
 	const pickImage = async () => {
+		if (disabled) return
 		const permissionResult =
 			await ExpoImagePicker.requestMediaLibraryPermissionsAsync()
 
@@ -79,6 +62,7 @@ export default function ImagePicker({
 	}
 
 	const takePhoto = async () => {
+		if (disabled) return
 		const permissionResult =
 			await ExpoImagePicker.requestCameraPermissionsAsync()
 
@@ -106,6 +90,7 @@ export default function ImagePicker({
 	}
 
 	if (multiple) {
+		if (disabled) return null
 		return (
 			<View
 				style={{
@@ -168,30 +153,29 @@ export default function ImagePicker({
 		>
 			{image ? (
 				<View style={{ position: "relative" }}>
-					<Button
-						iconLeft="trash"
-						variant="danger"
-						iconSize={18}
-						onPress={async () => {
-							await imageService.deleteImage(image)
-							setImage(null)
-						}}
-						style={{
-							position: "absolute",
-							top: 0,
-							right: 0,
-							zIndex: 10,
-							padding: 10,
-							opacity: 0.75,
-						}}
-					/>
+					{!disabled && (
+						<Button
+							iconLeft="trash"
+							variant="danger"
+							iconSize={18}
+							onPress={() => setImage(null)}
+							style={{
+								position: "absolute",
+								top: 0,
+								right: 0,
+								zIndex: 10,
+								padding: 10,
+								opacity: 0.75,
+							}}
+						/>
+					)}
 					<ImageViewer
-						imgSource={{ uri: imageService.getImageUri(image) }}
+						imgSource={{ uri: resolveImageSource(image) ?? "" }}
 						contentFit="contain"
 						style={{ width: 300, height: 240 }}
 					/>
 				</View>
-			) : (
+			) : disabled ? null : (
 				<View
 					style={{
 						alignSelf: "stretch",

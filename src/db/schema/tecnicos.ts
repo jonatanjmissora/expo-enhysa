@@ -12,7 +12,8 @@ export const CREATE_TECNICOS_TABLE = `
 		firmaImg TEXT NOT NULL,
 		empresaLogo TEXT,
 		dni INTEGER,
-		userId TEXT NOT NULL
+		userId TEXT NOT NULL,
+		informeId TEXT
 	);
 `
 
@@ -29,11 +30,12 @@ export const MIGRATE_TECNICOS_EMPRESA = `
 		firmaImg TEXT NOT NULL,
 		empresaLogo TEXT,
 		dni INTEGER,
-		userId TEXT NOT NULL
+		userId TEXT NOT NULL,
+		informeId TEXT
 	);
 	INSERT INTO tecnicos_new
-		(id, nombre, telefono, localidad, cargo, matricula, matriculaImg, firmaImg, empresaLogo, dni, userId)
-	SELECT id, nombre, telefono, localidad, cargo, matricula, matriculaImg, firmaImg, empresaLogo, dni, userId
+		(id, nombre, telefono, localidad, cargo, matricula, matriculaImg, firmaImg, empresaLogo, dni, userId, informeId)
+	SELECT id, nombre, telefono, localidad, cargo, matricula, matriculaImg, firmaImg, empresaLogo, dni, userId, informeId
 	FROM tecnicos;
 	DROP TABLE tecnicos;
 	ALTER TABLE tecnicos_new RENAME TO tecnicos;

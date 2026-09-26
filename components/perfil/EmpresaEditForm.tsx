@@ -1,22 +1,19 @@
 import Button from "@/components/Button"
 import ImagePicker from "@/components/ImagePicker"
-import ViewWithLogo from "@/components/ViewWithLogo"
-import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
-import { handleDataSaveError } from "@/src/auth/data-guard"
 import { imageService } from "@/src/media/image-service"
-import { useCreateEmpresa } from "@/src/query/hooks/use-empresa"
-import type { CreateEmpresaInput } from "@/src/repositories/empresa.repository"
+import { useUpdateEmpresa } from "@/src/query/hooks/use-empresa"
+import type { EmpresaType } from "@/src/repositories/empresa.repository"
+import { empresaFormValidator } from "@/src/db/schema/empresas"
 import { useUserId } from "@/src/session/session-context"
-import { useRouter } from "expo-router"
-import { useState } from "react"
-import { ScrollView, Text, TextInput, View } from "react-native"
+import { hasChanges } from "@/src/utils/hasChanges"
 import { useForm } from "@tanstack/react-form"
-import { defaultEmpresa, empresaFormValidator } from "@/src/db/schema/empresas"
+import { useState } from "react"
+import { Text, TextInput, View } from "react-native"
 
 const FIELDS = [
-	{ key: "razonSocial", label: "Razón Social", placeholder: "Mi Empresa SRL" },
 	{ key: "cuit", label: "CUIT", placeholder: "20304050607" },
+	{ key: "razonSocial", label: "Razón Social", placeholder: "Mi Empresa SRL" },
 	{ key: "direccion", label: "Dirección", placeholder: "Av. Libertador 1234" },
 	{ key: "localidad", label: "Localidad", placeholder: "Bahía Blanca" },
 	{ key: "provincia", label: "Provincia", placeholder: "Buenos Aires" },
@@ -24,55 +21,60 @@ const FIELDS = [
 	{ key: "horarios", label: "Horarios", placeholder: "Lun-Vie 8:00-17:00" },
 ] as const
 
-export default function NuevaEmpresa() {
-	return (
-		<ViewWithLogo>
-			<ScrollView
-				contentContainerStyle={{
-					gap: 12,
-					padding: 16,
-					paddingBottom: 150,
-				}}
-			>
-				<VolverBtn
-					title="Nueva Empresa"
-					href="/(inicio)/perfil"
-					header="empresa"
-				/>
-
-				<EmpresaNuevoForm />
-			</ScrollView>
-		</ViewWithLogo>
-	)
-}
-
-function EmpresaNuevoForm() {
-	const router = useRouter()
-	const createEmpresa = useCreateEmpresa()
+export default function EmpresaEditForm({
+	empresa,
+	disabled = false,
+	onSaved,
+}: {
+	empresa: EmpresaType
+	disabled?: boolean
+	onSaved: () => void
+}) {
+	const updateEmpresa = useUpdateEmpresa()
 	const userId = useUserId()
-
 	const [error, setError] = useState<string | null>(null)
-	const [logo, setLogo] = useState<string | null>(null)
+	const [logo, setLogo] = useState<string | null>(empresa.logo ?? null)
+
+	const defaultValues = {
+		cuit: empresa.cuit ?? "",
+		razonSocial: empresa.razonSocial ?? "",
+		direccion: empresa.direccion ?? "",
+		localidad: empresa.localidad ?? "",
+		provincia: empresa.provincia ?? "",
+		codigoPostal: empresa.codigoPostal ?? "",
+		horarios: empresa.horarios ?? "",
+		logo: empresa.logo ?? "",
+	}
 
 	const form = useForm({
-		defaultValues: defaultEmpresa,
+		defaultValues,
 		validators: { onSubmit: empresaFormValidator },
 		onSubmit: async ({ value }) => {
+			if (disabled) return
 			setError(null)
 			if (!logo) {
 				setError("Seleccioná el logo de la empresa")
 				return
 			}
-
+			if (!hasChanges({ ...value, logo }, defaultValues)) {
+				onSaved()
+				return
+			}
 			try {
-				const newLogo = await imageService.commitImage(logo, null, userId)
-				await createEmpresa.mutateAsync({
-					...value,
-					logo: newLogo ?? "",
-				} satisfies Omit<CreateEmpresaInput, "userId">)
-				router.dismissTo("/(inicio)/perfil?header=empresa")
+				const newLogo = await imageService.commitImage(
+					logo,
+					empresa.logo,
+					userId
+				)
+				await updateEmpresa.mutateAsync({
+					id: empresa.id,
+					input: { ...value, logo: newLogo ?? "" },
+				})
+				onSaved()
 			} catch (e) {
-				handleDataSaveError(e, setError)
+				setError(
+					e instanceof Error ? e.message : "No se pudo guardar la empresa"
+				)
 			}
 		},
 		onSubmitInvalid: () => {
@@ -89,6 +91,7 @@ function EmpresaNuevoForm() {
 							<Text style={{ color: "#cbd5e1" }}>{f.label}</Text>
 							<TextInput
 								selectTextOnFocus
+								editable={!disabled}
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChangeText={field.handleChange}
@@ -140,20 +143,22 @@ function EmpresaNuevoForm() {
 						borderRadius: 6,
 					}}
 				>
-					<ImagePicker image={logo} setImage={setLogo} />
+					<ImagePicker image={logo} setImage={setLogo} disabled={disabled} />
 				</View>
 			</View>
 
-			<form.Subscribe selector={state => state.isSubmitting}>
-				{isSubmitting => (
-					<Button
-						onPress={form.handleSubmit}
-						text={isSubmitting ? "Guardando..." : "Guardar"}
-						disabled={isSubmitting}
-						style={{ marginTop: 40 }}
-					/>
-				)}
-			</form.Subscribe>
+			{!disabled && (
+				<form.Subscribe selector={state => state.isSubmitting}>
+					{isSubmitting => (
+						<Button
+							onPress={form.handleSubmit}
+							text={isSubmitting ? "Guardando..." : "Guardar"}
+							disabled={isSubmitting}
+							style={{ marginTop: 40 }}
+						/>
+					)}
+				</form.Subscribe>
+			)}
 			{error && (
 				<Text style={{ color: "#fc4444", textAlign: "center" }}>{error}</Text>
 			)}

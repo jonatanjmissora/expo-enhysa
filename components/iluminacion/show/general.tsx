@@ -2,41 +2,108 @@ import { EmpresaType } from "@/src/repositories/empresa.repository"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { useDeleteInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { InstrumentoType } from "@/src/repositories/instrumento.repository"
-import { Text, View } from "react-native"
+import { TecnicoType } from "@/src/repositories/tecnico.repository"
+import { Pressable, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
 import MiniCard from "@/components/MiniCard"
-import { useState } from "react"
-import { useRouter } from "expo-router"
+import { type ReactNode, useState } from "react"
+import { router, useRouter } from "expo-router"
 import Button from "@/components/Button"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import InformeHeaderContent from "@/components/InformeHeader"
 
 export default function GeneralContent({
 	informe,
-	empresas,
-	instrumentos,
+	tecnico,
+	empresa,
+	instrumento,
 }: {
 	informe: InformesIluminacionType
-	empresas: EmpresaType[]
-	instrumentos: InstrumentoType[]
+	tecnico: TecnicoType
+	empresa: EmpresaType
+	instrumento: InstrumentoType
 }) {
-	const empresa = empresas.find(e => e.id === informe.empresaId)
-	if (!empresa) return null
-
-	const instrumento = instrumentos.find(i => i.id === informe.instrumentoId)
-	if (!instrumento) return null
+	const instrumentoImagen =
+		parseImages(instrumento.imagenes)[0] ??
+		parseImages(instrumento.imagenesCalibracion)[0] ??
+		null
 
 	return (
 		<>
 			<InformeHeader informe={informe} />
-			<EmpresaData empresa={empresa} />
-			<InstrumentoData instrumento={instrumento} />
+			<StampCard
+				label="Técnico"
+				onPress={() =>
+					router.push({
+						pathname:
+							"/(informe)/iluminacion/[id]/CRUD/general/tecnico/[tecnicoId]",
+						params: { id: informe.id, tecnicoId: tecnico.id },
+					})
+				}
+			>
+				<MiniCard
+					title={tecnico.nombre}
+					line1={tecnico.cargo}
+					line2={tecnico.matricula}
+					line3={tecnico.localidad}
+					imagen={tecnico.matriculaImg}
+				/>
+			</StampCard>
+
+			<StampCard
+				label="Empresa"
+				onPress={() =>
+					router.push({
+						pathname:
+							"/(informe)/iluminacion/[id]/CRUD/general/empresa/[empresaId]",
+						params: { id: informe.id, empresaId: empresa.id },
+					})
+				}
+			>
+				<MiniCard
+					title={empresa.razonSocial?.toUpperCase()}
+					line1={empresa.cuit?.toUpperCase()}
+					line2={empresa.direccion?.toUpperCase()}
+					line3={empresa.localidad?.toUpperCase()}
+					imagen={empresa.logo}
+				/>
+			</StampCard>
+
+			<StampCard
+				label="Instrumento"
+				onPress={() =>
+					router.push({
+						pathname:
+							"/(informe)/iluminacion/[id]/CRUD/general/instrumento/[instrumentoId]",
+						params: { id: informe.id, instrumentoId: instrumento.id },
+					})
+				}
+			>
+				<MiniCard
+					title={instrumento.nombre}
+					line1={instrumento.marca}
+					line2={instrumento.modelo}
+					line3={new Date(instrumento.fechaCalibracion).toLocaleDateString(
+						"es-AR"
+					)}
+					imagen={instrumentoImagen}
+				/>
+			</StampCard>
+
 			<GeneralData informe={informe} />
 		</>
 	)
 }
 
-function EmpresaData({ empresa }: { empresa: EmpresaType }) {
+function StampCard({
+	label,
+	onPress,
+	children,
+}: {
+	label: string
+	onPress: () => void
+	children: ReactNode
+}) {
 	return (
 		<View style={{ gap: 4, alignItems: "center" }}>
 			<View
@@ -55,55 +122,11 @@ function EmpresaData({ empresa }: { empresa: EmpresaType }) {
 						fontSize: 18,
 					}}
 				>
-					Empresa
+					{label}
 				</Text>
+				<Text style={{ color: theme.orange, fontSize: 12 }}>editar</Text>
 			</View>
-			<MiniCard
-				title={empresa.razonSocial?.toUpperCase()}
-				line1={empresa.cuit?.toUpperCase()}
-				line2={empresa.direccion?.toUpperCase()}
-				line3={empresa.localidad?.toUpperCase()}
-				imagen={empresa.logo}
-			/>
-		</View>
-	)
-}
-
-function InstrumentoData({ instrumento }: { instrumento: InstrumentoType }) {
-	const imagen =
-		parseImages(instrumento.imagenes)[0] ??
-		parseImages(instrumento.imagenesCalibracion)[0] ??
-		null
-	return (
-		<View style={{ gap: 4, alignItems: "center" }}>
-			<View
-				style={{
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					width: "100%",
-				}}
-			>
-				<Text
-					style={{
-						fontWeight: 600,
-						letterSpacing: 1.5,
-						color: "#ccc",
-						fontSize: 18,
-					}}
-				>
-					Instrumento
-				</Text>
-			</View>
-			<MiniCard
-				title={instrumento.nombre}
-				line1={instrumento.marca}
-				line2={instrumento.modelo}
-				line3={new Date(instrumento.fechaCalibracion).toLocaleDateString(
-					"es-AR"
-				)}
-				imagen={imagen}
-			/>
+			<Pressable onPress={onPress}>{children}</Pressable>
 		</View>
 	)
 }

@@ -242,16 +242,8 @@ function ImageEdit({ user }: { user: UserType }) {
 		setModalVisible(true)
 	}
 
-	const importPicked = async (uri: string, width: number, height: number) => {
-		if (draftImage && draftImage !== userImage) {
-			await imageService.deleteImage(draftImage)
-		}
-		const imported = await imageService.importImage(uri, {
-			userId: activeUserId,
-			width,
-			height,
-		})
-		setDraftImage(imported.imageId)
+	const importPicked = (uri: string) => {
+		setDraftImage(uri)
 	}
 
 	const pickFromGallery = async () => {
@@ -270,7 +262,7 @@ function ImageEdit({ user }: { user: UserType }) {
 		})
 		if (!result.canceled) {
 			const asset = result.assets[0]
-			await importPicked(asset.uri, asset.width, asset.height)
+			importPicked(asset.uri)
 		}
 	}
 
@@ -288,14 +280,11 @@ function ImageEdit({ user }: { user: UserType }) {
 		})
 		if (!result.canceled) {
 			const asset = result.assets[0]
-			await importPicked(asset.uri, asset.width, asset.height)
+			importPicked(asset.uri)
 		}
 	}
 
-	const removeDraft = async () => {
-		if (draftImage && draftImage !== userImage) {
-			await imageService.deleteImage(draftImage)
-		}
+	const removeDraft = () => {
 		setDraftImage(null)
 	}
 
@@ -303,14 +292,16 @@ function ImageEdit({ user }: { user: UserType }) {
 		setError(null)
 		setSaving(true)
 		try {
+			const newImage = await imageService.commitImage(
+				draftImage,
+				userImage,
+				activeUserId
+			)
 			await updateUser.mutateAsync({
 				id: user.id,
-				input: { userImage: draftImage },
+				input: { userImage: newImage },
 			})
-			if (userImage && userImage !== draftImage) {
-				await imageService.deleteImage(userImage)
-			}
-			setUserImage(draftImage)
+			setUserImage(newImage)
 			setModalVisible(false)
 		} catch (e) {
 			setError(

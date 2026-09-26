@@ -3,6 +3,10 @@ import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_INFORMES_ILUMINACION_TABLE } from "../db/schema/informes-iluminacion"
 import { imageService } from "../media/image-service"
+import { empresaRepository } from "./empresa.repository"
+import { instrumentoRepository } from "./instrumento.repository"
+import { syncQueueRepository } from "./sync-queue.repository"
+import { tecnicoRepository } from "./tecnico.repository"
 
 function parseStringArray(value: string): string[] {
 	try {
@@ -133,6 +137,37 @@ export const informesIluminacionRepository = {
 		return informe
 	},
 
+	/**
+	 * Crea el informe con copias congeladas del técnico, la empresa y el
+	 * instrumento seleccionados (vivos). El informe referencia las copias.
+	 */
+	async createWithStamps(
+		input: CreateInformesIluminacionInput
+	): Promise<InformesIluminacionType> {
+		const informeId = input.id ?? randomUUID()
+
+		const tecnicoStamp = await tecnicoRepository.createStamp(
+			input.tecnicoId,
+			informeId
+		)
+		const empresaStamp = await empresaRepository.createStamp(
+			input.empresaId,
+			informeId
+		)
+		const instrumentoStamp = await instrumentoRepository.createStamp(
+			input.instrumentoId,
+			informeId
+		)
+
+		return this.create({
+			...input,
+			id: informeId,
+			tecnicoId: tecnicoStamp.id,
+			empresaId: empresaStamp.id,
+			instrumentoId: instrumentoStamp.id,
+		})
+	},
+
 	async getById(id: string): Promise<InformesIluminacionType | null> {
 		await initializeInformesIluminacionTable()
 
@@ -237,12 +272,46 @@ export const informesIluminacionRepository = {
 			`SELECT imagenes FROM localizadas_iluminacion WHERE reportId = ?`,
 			id
 		)
+		const tecnicos = await db.getAllAsync<{
+			id: string
+			userId: string
+			matriculaImg: string
+			firmaImg: string
+			empresaLogo: string | null
+		}>(
+			`SELECT id, userId, matriculaImg, firmaImg, empresaLogo FROM tecnicos WHERE informeId = ?`,
+			id
+		)
+		const empresas = await db.getAllAsync<{
+			id: string
+			userId: string
+			logo: string
+		}>(`SELECT id, userId, logo FROM empresas WHERE informeId = ?`, id)
+		const instrumentos = await db.getAllAsync<{
+			id: string
+			userId: string
+			imagenesCalibracion: string
+			imagenes: string
+		}>(
+			`SELECT id, userId, imagenesCalibracion, imagenes FROM instrumentos WHERE informeId = ?`,
+			id
+		)
 
 		const imageIds = [
 			...areas.flatMap(area => parseStringArray(area.imagenes)),
 			...localizadas.flatMap(localizada =>
 				parseStringArray(localizada.imagenes)
 			),
+			...tecnicos.flatMap(tecnico =>
+				[tecnico.matriculaImg, tecnico.firmaImg, tecnico.empresaLogo].filter(
+					(item): item is string => Boolean(item)
+				)
+			),
+			...empresas.map(empresa => empresa.logo),
+			...instrumentos.flatMap(instrumento => [
+				...parseStringArray(instrumento.imagenesCalibracion),
+				...parseStringArray(instrumento.imagenes),
+			]),
 		]
 
 		await db.withTransactionAsync(async () => {
@@ -252,10 +321,38 @@ export const informesIluminacionRepository = {
 				id
 			)
 			await db.runAsync(`DELETE FROM informes_iluminacion WHERE id = ?`, id)
+			await db.runAsync(`DELETE FROM tecnicos WHERE informeId = ?`, id)
+			await db.runAsync(`DELETE FROM empresas WHERE informeId = ?`, id)
+			await db.runAsync(`DELETE FROM instrumentos WHERE informeId = ?`, id)
 		})
 
 		for (const imageId of imageIds) {
 			await imageService.deleteImage(imageId)
+		}
+
+		for (const tecnico of tecnicos) {
+			await syncQueueRepository.enqueue(
+				tecnico.userId,
+				"tecnicos",
+				tecnico.id,
+				"delete"
+			)
+		}
+		for (const empresa of empresas) {
+			await syncQueueRepository.enqueue(
+				empresa.userId,
+				"empresas",
+				empresa.id,
+				"delete"
+			)
+		}
+		for (const instrumento of instrumentos) {
+			await syncQueueRepository.enqueue(
+				instrumento.userId,
+				"instrumentos",
+				instrumento.id,
+				"delete"
+			)
 		}
 	},
 }

@@ -22,6 +22,7 @@ import {
 	type LocalizadaIluminacionType,
 } from "@/src/db/schema/localizadas-iluminacion"
 import { useUpdateLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
+import { useUserId } from "@/src/session/session-context"
 import { hasChanges } from "@/src/utils/hasChanges"
 
 export default function IluminacionCRUDLocalizadaEditContent({
@@ -34,6 +35,7 @@ export default function IluminacionCRUDLocalizadaEditContent({
 		localizadaIluminacion.imagenes ?? []
 	)
 	const updateLocalizada = useUpdateLocalizadaIluminacion()
+	const userId = useUserId()
 
 	const defaultValues = {
 		nombre: localizadaIluminacion.nombre,
@@ -67,11 +69,16 @@ export default function IluminacionCRUDLocalizadaEditContent({
 				return
 			}
 			try {
+				const newImagenes = await imageService.commitImages(
+					imagenes,
+					localizadaIluminacion.imagenes ?? [],
+					userId
+				)
 				await updateLocalizada.mutateAsync({
 					id: localizadaIluminacion.id,
 					input: {
 						...value,
-						imagenes,
+						imagenes: newImagenes,
 					},
 				})
 				router.push({

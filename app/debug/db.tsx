@@ -10,7 +10,7 @@ import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
 import { CREATE_USER_CREDITS_TABLE } from "@/src/db/schema/user-credits"
 import { CREATE_SYNC_QUEUE_TABLE } from "@/src/db/schema/sync-queue"
 import { apiHealth } from "@/src/api/client"
-import { useFocusEffect } from "expo-router"
+import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import {
 	Alert,
@@ -275,7 +275,7 @@ export default function DebugDB() {
 										<View key={key} style={fieldRow}>
 											<Text style={fieldKey}>{key}:</Text>
 											<Text style={fieldValue} numberOfLines={3}>
-												{String(value ?? "NULL")}
+												{String(value).substring(0, 30) ?? "NULL"}
 											</Text>
 										</View>
 									))}

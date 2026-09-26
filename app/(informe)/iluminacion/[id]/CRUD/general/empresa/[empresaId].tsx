@@ -3,15 +3,21 @@ import VolverBtn from "@/components/VolverBtn"
 import EmpresaEditForm from "@/components/perfil/EmpresaEditForm"
 import { theme } from "@/constants/theme"
 import { useEmpresaById } from "@/src/query/hooks/use-empresa"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 
-export default function EditarEmpresa() {
-	const { empresaId } = useLocalSearchParams<{ empresaId: string }>()
+export default function EmpresaStamp() {
+	const { id, empresaId } = useLocalSearchParams<{
+		id: string
+		empresaId: string
+	}>()
+	const { data: informe, isLoading: isLoadingInforme } =
+		useInformeIluminacionById(id)
 	const { data: empresa, isLoading } = useEmpresaById(empresaId)
 	const router = useRouter()
 
-	if (isLoading) {
+	if (isLoading || isLoadingInforme || !informe || !empresa) {
 		return (
 			<View
 				style={{
@@ -21,25 +27,12 @@ export default function EditarEmpresa() {
 					backgroundColor: theme.safeAreaBG,
 				}}
 			>
-				<Text style={{ color: "#94a3b8" }}>Cargando empresa…</Text>
+				<Text style={{ color: "#94a3b8" }}>Cargando…</Text>
 			</View>
 		)
 	}
 
-	if (!empresa) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-					backgroundColor: theme.safeAreaBG,
-				}}
-			>
-				<Text style={{ color: "#94a3b8" }}>No existe la empresa</Text>
-			</View>
-		)
-	}
+	const locked = informe.creditConsumed
 
 	return (
 		<ViewWithLogo>
@@ -50,15 +43,19 @@ export default function EditarEmpresa() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn
-					title="Editar Empresa"
-					href="/(inicio)/perfil"
-					header="empresa"
-				/>
+				<VolverBtn title="Empresa del informe" />
+
+				{locked && (
+					<Text style={{ color: theme.orange, textAlign: "center" }}>
+						El informe está desbloqueado: los datos de la empresa quedaron
+						congelados y no se pueden editar.
+					</Text>
+				)}
 
 				<EmpresaEditForm
 					empresa={empresa}
-					onSaved={() => router.dismissTo("/(inicio)/perfil?header=empresa")}
+					disabled={locked}
+					onSaved={() => router.back()}
 				/>
 			</ScrollView>
 		</ViewWithLogo>

@@ -1,8 +1,9 @@
 import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
-import { useEmpresas } from "@/src/query/hooks/use-empresa"
-import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
+import { useEmpresaById } from "@/src/query/hooks/use-empresa"
+import { useInstrumentoById } from "@/src/query/hooks/use-instrumento"
+import { useTecnicoById } from "@/src/query/hooks/use-tecnico"
 import { router, useGlobalSearchParams } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
@@ -12,13 +13,22 @@ export default function General() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const { data: informe, isLoading: isLoadingInforme } =
 		useInformeIluminacionById(id)
-	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
-	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
-		useInstrumentos()
+	const { data: tecnico, isLoading: isLoadingTecnico } = useTecnicoById(
+		informe?.tecnicoId
+	)
+	const { data: empresa, isLoading: isLoadingEmpresa } = useEmpresaById(
+		informe?.empresaId
+	)
+	const { data: instrumento, isLoading: isLoadingInstrumento } =
+		useInstrumentoById(informe?.instrumentoId)
 
-	const loading = isLoadingInforme || isLoadingEmpresas || isLoadingInstrumentos
+	const loading =
+		isLoadingInforme ||
+		isLoadingTecnico ||
+		isLoadingEmpresa ||
+		isLoadingInstrumento
 
-	if (loading || !informe || !empresas || !instrumentos) {
+	if (loading || !informe || !tecnico || !empresa || !instrumento) {
 		return (
 			<View
 				style={{
@@ -61,8 +71,9 @@ export default function General() {
 			>
 				<GeneralContent
 					informe={informe}
-					empresas={empresas}
-					instrumentos={instrumentos}
+					tecnico={tecnico}
+					empresa={empresa}
+					instrumento={instrumento}
 				/>
 			</ScrollView>
 		</ViewWithLogo>

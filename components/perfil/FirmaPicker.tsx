@@ -3,19 +3,19 @@ import { Alert, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
 import * as ExpoImagePicker from "expo-image-picker"
 import FirmaBox from "./FirmaBox"
-import { imageService } from "@/src/media/image-service"
-import { getImageUri } from "@/src/media/image-storage"
-import { useUserId } from "@/src/session/session-context"
+import { resolveImageSource } from "@/src/media/image-storage"
 
 export default function FirmaPicker({
 	image,
 	setImage,
+	disabled = false,
 }: {
 	image: string | null
 	setImage: (value: string | null) => void
+	disabled?: boolean
 }) {
-	const userId = useUserId()
 	const pickImage = async () => {
+		if (disabled) return
 		const permissionResult =
 			await ExpoImagePicker.requestMediaLibraryPermissionsAsync()
 
@@ -35,20 +35,7 @@ export default function FirmaPicker({
 		})
 
 		if (!result.canceled) {
-			try {
-				const asset = result.assets[0]
-				const imported = await imageService.importImage(asset.uri, {
-					userId,
-					width: asset.width,
-					height: asset.height,
-				})
-				setImage(imported.imageId)
-			} catch (e) {
-				Alert.alert(
-					"Error",
-					e instanceof Error ? e.message : "No se pudo importar la imagen"
-				)
-			}
+			setImage(result.assets[0].uri)
 		}
 	}
 
@@ -62,29 +49,28 @@ export default function FirmaPicker({
 		>
 			{image ? (
 				<View style={{ position: "relative", backgroundColor: "#aaa" }}>
-					<Button
-						iconLeft="trash"
-						variant="danger"
-						iconSize={18}
-						onPress={async () => {
-							if (image) await imageService.deleteImage(image)
-							setImage(null)
-						}}
-						style={{
-							position: "absolute",
-							top: 0,
-							right: 0,
-							zIndex: 10,
-							padding: 10,
-							opacity: 0.75,
-						}}
-					/>
+					{!disabled && (
+						<Button
+							iconLeft="trash"
+							variant="danger"
+							iconSize={18}
+							onPress={() => setImage(null)}
+							style={{
+								position: "absolute",
+								top: 0,
+								right: 0,
+								zIndex: 10,
+								padding: 10,
+								opacity: 0.75,
+							}}
+						/>
+					)}
 					<ImageViewer
-						imgSource={{ uri: getImageUri(image) }}
+						imgSource={{ uri: resolveImageSource(image) ?? "" }}
 						style={{ width: 300, aspectRatio: 4 / 3 }}
 					/>
 				</View>
-			) : (
+			) : disabled ? null : (
 				<View
 					style={{
 						flex: 1,

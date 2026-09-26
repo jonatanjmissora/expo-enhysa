@@ -24,12 +24,14 @@ import {
 	localizadaIluminacionFormValidator,
 } from "@/src/db/schema/localizadas-iluminacion"
 import { useCreateLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
+import { useUserId } from "@/src/session/session-context"
 
 export default function IluminacionLocalizadaNuevoContent() {
 	const { id } = useGlobalSearchParams<{ id: string }>()
 	const [error, setError] = useState<string | null>(null)
 	const [imagenes, setImagenes] = useState<string[]>([])
 	const createLocalizada = useCreateLocalizadaIluminacion()
+	const userId = useUserId()
 
 	const form = useForm({
 		defaultValues: defaultLocalizadaIluminacion,
@@ -42,12 +44,17 @@ export default function IluminacionLocalizadaNuevoContent() {
 			}
 			const localizadaId = randomUUID()
 			try {
+				const newImagenes = await imageService.commitImages(
+					imagenes,
+					[],
+					userId
+				)
 				await createLocalizada.mutateAsync({
 					...value,
 					id: localizadaId,
 					reportId: id,
 					iluminacion: "localizada",
-					imagenes,
+					imagenes: newImagenes,
 					timestamps: [new Date().toISOString()],
 				})
 				router.push({

@@ -68,7 +68,7 @@ async function migrateDatabase(database: SQLite.SQLiteDatabase) {
 	}
 }
 
-const SCHEMA_VERSION = 3
+const SCHEMA_VERSION = 4
 
 /**
  * Resets únicos (etapa tester):
@@ -77,6 +77,8 @@ const SCHEMA_VERSION = 3
  *   local queda solo como espejo del usuario de la nube).
  * - v3: el ledger de créditos pasó a ser solo de nube; se borran las tablas
  *   locales viejas `credit_history` / `pending_payments`.
+ * - v4: snapshot de técnico/empresa/instrumento por informe (`informeId`);
+ *   se resetean las tablas de negocio para recrearlas con la nueva columna.
  */
 async function runOneTimeResets(database: SQLite.SQLiteDatabase) {
 	const row = await database.getFirstAsync<{ user_version: number }>(
@@ -104,6 +106,19 @@ async function runOneTimeResets(database: SQLite.SQLiteDatabase) {
 	if (version < 3) {
 		await database.execAsync("DROP TABLE IF EXISTS credit_history")
 		await database.execAsync("DROP TABLE IF EXISTS pending_payments")
+	}
+
+	if (version < 4) {
+		for (const table of [
+			"tecnicos",
+			"empresas",
+			"instrumentos",
+			"informes_iluminacion",
+			"areas_iluminacion",
+			"localizadas_iluminacion",
+		]) {
+			await database.execAsync(`DROP TABLE IF EXISTS ${table}`)
+		}
 	}
 
 	await database.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`)

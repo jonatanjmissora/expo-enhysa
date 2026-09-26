@@ -22,8 +22,32 @@ function getImageFile(imageId: string): File {
 	return new File(getImagesDirectory(), imageFilename(imageId))
 }
 
-export function getImageUri(imageId: string): string {
-	return getImageFile(imageId).uri
+/**
+ * URI mostrable de una imagen. Acepta tanto un `imageId` persistido como una
+ * URI de borrador (imagen elegida en un form, todavía no importada).
+ */
+export function getImageUri(value: string): string {
+	if (isImageUri(value)) return value
+	return getImageFile(value).uri
+}
+
+/**
+ * `true` si el valor ya es una URI (imagen elegida pero todavía no importada,
+ * "borrador"), en vez de un `imageId` persistido.
+ */
+export function isImageUri(value: string): boolean {
+	return /^(file|content|http|https|data|ph|assets-library):/i.test(value)
+}
+
+/**
+ * Devuelve un URI mostrable a partir de un `imageId` persistido **o** de una
+ * URI de borrador (recién elegida, todavía no importada).
+ */
+export function resolveImageSource(
+	value: string | null | undefined
+): string | null {
+	if (!value) return null
+	return isImageUri(value) ? value : getImageUri(value)
 }
 
 export function imageExists(imageId: string): boolean {
