@@ -11,6 +11,7 @@ import PictureNotFound from "@/components/PictureNotFound"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
+import MenuBtn from "@/components/MenuBtn"
 
 const FIELDS = [
 	{ key: "razonSocial", label: "Razón Social" },
@@ -170,13 +171,8 @@ function MenuEmpresa({ empresa }: { empresa: EmpresaType }) {
 				opacity: 0.75,
 			}}
 		>
-			<Button
-				variant="ghost"
-				iconLeft="menu"
-				iconSize={24}
-				style={{ alignSelf: "flex-end", paddingVertical: 10 }}
-				onPress={() => setShowMenu(!showMenu)}
-			/>
+			<MenuBtn setShowMenu={setShowMenu} />
+
 			{showMenu && (
 				<View
 					style={{

@@ -2,10 +2,10 @@ import Button from "@/components/Button"
 import ImagePicker from "@/components/ImagePicker"
 import FirmaPicker from "@/components/perfil/FirmaPicker"
 import { theme } from "@/constants/theme"
-import type { TecnicoSnapshot } from "@/src/db/schema/snapshots"
 import { tecnicoFormValidator } from "@/src/db/schema/tecnicos"
 import { imageService } from "@/src/media/image-service"
 import { useUpdateInformeSnapshot } from "@/src/query/hooks/use-informe-iluminacion"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { useUserId } from "@/src/session/session-context"
 import { hasChanges } from "@/src/utils/hasChanges"
 import { useForm } from "@tanstack/react-form"
@@ -22,16 +22,14 @@ const FIELDS = [
 ] as const
 
 export default function TecnicoSnapshotForm({
-	informeId,
-	snapshot,
-	locked = false,
+	informe,
 	onSaved,
 }: {
-	informeId: string
-	snapshot: TecnicoSnapshot
-	locked?: boolean
+	informe: InformesIluminacionType
 	onSaved: () => void
 }) {
+	const snapshot = informe.tecnicoSnapshot
+	const locked = informe.creditConsumed
 	const updateSnapshot = useUpdateInformeSnapshot()
 	const userId = useUserId()
 	const [error, setError] = useState<string | null>(null)
@@ -98,7 +96,7 @@ export default function TecnicoSnapshotForm({
 				)
 
 				await updateSnapshot.mutateAsync({
-					id: informeId,
+					id: informe.id,
 					input: {
 						kind: "tecnico",
 						snapshot: {

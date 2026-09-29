@@ -13,6 +13,7 @@ import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
 import { router, useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
 import { ScrollView, Text, View } from "react-native"
+import MenuBtn from "@/components/MenuBtn"
 
 const FIELDS = [
 	{ key: "nombre", label: "Nombre" },
@@ -228,13 +229,8 @@ function MenuInstrumento({ instrumento }: { instrumento: InstrumentoType }) {
 				opacity: 0.75,
 			}}
 		>
-			<Button
-				variant="ghost"
-				iconLeft="menu"
-				iconSize={24}
-				style={{ alignSelf: "flex-end", paddingVertical: 10 }}
-				onPress={() => setShowMenu(!showMenu)}
-			/>
+			<MenuBtn setShowMenu={setShowMenu} />
+
 			{showMenu && (
 				<View
 					style={{

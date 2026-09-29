@@ -5,6 +5,7 @@ import Button from "@/components/Button"
 import TextArea from "@/components/TextArea"
 import { useState } from "react"
 import InformeHeaderContent from "@/components/InformeHeader"
+import MenuBtn from "@/components/MenuBtn"
 
 const FIELDS = [
 	{
@@ -94,33 +95,8 @@ function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 				opacity: 0.75,
 			}}
 		>
-			<View
-				style={{
-					alignSelf: "flex-end",
-					gap: 0,
-					position: "relative",
-				}}
-			>
-				<Button
-					variant="ghost"
-					iconRight="menu"
-					iconSize={34}
-					style={{ alignSelf: "flex-end", paddingVertical: 10 }}
-					onPress={() => setShowMenu(!showMenu)}
-				/>
-				<Text
-					style={{
-						fontSize: 12,
-						color: "#ccc",
-						position: "absolute",
-						bottom: 0,
-						left: 0,
-						transform: [{ translateX: "70%" }],
-					}}
-				>
-					menu
-				</Text>
-			</View>
+			<MenuBtn setShowMenu={setShowMenu} />
+
 			{showMenu && (
 				<View
 					style={{

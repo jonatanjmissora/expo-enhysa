@@ -15,6 +15,7 @@ import {
 	LeyendaColores,
 	TextoDimensiones,
 } from "../puntos/puntos-info"
+import MenuBtn from "@/components/MenuBtn"
 
 const FIELDS = [
 	{ key: "nombre", label: "Nombre" },
@@ -200,37 +201,8 @@ function MenuArea({
 				opacity: 0.75,
 			}}
 		>
-			<View
-				style={{
-					alignSelf: "flex-end",
-					gap: 0,
-					position: "relative",
-				}}
-			>
-				<Button
-					variant="ghost"
-					iconRight="menu"
-					iconSize={34}
-					style={{
-						alignSelf: "flex-end",
-						paddingVertical: 10,
-						paddingHorizontal: 2,
-					}}
-					onPress={() => setShowMenu(!showMenu)}
-				/>
-				<Text
-					style={{
-						fontSize: 12,
-						color: "#ccc",
-						position: "absolute",
-						bottom: 0,
-						left: 0,
-						transform: [{ translateX: "20%" }],
-					}}
-				>
-					menu
-				</Text>
-			</View>
+			<MenuBtn setShowMenu={setShowMenu} />
+
 			{showMenu && (
 				<View
 					style={{

@@ -2,12 +2,14 @@ import type { InformesIluminacionType } from "@/src/repositories/informes-ilumin
 import { useDeleteInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import { Pressable, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
-import MiniCard from "@/components/MiniCard"
-import { type ReactNode, useState } from "react"
+import { useState } from "react"
 import { router, useRouter } from "expo-router"
 import Button from "@/components/Button"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import InformeHeaderContent from "@/components/InformeHeader"
+import { getImageUri } from "@/src/media/image-storage"
+import ImageViewer from "@/components/ImageViewer"
+import MenuBtn from "@/components/MenuBtn"
 
 export default function GeneralContent({
 	informe,
@@ -23,183 +25,297 @@ export default function GeneralContent({
 	return (
 		<>
 			<InformeHeader informe={informe} />
-			<StampCard
-				label="Técnico"
-				onPress={() =>
-					router.push({
-						pathname: "/(informe)/iluminacion/[id]/CRUD/general/tecnico",
-						params: { id: informe.id },
-					})
-				}
-			>
-				<MiniCard
-					title={tecnico.nombre}
-					line1={tecnico.cargo}
-					line2={tecnico.matricula}
-					line3={tecnico.localidad}
-					imagen={tecnico.matriculaImg}
-				/>
-			</StampCard>
 
-			<StampCard
-				label="Empresa"
-				onPress={() =>
-					router.push({
-						pathname: "/(informe)/iluminacion/[id]/CRUD/general/empresa",
-						params: { id: informe.id },
-					})
-				}
-			>
-				<MiniCard
-					title={empresa.razonSocial?.toUpperCase()}
-					line1={empresa.cuit?.toUpperCase()}
-					line2={empresa.direccion?.toUpperCase()}
-					line3={empresa.localidad?.toUpperCase()}
-					imagen={empresa.logo}
-				/>
-			</StampCard>
+			<View style={{ gap: 30 }}>
+				<View style={{ gap: 14 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+							paddingBottom: 2,
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orangeAlpha,
+						}}
+					>
+						<Text
+							style={{
+								color: "#ccc",
+								fontWeight: "600",
+								fontSize: 18,
+							}}
+						>
+							Profesional
+						</Text>
+					</View>
 
-			<StampCard
-				label="Instrumento"
-				onPress={() =>
-					router.push({
-						pathname: "/(informe)/iluminacion/[id]/CRUD/general/instrumento",
-						params: { id: informe.id },
-					})
-				}
-			>
-				<MiniCard
-					title={instrumento.nombre}
-					line1={instrumento.marca}
-					line2={instrumento.modelo}
-					line3={
-						instrumento.fechaCalibracion
-							? new Date(instrumento.fechaCalibracion).toLocaleDateString(
-									"es-AR"
-								)
-							: ""
-					}
-					imagen={instrumentoImagen}
-				/>
-			</StampCard>
+					<MiniCard
+						title={tecnico.nombre}
+						line1={tecnico.cargo}
+						line2={tecnico.matricula}
+						line3={tecnico.localidad}
+						imagen={tecnico.matriculaImg}
+						onPress={() =>
+							router.push({
+								pathname: "/(informe)/iluminacion/[id]/CRUD/general/tecnico",
+								params: { id: informe.id },
+							})
+						}
+					/>
+				</View>
 
-			<GeneralData informe={informe} />
+				<View style={{ gap: 14 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginTop: 20,
+							paddingBottom: 2,
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orangeAlpha,
+						}}
+					>
+						<Text
+							style={{
+								color: "#ccc",
+								fontWeight: "600",
+								fontSize: 18,
+							}}
+						>
+							Empresa
+						</Text>
+					</View>
+
+					<MiniCard
+						title={empresa.razonSocial?.toUpperCase()}
+						line1={empresa.cuit?.toUpperCase()}
+						line2={empresa.direccion?.toUpperCase()}
+						line3={empresa.localidad?.toUpperCase()}
+						imagen={empresa.logo}
+						onPress={() =>
+							router.push({
+								pathname: "/(informe)/iluminacion/[id]/CRUD/general/empresa",
+								params: { id: informe.id },
+							})
+						}
+					/>
+				</View>
+
+				<View style={{ gap: 14 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginTop: 20,
+							paddingBottom: 2,
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orangeAlpha,
+						}}
+					>
+						<Text
+							style={{
+								color: "#ccc",
+								fontWeight: "600",
+								fontSize: 18,
+							}}
+						>
+							Instrumento
+						</Text>
+					</View>
+					<MiniCard
+						title={instrumento.nombre}
+						line1={instrumento.marca}
+						line2={instrumento.modelo}
+						line3={
+							instrumento.fechaCalibracion
+								? new Date(instrumento.fechaCalibracion).toLocaleDateString(
+										"es-AR"
+									)
+								: ""
+						}
+						imagen={instrumentoImagen}
+						onPress={() =>
+							router.push({
+								pathname:
+									"/(informe)/iluminacion/[id]/CRUD/general/instrumento",
+								params: { id: informe.id },
+							})
+						}
+					/>
+				</View>
+
+				<View style={{ gap: 14 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginTop: 20,
+							paddingBottom: 2,
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orangeAlpha,
+						}}
+					>
+						<Text
+							style={{
+								color: "#ccc",
+								fontWeight: "600",
+								fontSize: 18,
+							}}
+						>
+							Clima
+						</Text>
+					</View>
+					<GeneralData
+						informe={informe}
+						onPress={() =>
+							router.push({
+								pathname: "/(informe)/iluminacion/[id]/CRUD/general/clima",
+								params: { id: informe.id },
+							})
+						}
+					/>
+				</View>
+
+				<View>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							gap: 12,
+							alignItems: "center",
+						}}
+					>
+						<Text
+							style={{
+								color: theme.orange,
+								fontWeight: "600",
+								fontSize: 16,
+								letterSpacing: 1,
+							}}
+						>
+							fecha de comienzo
+						</Text>
+						<Text
+							style={{
+								color: "#94a3b8",
+								fontSize: 14,
+								marginTop: 2,
+							}}
+						>
+							{new Date(informe.createdAt).toLocaleDateString("es-AR")}
+						</Text>
+					</View>
+
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "center",
+							gap: 12,
+							alignItems: "center",
+						}}
+					>
+						<Text
+							style={{
+								color: theme.orange,
+								fontWeight: "600",
+								fontSize: 16,
+								letterSpacing: 1,
+							}}
+						>
+							fecha de finalización
+						</Text>
+						<Text
+							style={{
+								color: "#94a3b8",
+								fontSize: 14,
+								marginTop: 2,
+							}}
+						>
+							{new Date(informe.finishedAt).toLocaleDateString("es-AR")}
+						</Text>
+					</View>
+				</View>
+			</View>
 		</>
 	)
 }
 
-function StampCard({
-	label,
+function GeneralData({
+	informe,
 	onPress,
-	children,
 }: {
-	label: string
+	informe: InformesIluminacionType
 	onPress: () => void
-	children: ReactNode
 }) {
-	return (
-		<View style={{ gap: 4, alignItems: "center" }}>
-			<View
-				style={{
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					width: "100%",
-				}}
-			>
-				<Text
-					style={{
-						fontWeight: 600,
-						letterSpacing: 1.5,
-						color: "#ccc",
-						fontSize: 18,
-					}}
-				>
-					{label}
-				</Text>
-				<Text style={{ color: theme.orange, fontSize: 12 }}>editar</Text>
-			</View>
-			<Pressable onPress={onPress}>{children}</Pressable>
-		</View>
-	)
-}
-
-function GeneralData({ informe }: { informe: InformesIluminacionType }) {
 	const FIELDS = [
 		{ key: "estado", label: "Clima" },
 		{ key: "humedad", label: "Humedad" },
 		{ key: "temperatura", label: "Temperatura" },
-		{ key: "createdAt", label: "Comienzo" },
-		{ key: "finishedAt", label: "Finalización" },
 	] as const
 
 	return (
-		<View style={{ gap: 10, alignItems: "center" }}>
-			<View
-				style={{
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					gap: 6,
-					width: "100%",
-				}}
-			>
-				<Text
-					style={{
-						fontWeight: 600,
-						letterSpacing: 1.5,
-						color: "#ccc",
-						fontSize: 18,
-					}}
-				></Text>
-			</View>
-			{FIELDS.map(field => {
-				const value = informe[field.key]
-				let displayValue = "sin finalizar"
-				if (value) {
-					if (field.key === "createdAt" || field.key === "finishedAt") {
-						displayValue = new Date(value).toLocaleDateString("es-AR")
-					} else if (field.key === "humedad") {
-						displayValue = `${value} %`
-					} else if (field.key === "temperatura") {
-						displayValue = `${value}°C`
-					} else {
-						displayValue = value.toUpperCase()
+		<Pressable
+			onPress={onPress}
+			style={{
+				backgroundColor: theme.inputBG,
+				borderWidth: 1,
+				borderColor: theme.inputBorder,
+				borderRadius: 8,
+				padding: 14,
+				position: "relative",
+				width: "100%",
+			}}
+		>
+			<View style={{ gap: 10, alignItems: "center" }}>
+				{FIELDS.map(field => {
+					const value = informe[field.key]
+					let displayValue = "sin finalizar"
+					if (value) {
+						if (field.key === "humedad") {
+							displayValue = `${value} %`
+						} else if (field.key === "temperatura") {
+							displayValue = `${value}°C`
+						} else {
+							displayValue = value
+						}
 					}
-				}
-				return (
-					<View
-						key={field.key}
-						style={{ gap: 20, flexDirection: "row", alignItems: "center" }}
-					>
-						<Text
-							style={{
-								fontWeight: 600,
-								letterSpacing: 1.5,
-								color: "#ccc",
-								fontSize: 18,
-								width: "50%",
-								textAlign: "right",
-							}}
+					return (
+						<View
+							key={field.key}
+							style={{ gap: 20, flexDirection: "row", alignItems: "center" }}
 						>
-							{field.label} :{" "}
-						</Text>
-						<Text
-							style={{
-								fontWeight: 600,
-								letterSpacing: 1.5,
-								color: theme.orange,
-								fontSize: 18,
-								width: "50%",
-								textAlign: "left",
-							}}
-						>
-							{displayValue}
-						</Text>
-					</View>
-				)
-			})}
-		</View>
+							<Text
+								style={{
+									color: theme.orange,
+									fontWeight: "600",
+									fontSize: 16,
+									letterSpacing: 1,
+									width: "50%",
+									textAlign: "right",
+								}}
+							>
+								{field.label} :{" "}
+							</Text>
+							<Text
+								style={{
+									fontWeight: 600,
+									letterSpacing: 1.5,
+									color: "#94a3b8",
+									fontSize: 16,
+									width: "50%",
+									textAlign: "left",
+								}}
+							>
+								{displayValue}
+							</Text>
+						</View>
+					)
+				})}
+			</View>
+		</Pressable>
 	)
 }
 
@@ -242,37 +358,7 @@ function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 				opacity: 0.75,
 			}}
 		>
-			<View
-				style={{
-					alignSelf: "flex-end",
-					gap: 0,
-					position: "relative",
-				}}
-			>
-				<Button
-					variant="ghost"
-					iconRight="menu"
-					iconSize={34}
-					style={{
-						alignSelf: "flex-end",
-						paddingVertical: 10,
-						paddingHorizontal: 2,
-					}}
-					onPress={() => setShowMenu(!showMenu)}
-				/>
-				<Text
-					style={{
-						fontSize: 12,
-						color: "#ccc",
-						position: "absolute",
-						bottom: 0,
-						left: 0,
-						transform: [{ translateX: "20%" }],
-					}}
-				>
-					menu
-				</Text>
-			</View>
+			<MenuBtn setShowMenu={setShowMenu} />
 			{showMenu && (
 				<View
 					style={{
@@ -290,21 +376,6 @@ function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 						style={{ flex: 1, gap: 4 }}
 						onPress={confirmDelete}
 					/>
-					<Button
-						text="Editar"
-						iconLeft="pencil"
-						iconSize={18}
-						size="small"
-						style={{ flex: 1, gap: 4 }}
-						onPress={() => {
-							setShowMenu(false)
-							router.push({
-								pathname:
-									"/(informe)/iluminacion/[id]/CRUD/general/general-edit",
-								params: { id: informe.id },
-							})
-						}}
-					/>
 				</View>
 			)}
 			<ModalDeleteConfirm
@@ -318,5 +389,69 @@ function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 				onConfirm={handleDelete}
 			/>
 		</View>
+	)
+}
+
+function MiniCard({
+	title,
+	line1,
+	line2,
+	line3,
+	imagen,
+	onPress,
+}: {
+	title: string
+	line1: string
+	line2: string
+	line3: string
+	imagen: string
+	onPress: () => void
+}) {
+	const fontSize = title.length > 25 ? 14 : 18
+	return (
+		<Pressable
+			onPress={onPress}
+			style={{
+				backgroundColor: theme.inputBG,
+				borderWidth: 1,
+				borderColor: theme.inputBorder,
+				borderRadius: 8,
+				padding: 14,
+				position: "relative",
+				width: "100%",
+			}}
+		>
+			<ImageViewer
+				imgSource={{ uri: getImageUri(imagen) }}
+				contentFit="cover"
+				style={{
+					height: "80%",
+					aspectRatio: 4 / 3,
+					borderRadius: 4,
+					position: "absolute",
+					bottom: 8,
+					right: 8,
+				}}
+			/>
+			<View
+				style={{
+					flex: 1,
+					width: "100%",
+				}}
+			>
+				<Text style={{ color: theme.orange, fontWeight: "600", fontSize }}>
+					{title}
+				</Text>
+				<Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 2 }}>
+					{line1}
+				</Text>
+				<Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 2 }}>
+					{line2}
+				</Text>
+				<Text style={{ color: "#94a3b8", fontSize: 12, marginTop: 2 }}>
+					{line3}
+				</Text>
+			</View>
+		</Pressable>
 	)
 }

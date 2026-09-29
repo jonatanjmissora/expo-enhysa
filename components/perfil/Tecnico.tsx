@@ -10,6 +10,7 @@ import { useDataLockGuard } from "@/src/session/use-data-lock"
 import ImageViewer from "../ImageViewer"
 import ModalDeleteConfirm from "../ModalDeleteConfirm"
 import PictureNotFound from "../PictureNotFound"
+import MenuBtn from "../MenuBtn"
 
 const FIELDS = [
 	{ key: "nombre", label: "Nombre Completo", placeholder: "Juan Pérez" },
@@ -190,13 +191,7 @@ function MenuTecnico({ tecnico }: { tecnico: TecnicoType }) {
 				opacity: 0.75,
 			}}
 		>
-			<Button
-				variant="ghost"
-				iconLeft="menu"
-				iconSize={24}
-				style={{ alignSelf: "flex-end", paddingVertical: 10 }}
-				onPress={() => setShowMenu(!showMenu)}
-			/>
+			<MenuBtn setShowMenu={setShowMenu} />
 			{showMenu && (
 				<View
 					style={{
