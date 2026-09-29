@@ -4,43 +4,23 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useEmpresas } from "@/src/query/hooks/use-empresa"
 import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
-import { useTecnico } from "@/src/query/hooks/use-tecnico"
 import { router, useLocalSearchParams } from "expo-router"
 import { View, Text } from "react-native"
 
 export default function IluminacionGeneralEditContent() {
 	const { id } = useLocalSearchParams<{ id: string }>()
-	const { data: tecnico, isLoading: isLoadingTecnico } = useTecnico()
 	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
 	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
 		useInstrumentos()
 	const { data: informe, isLoading: isLoadingInforme } =
 		useInformeIluminacionById(id)
 
-	const loading =
-		isLoadingTecnico ||
-		isLoadingEmpresas ||
-		isLoadingInstrumentos ||
-		isLoadingInforme
+	const loading = isLoadingEmpresas || isLoadingInstrumentos || isLoadingInforme
 
 	if (loading) {
 		return (
 			<View style={{}}>
 				<Text style={{ color: "#cbd5e1" }}>Cargando...</Text>
-			</View>
-		)
-	}
-
-	if (!tecnico) {
-		return (
-			<View style={{}}>
-				<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
-					No tenes un técnico cargado
-				</Text>
-				<Button
-					text="Crear técnico"
-					onPress={() => router.push("/tecnico/nuevo")}
-				/>
 			</View>
 		)
 	}
@@ -117,7 +97,6 @@ export default function IluminacionGeneralEditContent() {
 			</View>
 
 			<IluminacionGeneralEditFormContent
-				tecnico={tecnico}
 				empresas={empresas}
 				instrumentos={instrumentos}
 				informe={informe}

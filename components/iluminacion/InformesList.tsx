@@ -2,18 +2,15 @@ import { View, Text } from "react-native"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { router } from "expo-router"
 import { theme } from "@/constants/theme"
-import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import { useInformesIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
-import { useEmpresas } from "@/src/query/hooks/use-empresa"
 import Button from "../Button"
 import InformeCard from "./InformeCard"
 
 export default function InformesList({ qnt }: { qnt: number }) {
 	const { data: informes, isLoading: isLoadingInformes } =
 		useInformesIluminacion()
-	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
 
-	if (isLoadingInformes || isLoadingEmpresas) {
+	if (isLoadingInformes) {
 		return (
 			<View
 				style={{
@@ -51,22 +48,14 @@ export default function InformesList({ qnt }: { qnt: number }) {
 			</View>
 		)
 	}
-	return (
-		<InformesListContent
-			informe={informes}
-			empresas={empresas ?? []}
-			qnt={qnt}
-		/>
-	)
+	return <InformesListContent informe={informes} qnt={qnt} />
 }
 
 function InformesListContent({
 	informe,
-	empresas,
 	qnt,
 }: {
 	informe: InformesIluminacionType[]
-	empresas: EmpresaType[] | null
 	qnt: number
 }) {
 	return (
@@ -78,7 +67,7 @@ function InformesListContent({
 			}}
 		>
 			{informe.slice(0, qnt).map(informe => (
-				<InformeCard key={informe.id} informe={informe} empresas={empresas} />
+				<InformeCard key={informe.id} informe={informe} />
 			))}
 			{informe.length > qnt && (
 				<View

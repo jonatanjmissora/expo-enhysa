@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
+	type CreateInformeConSnapshotInput,
 	type CreateInformesIluminacionInput,
+	type UpdateInformeGeneralInput,
+	type UpdateSnapshotInput,
 	informesIluminacionRepository,
 } from "@/src/repositories/informes-iluminacion.repository"
 import { useUserId } from "@/src/session/session-context"
@@ -33,8 +36,8 @@ export function useCreateInformeIluminacion() {
 	const qc = useQueryClient()
 	const userId = useUserId()
 	return useMutation({
-		mutationFn: (input: Omit<CreateInformesIluminacionInput, "userId">) =>
-			informesIluminacionRepository.createWithStamps({ ...input, userId }),
+		mutationFn: (input: Omit<CreateInformeConSnapshotInput, "userId">) =>
+			informesIluminacionRepository.createWithSnapshot({ ...input, userId }),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
 	})
@@ -50,6 +53,31 @@ export function useUpdateInformeIluminacion() {
 			id: string
 			input: Partial<Omit<CreateInformesIluminacionInput, "userId">>
 		}) => informesIluminacionRepository.update(id, input),
+		onSuccess: () =>
+			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
+	})
+}
+
+export function useUpdateInformeSnapshot() {
+	const qc = useQueryClient()
+	return useMutation({
+		mutationFn: ({ id, input }: { id: string; input: UpdateSnapshotInput }) =>
+			informesIluminacionRepository.updateSnapshot(id, input),
+		onSuccess: () =>
+			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
+	})
+}
+
+export function useUpdateInformeGeneral() {
+	const qc = useQueryClient()
+	return useMutation({
+		mutationFn: ({
+			id,
+			input,
+		}: {
+			id: string
+			input: UpdateInformeGeneralInput
+		}) => informesIluminacionRepository.updateGeneral(id, input),
 		onSuccess: () =>
 			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
 	})

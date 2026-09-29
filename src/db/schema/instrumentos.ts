@@ -10,8 +10,7 @@ export const CREATE_INSTRUMENTOS_TABLE = `
 		fechaCalibracion TEXT NOT NULL,
 		imagenesCalibracion TEXT NOT NULL,
 		imagenes TEXT NOT NULL,
-		userId TEXT NOT NULL,
-		informeId TEXT
+		userId TEXT NOT NULL
 	);
 `
 

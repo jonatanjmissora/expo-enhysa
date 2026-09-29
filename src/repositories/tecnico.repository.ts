@@ -1,11 +1,7 @@
 import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
-import {
-	CREATE_TECNICOS_TABLE,
-	MIGRATE_TECNICOS_EMPRESA,
-} from "../db/schema/tecnicos"
-import { imageService } from "../media/image-service"
+import { CREATE_TECNICOS_TABLE } from "../db/schema/tecnicos"
 import { syncQueueRepository } from "./sync-queue.repository"
 
 export type TecnicoType = {
@@ -20,7 +16,6 @@ export type TecnicoType = {
 	empresaLogo: string | null
 	dni: number | null
 	userId: string
-	informeId: string | null
 	updatedAt: string
 }
 
@@ -37,21 +32,24 @@ export type CreateTecnicoInput = {
 	userId: string
 }
 
+const SELECT_COLUMNS = `
+	id,
+	nombre,
+	telefono,
+	localidad,
+	cargo,
+	matricula,
+	matriculaImg,
+	firmaImg,
+	empresaLogo,
+	dni,
+	userId,
+	updatedAt
+`
+
 async function initializeTecnicosTable() {
 	const db = await getDatabase()
-
 	await db.execAsync(CREATE_TECNICOS_TABLE)
-
-	// Migration: allow NULL empresaLogo (table created in earlier builds had NOT NULL)
-	const shouldMigrate = await db
-		.getFirstAsync<{ count: number }>(
-			`SELECT COUNT(*) as count FROM pragma_table_info('tecnicos') WHERE name = 'empresaLogo' AND "notnull" = 1`
-		)
-		.then(r => r?.count ?? 0)
-
-	if (shouldMigrate) {
-		await db.execAsync(MIGRATE_TECNICOS_EMPRESA)
-	}
 }
 
 export const tecnicoRepository = {
@@ -78,10 +76,9 @@ export const tecnicoRepository = {
 					empresaLogo,
 					dni,
 					userId,
-					informeId,
 					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.nombre,
@@ -94,29 +91,11 @@ export const tecnicoRepository = {
 			input.empresaLogo ?? null,
 			input.dni ?? null,
 			input.userId,
-			null,
 			updatedAt
 		)
 
 		const tecnico = await db.getFirstAsync<TecnicoType>(
-			`
-				SELECT
-					id,
-					nombre,
-					telefono,
-					localidad,
-					cargo,
-					matricula,
-					matriculaImg,
-					firmaImg,
-					empresaLogo,
-					dni,
-					userId,
-					informeId,
-					updatedAt
-				FROM tecnicos
-				WHERE id = ?
-			`,
+			`SELECT ${SELECT_COLUMNS} FROM tecnicos WHERE id = ?`,
 			id
 		)
 
@@ -135,24 +114,7 @@ export const tecnicoRepository = {
 		const db = await getDatabase()
 
 		const tecnico = await db.getFirstAsync<TecnicoType>(
-			`
-				SELECT
-					id,
-					nombre,
-					telefono,
-					localidad,
-					cargo,
-					matricula,
-					matriculaImg,
-					firmaImg,
-					empresaLogo,
-					dni,
-					userId,
-					informeId,
-					updatedAt
-				FROM tecnicos
-				WHERE id = ?
-			`,
+			`SELECT ${SELECT_COLUMNS} FROM tecnicos WHERE id = ?`,
 			id
 		)
 
@@ -165,120 +127,11 @@ export const tecnicoRepository = {
 		const db = await getDatabase()
 
 		const tecnico = await db.getFirstAsync<TecnicoType>(
-			`
-				SELECT
-					id,
-					nombre,
-					telefono,
-					localidad,
-					cargo,
-					matricula,
-					matriculaImg,
-					firmaImg,
-					empresaLogo,
-					dni,
-					userId,
-					informeId,
-					updatedAt
-				FROM tecnicos
-				WHERE userId = ? AND informeId IS NULL
-				LIMIT 1
-			`,
+			`SELECT ${SELECT_COLUMNS} FROM tecnicos WHERE userId = ? LIMIT 1`,
 			userId
 		)
 
 		return tecnico ?? null
-	},
-
-	/**
-	 * Crea una copia "congelada" de un técnico vivo, asociada a un informe.
-	 * La copia no es seleccionable para informes nuevos y no se ve en /perfil.
-	 */
-	async createStamp(sourceId: string, informeId: string): Promise<TecnicoType> {
-		const source = await this.getById(sourceId)
-		if (!source) {
-			throw new Error("No se encontró el técnico a copiar")
-		}
-
-		await assertWritable(source.userId)
-		await initializeTecnicosTable()
-
-		const db = await getDatabase()
-		const id = randomUUID()
-		const updatedAt = new Date().toISOString()
-
-		const matriculaImg =
-			(await imageService.copyImage(source.matriculaImg, source.userId)) ?? ""
-		const firmaImg =
-			(await imageService.copyImage(source.firmaImg, source.userId)) ?? ""
-		const empresaLogo = await imageService.copyImage(
-			source.empresaLogo,
-			source.userId
-		)
-
-		await db.runAsync(
-			`
-				INSERT INTO tecnicos (
-					id,
-					nombre,
-					telefono,
-					localidad,
-					cargo,
-					matricula,
-					matriculaImg,
-					firmaImg,
-					empresaLogo,
-					dni,
-					userId,
-					informeId,
-					updatedAt
-				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-			`,
-			id,
-			source.nombre,
-			source.telefono,
-			source.localidad,
-			source.cargo,
-			source.matricula,
-			matriculaImg,
-			firmaImg,
-			empresaLogo,
-			source.dni ?? null,
-			source.userId,
-			informeId,
-			updatedAt
-		)
-
-		await syncQueueRepository.enqueue(source.userId, "tecnicos", id, "upsert")
-
-		const stamp = await db.getFirstAsync<TecnicoType>(
-			`
-				SELECT
-					id,
-					nombre,
-					telefono,
-					localidad,
-					cargo,
-					matricula,
-					matriculaImg,
-					firmaImg,
-					empresaLogo,
-					dni,
-					userId,
-					informeId,
-					updatedAt
-				FROM tecnicos
-				WHERE id = ?
-			`,
-			id
-		)
-
-		if (!stamp) {
-			throw new Error("No se pudo recuperar la copia del técnico")
-		}
-
-		return stamp
 	},
 
 	async delete(id: string): Promise<void> {
@@ -307,7 +160,7 @@ export const tecnicoRepository = {
 		const db = await getDatabase()
 
 		const existing = await db.getFirstAsync<TecnicoType>(
-			`SELECT * FROM tecnicos WHERE id = ? LIMIT 1`,
+			`SELECT ${SELECT_COLUMNS} FROM tecnicos WHERE id = ? LIMIT 1`,
 			id
 		)
 		if (!existing) {

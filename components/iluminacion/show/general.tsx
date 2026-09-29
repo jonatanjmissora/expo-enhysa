@@ -1,8 +1,5 @@
-import { EmpresaType } from "@/src/repositories/empresa.repository"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { useDeleteInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
-import { InstrumentoType } from "@/src/repositories/instrumento.repository"
-import { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { Pressable, Text, View } from "react-native"
 import { theme } from "@/constants/theme"
 import MiniCard from "@/components/MiniCard"
@@ -14,19 +11,14 @@ import InformeHeaderContent from "@/components/InformeHeader"
 
 export default function GeneralContent({
 	informe,
-	tecnico,
-	empresa,
-	instrumento,
 }: {
 	informe: InformesIluminacionType
-	tecnico: TecnicoType
-	empresa: EmpresaType
-	instrumento: InstrumentoType
 }) {
+	const tecnico = informe.tecnicoSnapshot
+	const empresa = informe.empresaSnapshot
+	const instrumento = informe.instrumentoSnapshot
 	const instrumentoImagen =
-		parseImages(instrumento.imagenes)[0] ??
-		parseImages(instrumento.imagenesCalibracion)[0] ??
-		null
+		instrumento.imagenes[0] ?? instrumento.imagenesCalibracion[0] ?? null
 
 	return (
 		<>
@@ -35,9 +27,8 @@ export default function GeneralContent({
 				label="Técnico"
 				onPress={() =>
 					router.push({
-						pathname:
-							"/(informe)/iluminacion/[id]/CRUD/general/tecnico/[tecnicoId]",
-						params: { id: informe.id, tecnicoId: tecnico.id },
+						pathname: "/(informe)/iluminacion/[id]/CRUD/general/tecnico",
+						params: { id: informe.id },
 					})
 				}
 			>
@@ -54,9 +45,8 @@ export default function GeneralContent({
 				label="Empresa"
 				onPress={() =>
 					router.push({
-						pathname:
-							"/(informe)/iluminacion/[id]/CRUD/general/empresa/[empresaId]",
-						params: { id: informe.id, empresaId: empresa.id },
+						pathname: "/(informe)/iluminacion/[id]/CRUD/general/empresa",
+						params: { id: informe.id },
 					})
 				}
 			>
@@ -73,9 +63,8 @@ export default function GeneralContent({
 				label="Instrumento"
 				onPress={() =>
 					router.push({
-						pathname:
-							"/(informe)/iluminacion/[id]/CRUD/general/instrumento/[instrumentoId]",
-						params: { id: informe.id, instrumentoId: instrumento.id },
+						pathname: "/(informe)/iluminacion/[id]/CRUD/general/instrumento",
+						params: { id: informe.id },
 					})
 				}
 			>
@@ -83,9 +72,13 @@ export default function GeneralContent({
 					title={instrumento.nombre}
 					line1={instrumento.marca}
 					line2={instrumento.modelo}
-					line3={new Date(instrumento.fechaCalibracion).toLocaleDateString(
-						"es-AR"
-					)}
+					line3={
+						instrumento.fechaCalibracion
+							? new Date(instrumento.fechaCalibracion).toLocaleDateString(
+									"es-AR"
+								)
+							: ""
+					}
 					imagen={instrumentoImagen}
 				/>
 			</StampCard>
@@ -208,17 +201,6 @@ function GeneralData({ informe }: { informe: InformesIluminacionType }) {
 			})}
 		</View>
 	)
-}
-
-function parseImages(value: string): string[] {
-	try {
-		const arr = JSON.parse(value)
-		return Array.isArray(arr)
-			? (arr as unknown[]).filter((v): v is string => typeof v === "string")
-			: []
-	} catch {
-		return []
-	}
 }
 
 function InformeHeader({ informe }: { informe: InformesIluminacionType }) {

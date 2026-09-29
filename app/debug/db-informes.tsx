@@ -15,9 +15,6 @@ type Row = Record<string, unknown>
 
 type InformeBundle = {
 	informe: Row
-	tecnico: Row | null
-	empresa: Row | null
-	instrumento: Row | null
 	areas: Row[]
 	localizadas: Row[]
 }
@@ -37,18 +34,6 @@ export default function DebugDbInformes() {
 		const result: InformeBundle[] = []
 		for (const informe of informes) {
 			const informeId = String(informe.id)
-			const tecnico = await db.getFirstAsync<Row>(
-				"SELECT * FROM tecnicos WHERE id = ?",
-				String(informe.tecnicoId)
-			)
-			const empresa = await db.getFirstAsync<Row>(
-				"SELECT * FROM empresas WHERE id = ?",
-				String(informe.empresaId)
-			)
-			const instrumento = await db.getFirstAsync<Row>(
-				"SELECT * FROM instrumentos WHERE id = ?",
-				String(informe.instrumentoId)
-			)
 			const areas = await db.getAllAsync<Row>(
 				"SELECT * FROM areas_iluminacion WHERE reportId = ?",
 				informeId
@@ -60,9 +45,6 @@ export default function DebugDbInformes() {
 
 			result.push({
 				informe,
-				tecnico,
-				empresa,
-				instrumento,
 				areas,
 				localizadas,
 			})
@@ -106,39 +88,29 @@ export default function DebugDbInformes() {
 }
 
 function InformeAccordion({ bundle }: { bundle: InformeBundle }) {
-	const { informe, tecnico, empresa, instrumento, areas, localizadas } = bundle
+	const { informe, areas, localizadas } = bundle
 
 	return (
 		<Accordion
 			label={`${clip(informe.title)} - ${clip(informe.id, 8)}`}
 			level={1}
 		>
-			{tecnico && (
-				<Accordion label={`Técnico - ${clip(tecnico.nombre)}`} level={2}>
-					<DataRows row={tecnico} />
-				</Accordion>
-			)}
-
-			{empresa && (
-				<Accordion label={`Empresa - ${clip(empresa.razonSocial)}`} level={2}>
-					<DataRows row={empresa} />
-				</Accordion>
-			)}
-
-			{instrumento && (
-				<Accordion
-					label={`Instrumento - ${clip(
-						`${instrumento.nombre} ${instrumento.modelo}`
-					)}`}
-					level={2}
-				>
-					<DataRows row={instrumento} />
-				</Accordion>
-			)}
-
 			<Accordion label="Informe data" level={2}>
 				<DataRows row={informe} />
 			</Accordion>
+
+			<SnapshotAccordion
+				label="Técnico (snapshot)"
+				value={informe.tecnicoSnapshot}
+			/>
+			<SnapshotAccordion
+				label="Empresa (snapshot)"
+				value={informe.empresaSnapshot}
+			/>
+			<SnapshotAccordion
+				label="Instrumento (snapshot)"
+				value={informe.instrumentoSnapshot}
+			/>
 
 			<Accordion label={`Áreas (${areas.length})`} level={2}>
 				{areas.length === 0 ? (
@@ -180,6 +152,36 @@ function InformeAccordion({ bundle }: { bundle: InformeBundle }) {
 	)
 }
 
+function SnapshotAccordion({
+	label,
+	value,
+}: {
+	label: string
+	value: unknown
+}) {
+	const parsed = parseSnapshot(value)
+
+	return (
+		<Accordion label={label} level={2}>
+			{parsed ? (
+				<DataRows row={parsed} />
+			) : (
+				<Text style={emptyInline}>Sin datos</Text>
+			)}
+		</Accordion>
+	)
+}
+
+function parseSnapshot(value: unknown): Row | null {
+	if (typeof value !== "string" || !value) return null
+	try {
+		const parsed = JSON.parse(value)
+		return parsed && typeof parsed === "object" ? (parsed as Row) : null
+	} catch {
+		return null
+	}
+}
+
 function Accordion({
 	label,
 	level,
@@ -219,7 +221,7 @@ function DataRows({ row }: { row: Row }) {
 				<View key={key} style={fieldRow}>
 					<Text style={fieldKey}>{key}:</Text>
 					<Text style={fieldValue} numberOfLines={4}>
-						{String(value ?? "NULL")}
+						{String(value).substring(30, 0) ?? "NULL"}
 					</Text>
 				</View>
 			))}

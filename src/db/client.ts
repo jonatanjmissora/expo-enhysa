@@ -68,7 +68,7 @@ async function migrateDatabase(database: SQLite.SQLiteDatabase) {
 	}
 }
 
-const SCHEMA_VERSION = 4
+const SCHEMA_VERSION = 5
 
 /**
  * Resets únicos (etapa tester):
@@ -79,6 +79,8 @@ const SCHEMA_VERSION = 4
  *   locales viejas `credit_history` / `pending_payments`.
  * - v4: snapshot de técnico/empresa/instrumento por informe (`informeId`);
  *   se resetean las tablas de negocio para recrearlas con la nueva columna.
+ * - v5: el snapshot pasa a vivir dentro del informe (3 columnas JSON);
+ *   las entidades dejan de tener `informeId` y los informes `tecnicoId`.
  */
 async function runOneTimeResets(database: SQLite.SQLiteDatabase) {
 	const row = await database.getFirstAsync<{ user_version: number }>(
@@ -109,6 +111,19 @@ async function runOneTimeResets(database: SQLite.SQLiteDatabase) {
 	}
 
 	if (version < 4) {
+		for (const table of [
+			"tecnicos",
+			"empresas",
+			"instrumentos",
+			"informes_iluminacion",
+			"areas_iluminacion",
+			"localizadas_iluminacion",
+		]) {
+			await database.execAsync(`DROP TABLE IF EXISTS ${table}`)
+		}
+	}
+
+	if (version < 5) {
 		for (const table of [
 			"tecnicos",
 			"empresas",

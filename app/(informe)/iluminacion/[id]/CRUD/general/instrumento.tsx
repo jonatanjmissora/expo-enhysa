@@ -1,23 +1,17 @@
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
-import TecnicoEditForm from "@/components/perfil/TecnicoEditForm"
+import InstrumentoSnapshotForm from "@/components/informe/InstrumentoSnapshotForm"
 import { theme } from "@/constants/theme"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
-import { useTecnicoById } from "@/src/query/hooks/use-tecnico"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 
-export default function TecnicoStamp() {
-	const { id, tecnicoId } = useLocalSearchParams<{
-		id: string
-		tecnicoId: string
-	}>()
-	const { data: informe, isLoading: isLoadingInforme } =
-		useInformeIluminacionById(id)
-	const { data: tecnico, isLoading } = useTecnicoById(tecnicoId)
+export default function InstrumentoSnapshot() {
+	const { id } = useLocalSearchParams<{ id: string }>()
+	const { data: informe, isLoading } = useInformeIluminacionById(id)
 	const router = useRouter()
 
-	if (isLoading || isLoadingInforme || !informe || !tecnico) {
+	if (isLoading || !informe) {
 		return (
 			<View
 				style={{
@@ -43,18 +37,19 @@ export default function TecnicoStamp() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Técnico del informe" />
+				<VolverBtn title="Instrumento del informe" />
 
 				{locked && (
 					<Text style={{ color: theme.orange, textAlign: "center" }}>
-						El informe está desbloqueado: los datos del técnico quedaron
+						El informe está desbloqueado: los datos del instrumento quedaron
 						congelados y no se pueden editar.
 					</Text>
 				)}
 
-				<TecnicoEditForm
-					tecnico={tecnico}
-					disabled={locked}
+				<InstrumentoSnapshotForm
+					informeId={informe.id}
+					snapshot={informe.instrumentoSnapshot}
+					locked={locked}
 					onSaved={() => router.back()}
 				/>
 			</ScrollView>

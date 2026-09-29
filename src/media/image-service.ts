@@ -79,8 +79,8 @@ export const imageService = {
 
 	/**
 	 * Duplica una imagen (archivo + metadata) con un nuevo `imageId`.
-	 * Se usa para los stamps: cada copia del informe tiene sus propias imágenes,
-	 * así editar/borrar la del registro vivo no la afecta.
+	 * Se usa para los snapshots: cada informe tiene sus propias imágenes, así
+	 * editar/borrar las del registro vivo no las afecta.
 	 */
 	async copyImage(
 		sourceImageId: string | null,

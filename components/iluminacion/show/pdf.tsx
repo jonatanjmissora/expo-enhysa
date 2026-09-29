@@ -19,10 +19,7 @@ import {
 	savePdfToDevice,
 } from "@/src/pdf/generate"
 import { useAreasIluminacion } from "@/src/query/hooks/use-area-iluminacion"
-import { useEmpresaById } from "@/src/query/hooks/use-empresa"
-import { useInstrumentoById } from "@/src/query/hooks/use-instrumento"
 import { useLocalizadasIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
-import { useTecnicoById } from "@/src/query/hooks/use-tecnico"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import type { InformeIluminacionPdfTipo } from "@/src/pdf/documents/informe-iluminacion/types"
 import ImageViewer from "@/components/ImageViewer"
@@ -128,19 +125,8 @@ function PdfPreview({
 	const qc = useQueryClient()
 	const { data: credits } = useCredits()
 	const updateInforme = useUpdateInformeIluminacion()
-	const { data: empresa, isLoading: isLoadingEmpresa } = useEmpresaById(
-		informe.empresaId
-	)
-	const { data: tecnico, isLoading: isLoadingTecnico } = useTecnicoById(
-		informe.tecnicoId
-	)
-	const { data: instrumento, isLoading: isLoadingInstrumento } =
-		useInstrumentoById(informe.instrumentoId)
-	const { data: areas, isLoading: isLoadingAreas } = useAreasIluminacion(
-		informe.id
-	)
-	const { data: localizadas, isLoading: isLoadingLocalizadas } =
-		useLocalizadasIluminacion(informe.id)
+	const { data: areas } = useAreasIluminacion(informe.id)
+	const { data: localizadas } = useLocalizadasIluminacion(informe.id)
 
 	const [html, setHtml] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -148,16 +134,8 @@ function PdfPreview({
 	const [unlocking, setUnlocking] = useState(false)
 	const offline = useIsOffline()
 
-	const isLoading =
-		isLoadingEmpresa ||
-		isLoadingTecnico ||
-		isLoadingInstrumento ||
-		isLoadingAreas ||
-		isLoadingLocalizadas
-	const notFound = !isLoading && (!empresa || !tecnico || !instrumento)
-
 	useEffect(() => {
-		if (!empresa || !tecnico || !instrumento || !areas || !localizadas) return
+		if (!areas || !localizadas) return
 
 		let active = true
 		setHtml(null)
@@ -165,9 +143,6 @@ function PdfPreview({
 
 		buildInformeIluminacionData({
 			informe,
-			empresa,
-			tecnico,
-			instrumento,
 			areas,
 			localizadas,
 			tipo,
@@ -191,7 +166,7 @@ function PdfPreview({
 		return () => {
 			active = false
 		}
-	}, [informe, empresa, tecnico, instrumento, areas, localizadas, tipo])
+	}, [informe, areas, localizadas, tipo])
 
 	const filename = `${informe.title}${
 		tipo === "reducida" ? " (reducida)" : ""
@@ -250,9 +225,7 @@ function PdfPreview({
 		}
 	}
 
-	const message = notFound
-		? "Verifique su perfil. Técnico, empresa o instrumento asociado al informe no existe"
-		: error
+	const message = error
 
 	return (
 		<View style={{ flex: 1, gap: 12 }}>

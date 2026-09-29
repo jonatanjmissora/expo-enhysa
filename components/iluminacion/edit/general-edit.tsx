@@ -1,9 +1,8 @@
 import { ScrollView, Text, View } from "react-native"
 import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
-import { useUpdateInformeIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
+import { useUpdateInformeGeneral } from "@/src/query/hooks/use-informe-iluminacion"
 import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
-import type { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
 import { iluminacionGeneralFormValidator } from "@/src/db/schema/informes-iluminacion"
@@ -16,20 +15,18 @@ import InformeHeaderContent from "@/components/InformeHeader"
 import { hasChanges } from "@/src/utils/hasChanges"
 
 type Props = {
-	tecnico: TecnicoType
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
 	informe: InformesIluminacionType
 }
 
 export default function IluminacionGeneralEditFormContent({
-	tecnico,
 	empresas,
 	instrumentos,
 	informe,
 }: Props) {
 	const [error, setError] = useState<string | null>(null)
-	const updateInforme = useUpdateInformeIluminacion()
+	const updateGeneral = useUpdateInformeGeneral()
 
 	const defaultValues = {
 		empresaId: informe.empresaId,
@@ -51,7 +48,7 @@ export default function IluminacionGeneralEditFormContent({
 			try {
 				const newTitle = updateTitle(informe, empresas, value.empresaId)
 
-				await updateInforme.mutateAsync({
+				await updateGeneral.mutateAsync({
 					id: informe.id,
 					input: {
 						empresaId: value.empresaId,
@@ -80,7 +77,7 @@ export default function IluminacionGeneralEditFormContent({
 				<InformeHeaderContent informe={informe} />
 			</View>
 			<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-				<TecnicoContent tecnico={tecnico} />
+				<TecnicoContent nombre={informe.tecnicoSnapshot.nombre} />
 
 				<View
 					style={{
@@ -337,7 +334,7 @@ export default function IluminacionGeneralEditFormContent({
 	)
 }
 
-function TecnicoContent({ tecnico }: { tecnico: TecnicoType }) {
+function TecnicoContent({ nombre }: { nombre: string }) {
 	return (
 		<View
 			style={{
@@ -370,7 +367,7 @@ function TecnicoContent({ tecnico }: { tecnico: TecnicoType }) {
 					alignSelf: "flex-end",
 				}}
 			>
-				{String(tecnico?.nombre)?.toUpperCase()}
+				{String(nombre)?.toUpperCase()}
 			</Text>
 		</View>
 	)

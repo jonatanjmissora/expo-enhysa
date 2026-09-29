@@ -2,20 +2,16 @@ import { getImageUri } from "@/src/media/image-storage"
 import { theme } from "@/constants/theme"
 import { router } from "expo-router"
 import { Text, Pressable, View } from "react-native"
-import { EmpresaType } from "@/src/repositories/empresa.repository"
 import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import ImageViewer from "../ImageViewer"
 import { Ionicons } from "@expo/vector-icons"
 
 export default function InformeCard({
 	informe,
-	empresas,
 }: {
 	informe: InformesIluminacionType
-	empresas: EmpresaType[] | null
 }) {
-	const empresa = empresas?.find(e => e.id === informe.empresaId)
-	if (!empresa) return null
+	const empresa = informe.empresaSnapshot
 
 	return (
 		<Pressable

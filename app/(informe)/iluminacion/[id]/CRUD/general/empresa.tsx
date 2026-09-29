@@ -1,23 +1,17 @@
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
-import EmpresaEditForm from "@/components/perfil/EmpresaEditForm"
+import EmpresaSnapshotForm from "@/components/informe/EmpresaSnapshotForm"
 import { theme } from "@/constants/theme"
-import { useEmpresaById } from "@/src/query/hooks/use-empresa"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 
-export default function EmpresaStamp() {
-	const { id, empresaId } = useLocalSearchParams<{
-		id: string
-		empresaId: string
-	}>()
-	const { data: informe, isLoading: isLoadingInforme } =
-		useInformeIluminacionById(id)
-	const { data: empresa, isLoading } = useEmpresaById(empresaId)
+export default function EmpresaSnapshot() {
+	const { id } = useLocalSearchParams<{ id: string }>()
+	const { data: informe, isLoading } = useInformeIluminacionById(id)
 	const router = useRouter()
 
-	if (isLoading || isLoadingInforme || !informe || !empresa) {
+	if (isLoading || !informe) {
 		return (
 			<View
 				style={{
@@ -52,9 +46,10 @@ export default function EmpresaStamp() {
 					</Text>
 				)}
 
-				<EmpresaEditForm
-					empresa={empresa}
-					disabled={locked}
+				<EmpresaSnapshotForm
+					informeId={informe.id}
+					snapshot={informe.empresaSnapshot}
+					locked={locked}
 					onSaved={() => router.back()}
 				/>
 			</ScrollView>

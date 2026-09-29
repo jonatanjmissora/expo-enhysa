@@ -12,33 +12,8 @@ export const CREATE_TECNICOS_TABLE = `
 		firmaImg TEXT NOT NULL,
 		empresaLogo TEXT,
 		dni INTEGER,
-		userId TEXT NOT NULL,
-		informeId TEXT
+		userId TEXT NOT NULL
 	);
-`
-
-export const MIGRATE_TECNICOS_EMPRESA = `
-	DROP TABLE IF EXISTS tecnicos_new;
-	CREATE TABLE tecnicos_new (
-		id TEXT PRIMARY KEY NOT NULL,
-		nombre TEXT NOT NULL,
-		telefono TEXT NOT NULL,
-		localidad TEXT NOT NULL,
-		cargo TEXT NOT NULL,
-		matricula TEXT NOT NULL,
-		matriculaImg TEXT NOT NULL,
-		firmaImg TEXT NOT NULL,
-		empresaLogo TEXT,
-		dni INTEGER,
-		userId TEXT NOT NULL,
-		informeId TEXT
-	);
-	INSERT INTO tecnicos_new
-		(id, nombre, telefono, localidad, cargo, matricula, matriculaImg, firmaImg, empresaLogo, dni, userId, informeId)
-	SELECT id, nombre, telefono, localidad, cargo, matricula, matriculaImg, firmaImg, empresaLogo, dni, userId, informeId
-	FROM tecnicos;
-	DROP TABLE tecnicos;
-	ALTER TABLE tecnicos_new RENAME TO tecnicos;
 `
 
 export const tecnicoFormValidator = z.object({

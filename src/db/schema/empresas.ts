@@ -11,8 +11,7 @@ export const CREATE_EMPRESAS_TABLE = `
 		codigoPostal TEXT NOT NULL,
 		horarios TEXT NOT NULL,
 		logo TEXT NOT NULL,
-		userId TEXT NOT NULL,
-		informeId TEXT
+		userId TEXT NOT NULL
 	);
 `
 

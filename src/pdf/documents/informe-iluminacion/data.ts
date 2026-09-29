@@ -1,43 +1,27 @@
 import { imageIdToDataUri, imageIdsToDataUris } from "@/src/media/image-base64"
 import type { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import type { LocalizadaIluminacionType } from "@/src/db/schema/localizadas-iluminacion"
-import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
-import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
-import type { TecnicoType } from "@/src/repositories/tecnico.repository"
 import type {
 	InformeIluminacionPdfData,
 	InformeIluminacionPdfTipo,
 } from "./types"
 
-function parseImages(value: string): string[] {
-	try {
-		const parsed = JSON.parse(value)
-		return Array.isArray(parsed)
-			? parsed.filter((item): item is string => typeof item === "string")
-			: []
-	} catch {
-		return []
-	}
-}
-
 export async function buildInformeIluminacionData({
 	informe,
-	empresa,
-	tecnico,
-	instrumento,
 	areas,
 	localizadas,
 	tipo = "completa",
 }: {
 	informe: InformesIluminacionType
-	empresa: EmpresaType
-	tecnico: TecnicoType
-	instrumento: InstrumentoType
 	areas: AreaIluminacionType[]
 	localizadas: LocalizadaIluminacionType[]
 	tipo?: InformeIluminacionPdfTipo
 }): Promise<InformeIluminacionPdfData> {
+	const empresa = informe.empresaSnapshot
+	const tecnico = informe.tecnicoSnapshot
+	const instrumento = informe.instrumentoSnapshot
+
 	const [logo, matriculaImg, firmaImg, empresaLogo] = await Promise.all([
 		empresa.logo ? imageIdToDataUri(empresa.logo) : Promise.resolve(null),
 		tecnico.matriculaImg
@@ -52,11 +36,9 @@ export async function buildInformeIluminacionData({
 	])
 
 	const imagenesCalibracion = await imageIdsToDataUris(
-		parseImages(instrumento.imagenesCalibracion)
+		instrumento.imagenesCalibracion
 	)
-	const imagenesInstrumento = await imageIdsToDataUris(
-		parseImages(instrumento.imagenes)
-	)
+	const imagenesInstrumento = await imageIdsToDataUris(instrumento.imagenes)
 
 	return {
 		tipo,

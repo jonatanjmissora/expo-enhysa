@@ -90,17 +90,13 @@ CREATE TABLE IF NOT EXISTS expo_tecnicos (
     firma_img      TEXT,
     empresa_logo   TEXT,
     dni            INTEGER,
-    informe_id     TEXT,
     deleted_at     TIMESTAMPTZ,
     updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_expo_tecnicos_user ON expo_tecnicos (user_id);
-CREATE INDEX IF NOT EXISTS idx_expo_tecnicos_informe ON expo_tecnicos (informe_id);
 ```
 
 - `id` = el `id` local del técnico (mismo UUID) → idempotencia.
-- **`informe_id`**: `NULL` = registro **vivo** (seleccionable); seteado = **copia
-  (stamp)** de ese informe. La nube guarda **vivos y copias** en la misma tabla.
 - **Soft delete**: `deleted_at` (no se borra la fila).
 - `updated_at` del server para ordenar.
 
@@ -112,19 +108,15 @@ CREATE INDEX IF NOT EXISTS idx_expo_tecnicos_informe ON expo_tecnicos (informe_i
 
 ## 3. Flujo de escritura (repo)
 
-En `tecnicoRepository.create/update/delete` **y en `createStamp`**:
+En `tecnicoRepository.create/update/delete`:
 
 1. Escribe en SQLite (como hoy).
 2. Llama `enqueue(userId, 'tecnicos', id, 'upsert' | 'delete')`.
 3. Dispara `void syncTecnicos(userId)` (fire-and-forget: intenta el flush).
 
-`createStamp` (se ejecuta al crear un informe) también encola el `upsert` de la
-copia, con su `informeId`. Tanto la tabla local como la de la nube guardan **vivos y
-copias**; el filtro `informeId IS NULL` es **solo** para las consultas de la app
-(`Select` del informe nuevo y `/perfil`).
-
-> **Al eliminar un informe**: se borran sus copias (y sus imágenes copiadas), así que
-> también hay que encolar el `delete` de cada stamp.
+> **Snapshot de informes**: el snapshot de técnico/empresa/instrumento vive dentro
+> de `informes_iluminacion` (columnas JSON) y **no** se sincroniza todavía. El sync
+> cubre solo los registros vivos.
 
 El flush:
 - Lee `sync_queue` del usuario.
@@ -160,8 +152,6 @@ Al confirmar → `flushTecnicos`.
 Al **loguearse** (o registrar) y establecer sesión:
 
 1. Consultar si la nube tiene datos del usuario (`GET /tecnicos` o `/sync/summary`).
-   El restore trae **todas** las filas (vivos **y copias**), porque un informe puede
-   referenciar copias.
 2. Si la nube tiene datos **y** el local está **vacío** para ese usuario (instalación
    nueva): popup
    > "Datos en la nube — Encontramos datos asociados a tu cuenta. ¿Querés traerlos a
@@ -206,7 +196,6 @@ Todo dentro de una transacción por request.
 ### Fase 1 — Local (cola)
 - [x] `sync_queue` schema + repo.
 - [x] `tecnicoRepository.create/update/delete` → `enqueue`.
-- [ ] `tecnicoRepository.createStamp` → `enqueue` (upsert de la copia).
 - [x] Registrar tabla en `db/client.ts`.
 
 ### Fase 2 — Sync Manager
