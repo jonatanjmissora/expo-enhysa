@@ -101,8 +101,14 @@ CREATE INDEX IF NOT EXISTS idx_expo_tecnicos_user ON expo_tecnicos (user_id);
 - `updated_at` del server para ordenar.
 
 > **Imágenes**: `matricula_img`, `firma_img`, `empresa_logo` son `imageId` locales.
-> Se sincronizan como string, pero **no son portables** entre dispositivos hasta
-> que exista el upload a la nube (uploadthing). Fase futura.
+> El archivo real vive en el **filesystem del dispositivo**; en la nube solo se guarda
+> el `imageId` (string), por lo que **no son portables** entre dispositivos hasta que
+> exista el upload a la nube (uploadthing). Fase futura.
+>
+> **Al restaurar** (local vacío en otro dispositivo), los `imageId` llegan pero **no los
+> archivos**. Antes de asignar cada imagen hay que **verificar que el archivo exista**
+> localmente: si no existe, usar un **placeholder / imagen genérica** (o null) en vez de
+> un `imageId` roto. Esto aplica a `matricula_img`, `firma_img` y `empresa_logo`.
 
 ---
 
@@ -147,25 +153,100 @@ Al confirmar → `flushTecnicos`.
 
 ---
 
-## 5. Restore (reinstalación)
+## 5. Restore / Merge (reinstalación)
 
-Al **loguearse** (o registrar) y establecer sesión:
+Se ejecuta **después** de la migración `user-1 → userId` (`auth.service.ts`), al
+establecer sesión.
 
-1. Consultar si la nube tiene datos del usuario (`GET /tecnicos` o `/sync/summary`).
-2. Si la nube tiene datos **y** el local está **vacío** para ese usuario (instalación
-   nueva): popup
-   > "Datos en la nube — Encontramos datos asociados a tu cuenta. ¿Querés traerlos a
-   > este dispositivo o empezar de cero?"
+### 5.1 Matriz de decisión (4 estados)
 
-   - **Traer**: borrar el local del usuario y cargar desde la nube (restore).
-   - **Empezar de cero**: no traer nada. Si había datos de `user-1`, se migran al
-     `userId` de la nube (lógica ya implementada); si no, las tablas quedan vacías.
+Se consulta la nube (`GET /tecnicos` o `/sync/summary`) **y** se cuenta el local del
+usuario. Según la combinación:
 
-3. Si el local **ya tiene datos** del usuario (usuario recurrente): no preguntar, solo
-   sincronizar normalmente.
+| local | nube | Acción |
+|-------|------|--------|
+| vacío | vacío | No hacer nada. |
+| vacío | con datos | **Popup restore**: `Traer` \| `Empezar de cero`. |
+| con datos | vacío | Push del local a la nube (sin popup, sync normal). |
+| con datos | con datos | **Popup merge**: `Combinar` \| `Solo nube` \| `Solo local`. |
 
-**Detección de "instalación nueva"**: `hasRegistered === false` antes del login, o el
-local del usuario está vacío.
+> El caso **"con datos / con datos"** es el que el plan viejo no contemplaba: una
+> **reinstalación** permite escribir como `user-1` (porque `hasAny() === false`,
+> `data-guard.ts`), luego el login migra esos datos al `userId` real, y el local ya no
+> está vacío. Sin la matriz, el popup de restore nunca aparecería. Ver 5.3.
+
+### 5.2 Popups
+
+**Restore (local vacío, nube con datos):**
+> "Datos en la nube — Encontramos datos asociados a tu cuenta. ¿Querés traerlos a este
+> dispositivo o empezar de cero?"
+
+- **Traer**: borrar el local del usuario y cargar desde la nube (restore).
+- **Empezar de cero**: no traer nada → **borrar la copia en la nube** (ver 5.4).
+
+**Merge (local y nube con datos):**
+> "Datos en ambos lados — Tenés datos en este dispositivo y también en tu cuenta. ¿Cómo
+> querés combinarlos?"
+
+- **Combinar**: unión por `id` de ambos lados (ver 5.3).
+- **Solo nube**: descartar el local y traer la nube (equivale al restore).
+- **Solo local**: descartar la nube del usuario y subir el local.
+
+### 5.3 Merge (unión en dos direcciones por `id`)
+
+Con ambos lados bajo el **mismo `userId`** (post-migración), para cada `id` en la
+unión `local ∪ nube`:
+
+- **solo local** → `upsert` a la nube.
+- **solo nube** → `insert` a local (si `deleted_at` no es null, **no** insertar).
+- **en ambos** → gana el `updatedAt` mayor (last-write-wins); se actualiza el lado
+  viejo con el registro ganador.
+
+Al final, aplicar **tombstones**: los `delete` pendientes de `sync_queue` y los
+`deleted_at` de la nube, para no resucitar registros borrados.
+
+> **Calidad de datos:** cada reinstalación genera **UUIDs nuevos**, por lo que el merge
+> por `id` **no** unifica "el mismo técnico" entre instalaciones; queda una fila por
+> versión. Es aceptable técnicamente, pero es la razón de fondo para borrar la nube al
+> arrancar de cero (5.4).
+
+### 5.4 Empezar de cero → borrar la nube (con confirmación obligatoria)
+
+Si el usuario elige **Empezar de cero** (caso local vacío) o **Solo local** (caso
+con datos), sus datos previos se descartan. Para evitar acumular copias huérfanas
+(UUIDs nuevos por instalación que un restore futuro traería todas), se **eliminan los
+datos del usuario en la nube**.
+
+El borrado es **destructivo e irreversible**: siempre mostrar una **confirmación
+explícita** que explique la gravedad, por ejemplo:
+
+> **¿Borrar la copia en la nube?**
+> Vas a eliminar permanentemente los datos guardados en tu cuenta. Esta acción **no se
+> puede deshacer**. Si más adelante instalás la app en otro dispositivo, **no** podrás
+> recuperar estos datos.
+> `[Cancelar]` `[Borrar y empezar de cero]`
+
+Solo si confirma el segundo botón se llama al endpoint de borrado; si cancela, no se
+toca la nube y se mantiene la copia como respaldo.
+
+Endpoint: `DELETE /tecnicos` (borra/soft-deletea todo lo del usuario) — a definir en §6.
+
+### 5.5 Usuario recurrente
+
+Si el local **ya tiene datos** del usuario (mismo dispositivo, sesión existente): no
+preguntar, solo sincronizar normalmente (matriz, fila "con datos / vacío" o "con datos /
+con datos" si además hay nube).
+
+### 5.6 Imágenes en el restore
+
+El archivo de imagen vive en el **filesystem del dispositivo** y solo el `imageId` viaja
+por la nube. Al restaurar en un dispositivo nuevo, los `imageId` llegan pero **no los
+archivos**. Por cada imagen (`matricula_img`, `firma_img`, `empresa_logo`):
+
+1. Verificar que el archivo exista localmente para ese `imageId`.
+2. Si **no existe** → dejar el campo en `null` / **placeholder genérico** (nunca un
+   `imageId` roto que apunte a un archivo inexistente).
+3. Si existe → conservar el `imageId`.
 
 ---
 
@@ -178,6 +259,11 @@ Endpoints nuevos (derivan `userId` del token de sesión):
   - Upsert idempotente por `id` (con `ON CONFLICT (id) DO UPDATE`).
   - Delete = `UPDATE ... SET deleted_at = now() WHERE id = ? AND user_id = ?`.
   - Devuelve `{ ok: true, synced: number }`.
+- `DELETE /tecnicos` → borra **todos** los datos del usuario (para "empezar de cero",
+  §5.4). Hard delete o soft-delete masivo (`UPDATE ... SET deleted_at = now() WHERE
+  user_id = ?`). Con confirmación en la UI antes de llamarlo.
+- Opcional: `GET /sync/summary` → `{ count: number }` para decidir restore/merge sin
+  bajar la lista completa.
 
 Todo dentro de una transacción por request.
 
@@ -211,10 +297,14 @@ Todo dentro de una transacción por request.
 - [ ] Popup de pendientes cuando vuelve la conexión.
 - [ ] Indicador de pendientes.
 
-### Fase 5 — Restore
-- [ ] Detección de instalación nueva + `GET /tecnicos`.
-- [ ] Popup restore/empezar de cero.
+### Fase 5 — Restore / Merge
+- [ ] Detección de los 4 estados (local × nube) al login, post-migración `user-1`.
+- [ ] Popup restore (`Traer` | `Empezar de cero`) + popup merge (`Combinar` | `Solo nube`
+      | `Solo local`).
+- [ ] `mergeTecnicos()`: unión por `id` + LWW por `updatedAt` + tombstones (§5.3).
 - [ ] Restore: limpiar local + insertar desde la nube.
+- [ ] `DELETE /tecnicos` + **confirmación destructiva** en "Empezar de cero"/"Solo
+      local" (§5.4).
 
 ### Fase 6 — Replicar
 - [ ] Copiar el patrón a `empresas`, `instrumentos`, luego informes/áreas/localizadas
@@ -230,4 +320,16 @@ Todo dentro de una transacción por request.
    ¿alcanza, o querés tombstone local también?
 3. **Frecuencia del flush**: ¿solo en eventos (repo/confirmar/arranque) o también un
    intervalo/timer? Recomiendo eventos para la fase 1.
-4. **Imágenes**: confirmar que en la fase 1 se sincronizan como string (no portables).
+4. **Imágenes**: en la fase 1 se sincronizan como string (no portables). Al restaurar
+   hay que **verificar la existencia del archivo** y caer a placeholder si falta (§5.6).
+
+## 10. Decisiones tomadas
+
+1. **"Empezar de cero" / "Solo local" → borrar la copia en la nube** (§5.4), para no
+   acumular filas huérfanas (UUIDs nuevos por instalación). Siempre con **confirmación
+   destructiva** explicando que es irreversible y que no podrá recuperarse en otra
+   instalación.
+2. **Detección de restauración = 4 estados** `local × nube`, no solo "local vacío"
+   (§5.1), porque una reinstalación puede tener datos locales migrados desde `user-1`.
+3. **Conflicto local+nube = merge por `id` con LWW** por `updatedAt` (§5.3), con
+   opciones `Combinar` | `Solo nube` | `Solo local`.
