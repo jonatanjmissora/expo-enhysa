@@ -6,7 +6,7 @@ import VolverBtn from "@/components/VolverBtn"
 import { theme } from "@/constants/theme"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
-import { Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import MenuBtn from "@/components/MenuBtn"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
@@ -63,13 +63,13 @@ function InstrumentoItem({ informe }: { informe: InformesIluminacionType }) {
 	}
 
 	return (
-		<View
-			style={{
-				flex: 1,
-				gap: 24,
+		<ScrollView
+			contentContainerStyle={{
+				gap: 12,
+				padding: 16,
+				paddingBottom: 150,
 				justifyContent: "center",
 				alignItems: "center",
-				paddingBottom: 100,
 			}}
 		>
 			<MenuInstrumento id={informe.id} />
@@ -164,7 +164,7 @@ function InstrumentoItem({ informe }: { informe: InformesIluminacionType }) {
 					</View>
 				</View>
 			)}
-		</View>
+		</ScrollView>
 	)
 }
 
@@ -197,6 +197,7 @@ function MenuInstrumento({ id }: { id: string }) {
 						size="small"
 						style={{ flex: 1, gap: 4 }}
 						onPress={() => {
+							setShowMenu(false)
 							router.push({
 								pathname: "/iluminacion/[id]/CRUD/general/instrumento-edit",
 								params: {

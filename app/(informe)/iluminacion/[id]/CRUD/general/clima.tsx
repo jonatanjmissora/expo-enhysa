@@ -1,11 +1,8 @@
-import { getImageUri } from "@/src/media/image-storage"
 import { View, Text, ScrollView } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useState } from "react"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import ImageViewer from "@/components/ImageViewer"
-import PictureNotFound from "@/components/PictureNotFound"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
 import MenuBtn from "@/components/MenuBtn"
@@ -13,16 +10,12 @@ import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-ilumina
 import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 
 const FIELDS = [
-	{ key: "razonSocial", label: "Razón Social" },
-	{ key: "cuit", label: "CUIT" },
-	{ key: "direccion", label: "Dirección" },
-	{ key: "localidad", label: "Localidad" },
-	{ key: "provincia", label: "Provincia" },
-	{ key: "codigoPostal", label: "Código Postal" },
-	{ key: "horarios", label: "Horarios" },
+	{ key: "estado", label: "Clima" },
+	{ key: "humedad", label: "Humedad" },
+	{ key: "temperatura", label: "Temperatura" },
 ] as const
 
-export default function EmpresaSnapshot() {
+export default function ClimaSnapshot() {
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: informe, isLoading } = useInformeIluminacionById(id)
 
@@ -43,28 +36,15 @@ export default function EmpresaSnapshot() {
 	return (
 		<ViewWithLogo>
 			<View style={{ marginHorizontal: 20 }}>
-				<VolverBtn title="Empresa" />
+				<VolverBtn title="Clima" />
 			</View>
 
-			<EmpresaItem informe={informe} />
+			<ClimaItem informe={informe} />
 		</ViewWithLogo>
 	)
 }
 
-function EmpresaItem({ informe }: { informe: InformesIluminacionType }) {
-	const snapshot = informe.empresaSnapshot
-
-	const empresa = {
-		razonSocial: snapshot.razonSocial ?? "",
-		cuit: snapshot.cuit ?? "",
-		direccion: snapshot.direccion ?? "",
-		localidad: snapshot.localidad ?? "",
-		provincia: snapshot.provincia ?? "",
-		codigoPostal: snapshot.codigoPostal ?? "",
-		horarios: snapshot.horarios ?? "",
-		logo: snapshot.logo ?? "",
-	}
-
+function ClimaItem({ informe }: { informe: InformesIluminacionType }) {
 	return (
 		<ScrollView
 			contentContainerStyle={{
@@ -75,7 +55,7 @@ function EmpresaItem({ informe }: { informe: InformesIluminacionType }) {
 				alignItems: "center",
 			}}
 		>
-			<MenuEmpresa id={informe.id} />
+			<MenuClima id={informe.id} />
 
 			{FIELDS.map(field => (
 				<View
@@ -109,29 +89,19 @@ function EmpresaItem({ informe }: { informe: InformesIluminacionType }) {
 							alignSelf: "flex-end",
 						}}
 					>
-						{String(empresa[field.key])?.toUpperCase()}
+						{field.key === "estado"
+							? String(informe.estado)?.toUpperCase()
+							: field.key === "humedad"
+								? `${String(informe.humedad)?.toUpperCase()} %`
+								: `${String(informe.temperatura)?.toUpperCase()} °C`}
 					</Text>
 				</View>
 			))}
-			<View style={{ justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
-					Logo
-				</Text>
-				{empresa?.logo ? (
-					<ImageViewer
-						imgSource={{ uri: getImageUri(empresa?.logo ?? "") }}
-						style={{ width: "90%", aspectRatio: 4 / 3, borderRadius: 4 }}
-						zoomable
-					/>
-				) : (
-					<PictureNotFound />
-				)}
-			</View>
 		</ScrollView>
 	)
 }
 
-function MenuEmpresa({ id }: { id: string }) {
+function MenuClima({ id }: { id: string }) {
 	const [showMenu, setShowMenu] = useState(false)
 	const router = useRouter()
 
@@ -162,7 +132,7 @@ function MenuEmpresa({ id }: { id: string }) {
 						onPress={() => {
 							setShowMenu(false)
 							router.push({
-								pathname: "/iluminacion/[id]/CRUD/general/empresa-edit",
+								pathname: "/iluminacion/[id]/CRUD/general/clima-edit",
 								params: {
 									id,
 								},

@@ -1,12 +1,12 @@
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
-import InstrumentoSnapshotForm from "@/components/informe/InstrumentoSnapshotForm"
+import ClimaSnapshotForm from "@/components/informe/ClimaSnapshotForm"
 import { theme } from "@/constants/theme"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 
-export default function InstrumentoSnapshotEdit() {
+export default function ClimaSnapshotEdit() {
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: informe, isLoading } = useInformeIluminacionById(id)
 	const router = useRouter()
@@ -35,19 +35,16 @@ export default function InstrumentoSnapshotEdit() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Editar Instrumento" />
+				<VolverBtn title="Editar Clima" />
 
 				{informe.creditConsumed && (
 					<Text style={{ color: theme.orange, textAlign: "center" }}>
-						El informe está desbloqueado: los datos del instrumento quedaron
+						El informe está desbloqueado: los datos del clima quedaron
 						congelados y no se pueden editar.
 					</Text>
 				)}
 
-				<InstrumentoSnapshotForm
-					informe={informe}
-					onSaved={() => router.back()}
-				/>
+				<ClimaSnapshotForm informe={informe} onSaved={() => router.back()} />
 			</ScrollView>
 		</ViewWithLogo>
 	)
