@@ -3,10 +3,10 @@ import ImagePicker from "@/components/ImagePicker"
 import ImageViewer from "@/components/ImageViewer"
 import { theme } from "@/constants/theme"
 import { instrumentoFormValidator } from "@/src/db/schema/instrumentos"
-import type { InstrumentoSnapshot } from "@/src/db/schema/snapshots"
 import { imageService } from "@/src/media/image-service"
 import { getImageUri } from "@/src/media/image-storage"
 import { useUpdateInformeSnapshot } from "@/src/query/hooks/use-informe-iluminacion"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { useUserId } from "@/src/session/session-context"
 import { hasChanges } from "@/src/utils/hasChanges"
 import DateTimePicker from "@react-native-community/datetimepicker"
@@ -22,16 +22,14 @@ const FIELDS = [
 ] as const
 
 export default function InstrumentoSnapshotForm({
-	informeId,
-	snapshot,
-	locked = false,
+	informe,
 	onSaved,
 }: {
-	informeId: string
-	snapshot: InstrumentoSnapshot
-	locked?: boolean
+	informe: InformesIluminacionType
 	onSaved: () => void
 }) {
+	const snapshot = informe.instrumentoSnapshot
+	const locked = informe.creditConsumed
 	const updateSnapshot = useUpdateInformeSnapshot()
 	const userId = useUserId()
 
@@ -80,7 +78,7 @@ export default function InstrumentoSnapshotForm({
 					userId
 				)
 				await updateSnapshot.mutateAsync({
-					id: informeId,
+					id: informe.id,
 					input: {
 						kind: "instrumento",
 						snapshot: {

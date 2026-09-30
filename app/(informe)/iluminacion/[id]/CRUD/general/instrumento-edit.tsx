@@ -1,12 +1,12 @@
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
-import TecnicoSnapshotForm from "@/components/informe/TecnicoSnapshotForm"
+import InstrumentoSnapshotForm from "@/components/informe/InstrumentoSnapshotForm"
 import { theme } from "@/constants/theme"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 
-export default function TecnicoSnapshotEdit() {
+export default function InstrumentoSnapshotEdit() {
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const { data: informe, isLoading } = useInformeIluminacionById(id)
 	const router = useRouter()
@@ -35,16 +35,19 @@ export default function TecnicoSnapshotEdit() {
 					paddingBottom: 150,
 				}}
 			>
-				<VolverBtn title="Editar Profesional" />
+				<VolverBtn title="Instrumento del informe" />
 
 				{informe.creditConsumed && (
 					<Text style={{ color: theme.orange, textAlign: "center" }}>
-						El informe está desbloqueado: los datos del técnico quedaron
+						El informe está desbloqueado: los datos del instrumento quedaron
 						congelados y no se pueden editar.
 					</Text>
 				)}
 
-				<TecnicoSnapshotForm informe={informe} onSaved={() => router.back()} />
+				<InstrumentoSnapshotForm
+					informe={informe}
+					onSaved={() => router.back()}
+				/>
 			</ScrollView>
 		</ViewWithLogo>
 	)

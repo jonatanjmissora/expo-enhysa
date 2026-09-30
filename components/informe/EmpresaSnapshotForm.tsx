@@ -2,9 +2,9 @@ import Button from "@/components/Button"
 import ImagePicker from "@/components/ImagePicker"
 import { theme } from "@/constants/theme"
 import { empresaFormValidator } from "@/src/db/schema/empresas"
-import type { EmpresaSnapshot } from "@/src/db/schema/snapshots"
 import { imageService } from "@/src/media/image-service"
 import { useUpdateInformeSnapshot } from "@/src/query/hooks/use-informe-iluminacion"
+import { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { useUserId } from "@/src/session/session-context"
 import { hasChanges } from "@/src/utils/hasChanges"
 import { useForm } from "@tanstack/react-form"
@@ -22,16 +22,14 @@ const FIELDS = [
 ] as const
 
 export default function EmpresaSnapshotForm({
-	informeId,
-	snapshot,
-	locked = false,
+	informe,
 	onSaved,
 }: {
-	informeId: string
-	snapshot: EmpresaSnapshot
-	locked?: boolean
+	informe: InformesIluminacionType
 	onSaved: () => void
 }) {
+	const snapshot = informe.empresaSnapshot
+	const locked = informe.creditConsumed
 	const updateSnapshot = useUpdateInformeSnapshot()
 	const userId = useUserId()
 	const [error, setError] = useState<string | null>(null)
@@ -69,7 +67,7 @@ export default function EmpresaSnapshotForm({
 					userId
 				)
 				await updateSnapshot.mutateAsync({
-					id: informeId,
+					id: informe.id,
 					input: {
 						kind: "empresa",
 						snapshot: { ...value, logo: newLogo ?? "" },

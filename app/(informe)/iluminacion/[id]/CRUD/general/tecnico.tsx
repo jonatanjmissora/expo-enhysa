@@ -39,7 +39,15 @@ export default function TecnicoSnapshot() {
 		)
 	}
 
-	return <TecnicoItem informe={informe} />
+	return (
+		<ViewWithLogo>
+			<View style={{ marginHorizontal: 20 }}>
+				<VolverBtn title="Profesional" />
+			</View>
+
+			<TecnicoItem informe={informe} />
+		</ViewWithLogo>
+	)
 }
 
 function TecnicoItem({ informe }: { informe: InformesIluminacionType }) {
@@ -57,106 +65,95 @@ function TecnicoItem({ informe }: { informe: InformesIluminacionType }) {
 		empresaLogo: snapshot.empresaLogo ?? "",
 	}
 	return (
-		<ViewWithLogo>
-			<View style={{ marginHorizontal: 20 }}>
-				<VolverBtn title="Profesional" />
-			</View>
-			<ScrollView
-				contentContainerStyle={{
-					gap: 12,
-					padding: 16,
-					paddingBottom: 150,
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
-				<MenuTecnico id={informe.id} />
+		<ScrollView
+			contentContainerStyle={{
+				gap: 12,
+				padding: 16,
+				paddingBottom: 150,
+				justifyContent: "center",
+				alignItems: "center",
+			}}
+		>
+			<MenuTecnico id={informe.id} />
 
-				{FIELDS.map(field => (
-					<View
-						key={field.key}
+			{FIELDS.map(field => (
+				<View
+					key={field.key}
+					style={{
+						justifyContent: "center",
+						alignItems: "center",
+						width: "80%",
+					}}
+				>
+					<Text
 						style={{
-							justifyContent: "center",
-							alignItems: "center",
-							width: "80%",
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.5,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
 						}}
 					>
-						<Text
-							style={{
-								color: theme.orange,
-								fontWeight: "600",
-								opacity: 0.5,
-								marginRight: "auto",
-								borderBottomWidth: 1,
-								borderBottomColor: theme.orange,
-								width: "100%",
-							}}
-						>
-							{field.label}
-						</Text>
-						<Text
-							style={{
-								color: "#ccc",
-								fontSize: 16,
-								fontWeight: "600",
-								letterSpacing: 2,
-								fontStyle: "italic",
-								alignSelf: "flex-end",
-							}}
-						>
-							{String(tecnico[field.key])?.toUpperCase()}
-						</Text>
-					</View>
-				))}
-				<View style={{ justifyContent: "center", alignItems: "center" }}>
-					<Text
-						style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}
-					>
-						Matrícula
+						{field.label}
 					</Text>
-					{tecnico?.matriculaImg ? (
-						<ImageViewer
-							imgSource={{ uri: getImageUri(tecnico?.matriculaImg ?? "") }}
-							style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
-							zoomable
-						/>
-					) : (
-						<PictureNotFound />
-					)}
-				</View>
-				<View style={{ justifyContent: "center", alignItems: "center" }}>
 					<Text
-						style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}
+						style={{
+							color: "#ccc",
+							fontSize: 16,
+							fontWeight: "600",
+							letterSpacing: 2,
+							fontStyle: "italic",
+							alignSelf: "flex-end",
+						}}
 					>
-						Firma Digital
+						{String(tecnico[field.key])?.toUpperCase()}
 					</Text>
-					{tecnico?.firmaImg ? (
-						<ImageViewer
-							imgSource={{ uri: getImageUri(tecnico?.firmaImg ?? "") }}
-							style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
-						/>
-					) : (
-						<PictureNotFound />
-					)}
 				</View>
-				<View style={{ justifyContent: "center", alignItems: "center" }}>
-					<Text
-						style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}
-					>
-						Empresa Logo
-					</Text>
-					{tecnico?.empresaLogo ? (
-						<ImageViewer
-							imgSource={{ uri: getImageUri(tecnico?.empresaLogo ?? "") }}
-							style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
-							zoomable
-						/>
-					) : (
-						<PictureNotFound />
-					)}
-				</View>
-			</ScrollView>
-		</ViewWithLogo>
+			))}
+			<View style={{ justifyContent: "center", alignItems: "center" }}>
+				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
+					Matrícula
+				</Text>
+				{tecnico?.matriculaImg ? (
+					<ImageViewer
+						imgSource={{ uri: getImageUri(tecnico?.matriculaImg ?? "") }}
+						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+						zoomable
+					/>
+				) : (
+					<PictureNotFound />
+				)}
+			</View>
+			<View style={{ justifyContent: "center", alignItems: "center" }}>
+				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
+					Firma Digital
+				</Text>
+				{tecnico?.firmaImg ? (
+					<ImageViewer
+						imgSource={{ uri: getImageUri(tecnico?.firmaImg ?? "") }}
+						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+					/>
+				) : (
+					<PictureNotFound />
+				)}
+			</View>
+			<View style={{ justifyContent: "center", alignItems: "center" }}>
+				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
+					Empresa Logo
+				</Text>
+				{tecnico?.empresaLogo ? (
+					<ImageViewer
+						imgSource={{ uri: getImageUri(tecnico?.empresaLogo ?? "") }}
+						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
+						zoomable
+					/>
+				) : (
+					<PictureNotFound />
+				)}
+			</View>
+		</ScrollView>
 	)
 }
 
