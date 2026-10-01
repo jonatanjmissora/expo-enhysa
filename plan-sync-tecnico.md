@@ -285,17 +285,23 @@ Todo dentro de una transacción por request.
 - [x] Registrar tabla en `db/client.ts`.
 
 ### Fase 2 — Sync Manager
-- [ ] `src/sync/sync-manager.ts` con `flushTecnicos`.
-- [ ] `client.ts`: `apiGetTecnicos()`, `apiSyncTecnicos({ upserts, deletes })`.
-- [ ] Hook `useSyncStatus()` (count de pendientes).
+- [x] `src/sync/sync-manager.ts` con `flushTecnicos` (serializado por usuario).
+- [x] `client.ts`: `apiGetTecnicos()`, `apiSyncTecnicos({ upserts, deletes })`,
+      `apiDeleteAllTecnicos()`.
+- [x] Hook `useSyncStatus()` (count de pendientes).
+- [x] Disparo de flush tras create/update/delete (`use-tecnico.ts`) y al arrancar /
+      recuperar conexión (`SyncBootstrap` en `_layout.tsx`).
+- [x] Migrar/limpiar `sync_queue` junto a `user-1` (`DATA_TABLES` en `auth.service.ts`).
 
 ### Fase 3 — Backend
-- [ ] `schema.sql`: `expo_tecnicos`.
-- [ ] `api/tecnicos.ts` (GET) y `api/tecnicos-sync.ts` (POST).
+- [x] `schema.sql`: `expo_tecnicos`.
+- [x] `api/tecnicos.ts` (GET listar + DELETE borrar todo) y `api/tecnicos-sync.ts` (POST).
 
 ### Fase 4 — UI
+- [x] Toast offline: "Sin conexión. Se sincronizará cuando vuelvas online."
+- [x] Toast online: "Sincronizando N operación(es) con la nube."
+- [ ] Indicador persistente de pendientes (`useSyncStatus`) en la UI.
 - [ ] Popup de pendientes cuando vuelve la conexión.
-- [ ] Indicador de pendientes.
 
 ### Fase 5 — Restore / Merge
 - [ ] Detección de los 4 estados (local × nube) al login, post-migración `user-1`.
@@ -333,3 +339,7 @@ Todo dentro de una transacción por request.
    (§5.1), porque una reinstalación puede tener datos locales migrados desde `user-1`.
 3. **Conflicto local+nube = merge por `id` con LWW** por `updatedAt` (§5.3), con
    opciones `Combinar` | `Solo nube` | `Solo local`.
+4. **Soft delete = tombstone**: el borrado por registro marca `deleted_at` en la nube
+   para que otro dispositivo/restore no lo resucite en el merge. Como acumula filas,
+   se agrega **retención**: purgar `deleted_at` más viejo que N días (30–90) vía cron
+   (Vercel Cron). Pendiente de implementar.

@@ -23,6 +23,7 @@ const DATA_TABLES = [
 	"empresas",
 	"instrumentos",
 	"images",
+	"sync_queue",
 ] as const
 
 export type AuthResult = {

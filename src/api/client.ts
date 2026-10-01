@@ -171,3 +171,40 @@ export function apiConsumeCredit(
 		body: JSON.stringify({ reportId }),
 	})
 }
+
+export type CloudTecnico = {
+	id: string
+	nombre: string | null
+	telefono: string | null
+	localidad: string | null
+	cargo: string | null
+	matricula: string | null
+	matriculaImg: string | null
+	firmaImg: string | null
+	empresaLogo: string | null
+	dni: number | null
+	updatedAt: string
+}
+
+export function apiGetTecnicos(): Promise<{ tecnicos: CloudTecnico[] }> {
+	return apiFetch<{ tecnicos: CloudTecnico[] }>("/tecnicos")
+}
+
+export function apiSyncTecnicos(payload: {
+	upserts: CloudTecnico[]
+	deletes: string[]
+}): Promise<{ ok: boolean; synced: number }> {
+	return apiFetch<{ ok: boolean; synced: number }>("/tecnicos/sync", {
+		method: "POST",
+		body: JSON.stringify(payload),
+	})
+}
+
+export function apiDeleteAllTecnicos(): Promise<{
+	ok: boolean
+	deleted: number
+}> {
+	return apiFetch<{ ok: boolean; deleted: number }>("/tecnicos", {
+		method: "DELETE",
+	})
+}

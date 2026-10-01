@@ -2,6 +2,8 @@ import { theme } from "@/constants/theme"
 import { queryClient } from "@/src/query/query-client"
 import { useCreditsQuery } from "@/src/query/hooks/use-credits"
 import { SessionProvider } from "@/src/session/session-context"
+import { SyncBootstrap } from "@/src/sync/SyncBootstrap"
+import { ToastHost } from "@/src/ui/ToastHost"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { Stack } from "expo-router"
 import {
@@ -23,6 +25,7 @@ export default function RootLayout() {
 		<QueryClientProvider client={queryClient}>
 			<SessionProvider>
 				<CreditsSync />
+				<SyncBootstrap />
 				<SafeAreaProvider
 					initialMetrics={initialWindowMetrics}
 					style={{ backgroundColor: theme.safeAreaBG }}
@@ -48,6 +51,7 @@ export default function RootLayout() {
 						<Stack.Screen name="debug/images" options={{ title: "Imágenes" }} />
 						<Stack.Screen name="pago" options={{ headerShown: false }} />
 					</Stack>
+					<ToastHost />
 				</SafeAreaProvider>
 			</SessionProvider>
 		</QueryClientProvider>
