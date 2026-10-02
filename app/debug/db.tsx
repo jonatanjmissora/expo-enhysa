@@ -10,6 +10,7 @@ import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
 import { CREATE_USER_CREDITS_TABLE } from "@/src/db/schema/user-credits"
 import { CREATE_SYNC_QUEUE_TABLE } from "@/src/db/schema/sync-queue"
 import { apiHealth } from "@/src/api/client"
+import { clearRestoreFlag, isRestoreChecked } from "@/src/sync/restore-flag"
 import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import {
@@ -73,6 +74,9 @@ export default function DebugDB() {
 	const [rows, setRows] = useState<TableRow[]>([])
 	const [rowCount, setRowCount] = useState<Record<string, number>>({})
 	const [health, setHealth] = useState<string | null>(null)
+	const [restoreChecked, setRestoreCheckedState] = useState(() =>
+		isRestoreChecked()
+	)
 
 	const checkBackend = useCallback(async () => {
 		setHealth("probando...")
@@ -237,6 +241,28 @@ export default function DebugDB() {
 					{health}
 				</Text>
 			)}
+
+			<Pressable
+				onPress={() => {
+					clearRestoreFlag()
+					setRestoreCheckedState(false)
+					Alert.alert(
+						"Flag de restore",
+						"Borrado. El restore/merge de técnicos se reevaluará al reconectar o reabrir."
+					)
+				}}
+				style={{
+					backgroundColor: "#ff9500",
+					paddingVertical: 12,
+					borderRadius: 8,
+					alignItems: "center",
+					marginBottom: 16,
+				}}
+			>
+				<Text style={{ color: "#fff", fontWeight: "700" }}>
+					Borrar flag de restore ({restoreChecked ? "seteado" : "libre"})
+				</Text>
+			</Pressable>
 
 			{TABLE_NAMES.map(tableName => (
 				<View key={tableName} style={tableCard}>

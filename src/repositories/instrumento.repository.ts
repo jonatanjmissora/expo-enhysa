@@ -2,6 +2,7 @@ import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_INSTRUMENTOS_TABLE } from "../db/schema/instrumentos"
+import { syncQueueRepository } from "./sync-queue.repository"
 
 export type InstrumentoType = {
 	id: string
@@ -91,6 +92,13 @@ export const instrumentoRepository = {
 		if (!instrumento) {
 			throw new Error("No se pudo recuperar el instrumento creado")
 		}
+
+		await syncQueueRepository.enqueue(
+			input.userId,
+			"instrumentos",
+			id,
+			"upsert"
+		)
 
 		return instrumento
 	},
@@ -182,6 +190,13 @@ export const instrumentoRepository = {
 			id
 		)
 
+		await syncQueueRepository.enqueue(
+			instrumento.userId,
+			"instrumentos",
+			id,
+			"upsert"
+		)
+
 		return instrumento
 	},
 
@@ -190,6 +205,20 @@ export const instrumentoRepository = {
 
 		const db = await getDatabase()
 
+		const row = await db.getFirstAsync<{ userId: string }>(
+			`SELECT userId FROM instrumentos WHERE id = ?`,
+			id
+		)
+
 		await db.runAsync(`DELETE FROM instrumentos WHERE id = ?`, id)
+
+		if (row?.userId) {
+			await syncQueueRepository.enqueue(
+				row.userId,
+				"instrumentos",
+				id,
+				"delete"
+			)
+		}
 	},
 }

@@ -138,18 +138,21 @@ Así:
 
 ## 4. Flujo de sincronización (Sync Manager)
 
-`src/sync/sync-manager.ts`:
-- `flushTecnicos(userId): Promise<{ synced: number }>`: drena la cola de `tecnicos`.
+`src/sync/sync-manager.ts` (genérico por entidad):
+- `flushEntity(entityKey, userId, { notify }): Promise<FlushResult>`: drena la cola de
+  UNA entidad.
+- `flushAll(userId, { notify })`: drena todas las entidades.
 - Se llama:
-  - Después de cada operación de repo (fire-and-forget).
-  - Al arrancar la app (si hay sesión y conexión).
+  - Después de cada operación de repo (fire-and-forget, vía
+    `useAfterEntityChange`).
+  - Al arrancar la app / recuperar conexión (`SyncBootstrap` → `flushAll`).
   - Cuando el usuario confirma el popup de pendientes.
 
 **Cuándo se dispara el popup**: cuando hay `pendingCount > 0` **y** hay conexión
 (`useIsOffline()` → false). Se muestra un `Alert`:
 > "Operaciones pendientes — Tenés N operaciones sin sincronizar. ¿Sincronizar ahora?"
 
-Al confirmar → `flushTecnicos`.
+Al confirmar → `flushAll`.
 
 ---
 
@@ -158,39 +161,33 @@ Al confirmar → `flushTecnicos`.
 Se ejecuta **después** de la migración `user-1 → userId` (`auth.service.ts`), al
 establecer sesión.
 
-### 5.1 Matriz de decisión (4 estados)
+### 5.1 Detección (global, todas las entidades)
 
-Se consulta la nube (`GET /tecnicos` o `/sync/summary`) **y** se cuenta el local del
-usuario. Según la combinación:
+Se toma un snapshot de **todas** las entidades (`GET /sync/:entity` + local) y se
+decide **una sola vez** para el conjunto:
 
-| local | nube | Acción |
-|-------|------|--------|
-| vacío | vacío | No hacer nada. |
-| vacío | con datos | **Popup restore**: `Traer` \| `Empezar de cero`. |
-| con datos | vacío | Push del local a la nube (sin popup, sync normal). |
-| con datos | con datos | **Popup merge**: `Combinar` \| `Solo nube` \| `Solo local`. |
+| estado global | Acción |
+|---------------|--------|
+| ninguna con datos en la nube | Push del local en silencio (sin popup). |
+| al menos una con datos en la nube | **Un único popup** global (ver 5.2). |
 
-> El caso **"con datos / con datos"** es el que el plan viejo no contemplaba: una
-> **reinstalación** permite escribir como `user-1` (porque `hasAny() === false`,
-> `data-guard.ts`), luego el login migra esos datos al `userId` real, y el local ya no
-> está vacío. Sin la matriz, el popup de restore nunca aparecería. Ver 5.3.
+> Antes se preguntaba entidad por entidad (hasta 3 alerts). Ahora es **una sola
+> confirmación** para técnicos, empresas e instrumentos juntos.
 
-### 5.2 Popups
+### 5.2 Popup global (una sola vez)
 
-**Restore (local vacío, nube con datos):**
-> "Datos en la nube — Encontramos datos asociados a tu cuenta. ¿Querés traerlos a este
-> dispositivo o empezar de cero?"
+> "Datos en la nube — Encontramos datos asociados a tu cuenta. ¿Querés trabajar con
+> los datos de la nube, empezar de cero o combinar ambos?"
 
-- **Traer**: borrar el local del usuario y cargar desde la nube (restore).
-- **Empezar de cero**: no traer nada → **borrar la copia en la nube** (ver 5.4).
+- **Trabajar con la nube**: por cada entidad con datos en la nube, se reemplaza el
+  local por la nube (restore). Las entidades sin datos en la nube conservan su local.
+- **Empezar de cero**: borra la copia en la nube de **todas** las entidades y sube el
+  local del dispositivo. Pasa por una **confirmación destructiva** (ver 5.4).
+- **Combinar ambos**: merge (unión por `id` + LWW + tombstones) de todas las
+  entidades (ver 5.3).
 
-**Merge (local y nube con datos):**
-> "Datos en ambos lados — Tenés datos en este dispositivo y también en tu cuenta. ¿Cómo
-> querés combinarlos?"
-
-- **Combinar**: unión por `id` de ambos lados (ver 5.3).
-- **Solo nube**: descartar el local y traer la nube (equivale al restore).
-- **Solo local**: descartar la nube del usuario y subir el local.
+La subida de lo que quede pendiente la hace el `flushAll` de `SyncBootstrap` después
+del popup.
 
 ### 5.3 Merge (unión en dos direcciones por `id`)
 
@@ -212,60 +209,65 @@ Al final, aplicar **tombstones**: los `delete` pendientes de `sync_queue` y los
 
 ### 5.4 Empezar de cero → borrar la nube (con confirmación obligatoria)
 
-Si el usuario elige **Empezar de cero** (caso local vacío) o **Solo local** (caso
-con datos), sus datos previos se descartan. Para evitar acumular copias huérfanas
-(UUIDs nuevos por instalación que un restore futuro traería todas), se **eliminan los
-datos del usuario en la nube**.
+Si el usuario elige **Empezar de cero**, se descarta la copia en la nube. Para evitar
+acumular copias huérfanas (UUIDs nuevos por instalación que un restore futuro traería
+todas), se **eliminan los datos del usuario en la nube** de **todas** las entidades.
 
 El borrado es **destructivo e irreversible**: siempre mostrar una **confirmación
-explícita** que explique la gravedad, por ejemplo:
+explícita** que explique la gravedad:
 
 > **¿Borrar la copia en la nube?**
-> Vas a eliminar permanentemente los datos guardados en tu cuenta. Esta acción **no se
-> puede deshacer**. Si más adelante instalás la app en otro dispositivo, **no** podrás
-> recuperar estos datos.
-> `[Cancelar]` `[Borrar y empezar de cero]`
+> Vas a eliminar permanentemente los datos guardados en la nube. Esta acción no se
+> puede deshacer. Los datos del dispositivo serán subidos a la nube.
+> `[Combinar ambos]` `[Eliminar datos de la nube]`
 
-Solo si confirma el segundo botón se llama al endpoint de borrado; si cancela, no se
-toca la nube y se mantiene la copia como respaldo.
-
-Endpoint: `DELETE /tecnicos` (borra/soft-deletea todo lo del usuario) — a definir en §6.
+Solo si confirma el segundo botón se llama a `DELETE /sync/:entity` de cada entidad. La
+confirmación es **binaria** (no hay "Cancelar"): la opción no destructiva es
+**Combinar ambos**, para no quedar en un estado a medias.
 
 ### 5.5 Usuario recurrente
 
-Si el local **ya tiene datos** del usuario (mismo dispositivo, sesión existente): no
-preguntar, solo sincronizar normalmente (matriz, fila "con datos / vacío" o "con datos /
-con datos" si además hay nube).
+Si el local **ya tiene datos** del usuario (mismo dispositivo, sesión existente): el flag
+de "restore evaluado" ya está seteado, no se pregunta, y solo sincroniza normalmente.
+
+> Excepción: si hay datos en la nube y el flag no está seteado (p. ej. la primera vez
+> tras loguear), se muestra el **único** popup global de 5.2.
 
 ### 5.6 Imágenes en el restore
 
 El archivo de imagen vive en el **filesystem del dispositivo** y solo el `imageId` viaja
 por la nube. Al restaurar en un dispositivo nuevo, los `imageId` llegan pero **no los
-archivos**. Por cada imagen (`matricula_img`, `firma_img`, `empresa_logo`):
+archivos**. Por cada campo de imagen (`imageFields` → `null`/vacío; `imageArrayFields` →
+se filtran del JSON los ids sin archivo):
 
 1. Verificar que el archivo exista localmente para ese `imageId`.
-2. Si **no existe** → dejar el campo en `null` / **placeholder genérico** (nunca un
-   `imageId` roto que apunte a un archivo inexistente).
+2. Si **no existe** → dejar el campo vacío / **placeholder** (nunca un `imageId` roto).
 3. Si existe → conservar el `imageId`.
 
 ---
 
 ## 6. Backend
 
-Endpoints nuevos (derivan `userId` del token de sesión):
+**Función genérica** `api/sync/[entity].ts` (1 sola Serverless Function para todas las
+entidades, por el límite de 12 del plan Hobby). Deriva `userId` del token de sesión y
+usa el registro `lib/sync-entities.ts` (`entity → tabla + columnas`) para armar el SQL.
 
-- `GET /tecnicos` → lista los técnicos del usuario (no borrados). Para el restore.
-- `POST /tecnicos/sync` → body `{ upserts: Tecnico[], deletes: string[] }`.
+- `GET /sync/:entity` → `{ items: T[], deletedIds: string[] }` (vivos + tombstones).
+- `POST /sync/:entity` → body `{ upserts: T[], deletes: string[] }`.
   - Upsert idempotente por `id` (con `ON CONFLICT (id) DO UPDATE`).
   - Delete = `UPDATE ... SET deleted_at = now() WHERE id = ? AND user_id = ?`.
   - Devuelve `{ ok: true, synced: number }`.
-- `DELETE /tecnicos` → borra **todos** los datos del usuario (para "empezar de cero",
-  §5.4). Hard delete o soft-delete masivo (`UPDATE ... SET deleted_at = now() WHERE
-  user_id = ?`). Con confirmación en la UI antes de llamarlo.
-- Opcional: `GET /sync/summary` → `{ count: number }` para decidir restore/merge sin
-  bajar la lista completa.
+- `DELETE /sync/:entity` → borra **todos** los datos del usuario (para "empezar de cero",
+  §5.4). Con confirmación en la UI antes de llamarlo.
+- **Cron** (`GET /api/sync/tecnicos` con `Authorization: Bearer <CRON_SECRET>`) → purga
+  tombstones de todas las entidades con más de 30 días. Configurado en `vercel.json`
+  (`crons`, `0 3 * * 1`).
 
 Todo dentro de una transacción por request.
+
+> Para agregar una entidad: crear su tabla `expo_*` en Neon con `id TEXT PK`,
+> `user_id UUID`, `deleted_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ` y registrar sus
+> columnas en `SYNC_ENTITIES`. No se agregan Functions.
 
 ---
 
@@ -285,9 +287,9 @@ Todo dentro de una transacción por request.
 - [x] Registrar tabla en `db/client.ts`.
 
 ### Fase 2 — Sync Manager
-- [x] `src/sync/sync-manager.ts` con `flushTecnicos` (serializado por usuario).
-- [x] `client.ts`: `apiGetTecnicos()`, `apiSyncTecnicos({ upserts, deletes })`,
-      `apiDeleteAllTecnicos()`.
+- [x] `src/sync/sync-manager.ts` con `flushEntity` / `flushAll` (serializado por
+      usuario+entidad).
+- [x] `client.ts`: `apiSyncList`, `apiSyncPush`, `apiSyncClear` (genéricos).
 - [x] Hook `useSyncStatus()` (count de pendientes).
 - [x] Disparo de flush tras create/update/delete (`use-tecnico.ts`) y al arrancar /
       recuperar conexión (`SyncBootstrap` en `_layout.tsx`).
@@ -295,26 +297,36 @@ Todo dentro de una transacción por request.
 
 ### Fase 3 — Backend
 - [x] `schema.sql`: `expo_tecnicos`.
-- [x] `api/tecnicos.ts` (GET listar + DELETE borrar todo) y `api/tecnicos-sync.ts` (POST).
+- [x] Función genérica `api/sync/[entity].ts` (GET/POST/DELETE) + registro
+      `lib/sync-entities.ts`.
+- [x] Cron de retención de tombstones (> 30 días) en la misma función.
 
 ### Fase 4 — UI
-- [x] Toast offline: "Sin conexión. Se sincronizará cuando vuelvas online."
-- [x] Toast online: "Sincronizando N operación(es) con la nube."
+- [x] Toast offline (naranja): "Sin conexión. Se sincronizará cuando vuelvas online."
+- [x] Barra de progreso al arrancar/recuperar conexión (`SyncProgressBar`); online
+      normal sincroniza en silencio (sin toast).
 - [ ] Indicador persistente de pendientes (`useSyncStatus`) en la UI.
 - [ ] Popup de pendientes cuando vuelve la conexión.
 
 ### Fase 5 — Restore / Merge
-- [ ] Detección de los 4 estados (local × nube) al login, post-migración `user-1`.
-- [ ] Popup restore (`Traer` | `Empezar de cero`) + popup merge (`Combinar` | `Solo nube`
-      | `Solo local`).
-- [ ] `mergeTecnicos()`: unión por `id` + LWW por `updatedAt` + tombstones (§5.3).
-- [ ] Restore: limpiar local + insertar desde la nube.
-- [ ] `DELETE /tecnicos` + **confirmación destructiva** en "Empezar de cero"/"Solo
-      local" (§5.4).
+- [x] Detección **global** (todas las entidades) al establecer sesión, post-migración
+      `user-1` (`src/sync/restore.ts`).
+- [x] **Un único popup global**: `Trabajar con la nube` | `Empezar de cero` | `Combinar
+      ambos`. Una sola vez por instalación (flag en archivo, se borra al reinstalar).
+- [x] `mergeEntityLocally()` genérico: unión por `id` + LWW por `updatedAt`.
+- [x] Restore: limpiar local + insertar desde la nube (con verificación de imágenes →
+      vacío si el archivo no existe).
+- [x] `DELETE /sync/:entity` (confirmación destructiva binaria) para "Empezar de cero".
+- [x] Tombstones en el merge: `GET /sync/:entity` devuelve `deletedIds`; "Combinar"
+      limpia del local lo borrado en la nube y no lo re-sube.
+- [x] Cron de retención: purga tombstones con `deleted_at` > 30 días (Vercel Cron,
+      `0 3 * * 1`), dentro de `api/sync/[entity].ts`.
 
 ### Fase 6 — Replicar
-- [ ] Copiar el patrón a `empresas`, `instrumentos`, luego informes/áreas/localizadas
-      e imágenes.
+- [x] `empresas` e `instrumentos`: tabla `expo_*` + `SYNC_ENTITIES` (backend),
+      `LOCAL_ENTITIES` + repo genérico (app), enqueue en sus repos, flush en sus hooks y
+      restore/merge incluidos.
+- [ ] `informes_iluminacion` (+ `areas` + `localizadas`) e `images`.
 
 ---
 

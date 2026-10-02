@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
 	type CreateInstrumentoInput,
 	instrumentoRepository,
 } from "@/src/repositories/instrumento.repository"
 import { useUserId } from "@/src/session/session-context"
+import { useAfterEntityChange } from "@/src/sync/use-after-entity-change"
 import { instrumentoKeys } from "../keys/instrumento.keys"
 
 export function useInstrumentos() {
@@ -30,17 +31,17 @@ export function useInstrumentoById(id: string | undefined) {
 }
 
 export function useCreateInstrumento() {
-	const qc = useQueryClient()
 	const userId = useUserId()
+	const after = useAfterEntityChange("instrumentos", instrumentoKeys.all)
 	return useMutation({
 		mutationFn: (input: Omit<CreateInstrumentoInput, "userId">) =>
 			instrumentoRepository.create({ ...input, userId }),
-		onSuccess: () => qc.invalidateQueries({ queryKey: instrumentoKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useUpdateInstrumento() {
-	const qc = useQueryClient()
+	const after = useAfterEntityChange("instrumentos", instrumentoKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -49,14 +50,14 @@ export function useUpdateInstrumento() {
 			id: string
 			input: Partial<Omit<CreateInstrumentoInput, "userId">>
 		}) => instrumentoRepository.update(id, input),
-		onSuccess: () => qc.invalidateQueries({ queryKey: instrumentoKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useDeleteInstrumento() {
-	const qc = useQueryClient()
+	const after = useAfterEntityChange("instrumentos", instrumentoKeys.all)
 	return useMutation({
 		mutationFn: (id: string) => instrumentoRepository.delete(id),
-		onSuccess: () => qc.invalidateQueries({ queryKey: instrumentoKeys.all }),
+		onSuccess: after,
 	})
 }

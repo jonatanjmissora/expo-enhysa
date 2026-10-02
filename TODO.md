@@ -17,6 +17,8 @@ export default function Index() {
 }
 
 - sync con database (decidir si dejo los de local o los de la nube)
+       - barra de progreso cuando empiezo fress
+       - barra de progreso cuando vuelvo del offline y tengo tareas para sincronizar
 
 - reanimated ?
 

@@ -3,6 +3,7 @@ import { queryClient } from "@/src/query/query-client"
 import { useCreditsQuery } from "@/src/query/hooks/use-credits"
 import { SessionProvider } from "@/src/session/session-context"
 import { SyncBootstrap } from "@/src/sync/SyncBootstrap"
+import { SyncProgressBar } from "@/src/ui/SyncProgressBar"
 import { ToastHost } from "@/src/ui/ToastHost"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { Stack } from "expo-router"
@@ -52,6 +53,7 @@ export default function RootLayout() {
 						<Stack.Screen name="pago" options={{ headerShown: false }} />
 					</Stack>
 					<ToastHost />
+					<SyncProgressBar />
 				</SafeAreaProvider>
 			</SessionProvider>
 		</QueryClientProvider>

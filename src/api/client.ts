@@ -172,39 +172,31 @@ export function apiConsumeCredit(
 	})
 }
 
-export type CloudTecnico = {
-	id: string
-	nombre: string | null
-	telefono: string | null
-	localidad: string | null
-	cargo: string | null
-	matricula: string | null
-	matriculaImg: string | null
-	firmaImg: string | null
-	empresaLogo: string | null
-	dni: number | null
-	updatedAt: string
+export type SyncItemsResponse<T> = {
+	items: T[]
+	/** Ids con soft delete en la nube (tombstones). */
+	deletedIds: string[]
 }
 
-export function apiGetTecnicos(): Promise<{ tecnicos: CloudTecnico[] }> {
-	return apiFetch<{ tecnicos: CloudTecnico[] }>("/tecnicos")
+/** Lista los registros vivos de una entidad sincronizable + sus tombstones. */
+export function apiSyncList<T>(entity: string): Promise<SyncItemsResponse<T>> {
+	return apiFetch<SyncItemsResponse<T>>(`/sync/${entity}`)
 }
 
-export function apiSyncTecnicos(payload: {
-	upserts: CloudTecnico[]
-	deletes: string[]
-}): Promise<{ ok: boolean; synced: number }> {
-	return apiFetch<{ ok: boolean; synced: number }>("/tecnicos/sync", {
+export function apiSyncPush<T>(
+	entity: string,
+	payload: { upserts: T[]; deletes: string[] }
+): Promise<{ ok: boolean; synced: number }> {
+	return apiFetch<{ ok: boolean; synced: number }>(`/sync/${entity}`, {
 		method: "POST",
 		body: JSON.stringify(payload),
 	})
 }
 
-export function apiDeleteAllTecnicos(): Promise<{
-	ok: boolean
-	deleted: number
-}> {
-	return apiFetch<{ ok: boolean; deleted: number }>("/tecnicos", {
+export function apiSyncClear(
+	entity: string
+): Promise<{ ok: boolean; deleted: number }> {
+	return apiFetch<{ ok: boolean; deleted: number }>(`/sync/${entity}`, {
 		method: "DELETE",
 	})
 }

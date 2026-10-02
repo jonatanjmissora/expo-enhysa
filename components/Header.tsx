@@ -1,11 +1,13 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Pressable, Text, View } from "react-native"
+import Ionicons from "@expo/vector-icons/Ionicons"
 
 import LogoImage from "../assets/images/logo2.png"
 import ImageViewer from "./ImageViewer"
 import { theme } from "@/constants/theme"
 import { router, usePathname } from "expo-router"
 import { useActiveUser } from "@/src/query/hooks/use-user"
+import { useSyncStatus } from "@/src/query/hooks/use-sync-status"
 import { useSession } from "@/src/session/session-context"
 import { getImageUri } from "@/src/media/image-storage"
 
@@ -44,7 +46,33 @@ export default function Header() {
 					EnHySa
 				</Text>
 			</Pressable>
+			<SyncIndicator />
 			<Avatar />
+		</View>
+	)
+}
+
+/** Indicador persistente: operaciones sin sincronizar con la nube. */
+function SyncIndicator() {
+	const { pendingCount } = useSyncStatus()
+
+	if (pendingCount <= 0) return null
+
+	return (
+		<View
+			accessibilityLabel={`${pendingCount} operaciones sin sincronizar`}
+			style={{
+				flexDirection: "row",
+				alignItems: "center",
+				gap: 4,
+				paddingHorizontal: 10,
+				paddingVertical: 6,
+			}}
+		>
+			<Ionicons name="cloud-upload-outline" size={16} color={theme.orange} />
+			<Text style={{ color: theme.orange, fontSize: 12, fontWeight: "700" }}>
+				{pendingCount}
+			</Text>
 		</View>
 	)
 }

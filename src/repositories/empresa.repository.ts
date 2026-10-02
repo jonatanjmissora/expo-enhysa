@@ -2,6 +2,7 @@ import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_EMPRESAS_TABLE } from "../db/schema/empresas"
+import { syncQueueRepository } from "./sync-queue.repository"
 
 export type EmpresaType = {
 	id: string
@@ -97,6 +98,8 @@ export const empresaRepository = {
 			throw new Error("No se pudo recuperar la empresa creada")
 		}
 
+		await syncQueueRepository.enqueue(input.userId, "empresas", id, "upsert")
+
 		return empresa
 	},
 
@@ -189,6 +192,8 @@ export const empresaRepository = {
 			id
 		)
 
+		await syncQueueRepository.enqueue(empresa.userId, "empresas", id, "upsert")
+
 		return empresa
 	},
 
@@ -197,6 +202,15 @@ export const empresaRepository = {
 
 		const db = await getDatabase()
 
+		const row = await db.getFirstAsync<{ userId: string }>(
+			`SELECT userId FROM empresas WHERE id = ?`,
+			id
+		)
+
 		await db.runAsync(`DELETE FROM empresas WHERE id = ?`, id)
+
+		if (row?.userId) {
+			await syncQueueRepository.enqueue(row.userId, "empresas", id, "delete")
+		}
 	},
 }

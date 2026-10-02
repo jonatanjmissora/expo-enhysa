@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
 	type CreateEmpresaInput,
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
 import { useUserId } from "@/src/session/session-context"
+import { useAfterEntityChange } from "@/src/sync/use-after-entity-change"
 import { empresaKeys } from "../keys/empresa.keys"
 
 export function useEmpresas() {
@@ -30,17 +31,17 @@ export function useEmpresaById(id: string | undefined) {
 }
 
 export function useCreateEmpresa() {
-	const qc = useQueryClient()
 	const userId = useUserId()
+	const after = useAfterEntityChange("empresas", empresaKeys.all)
 	return useMutation({
 		mutationFn: (input: Omit<CreateEmpresaInput, "userId">) =>
 			empresaRepository.create({ ...input, userId }),
-		onSuccess: () => qc.invalidateQueries({ queryKey: empresaKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useUpdateEmpresa() {
-	const qc = useQueryClient()
+	const after = useAfterEntityChange("empresas", empresaKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -49,14 +50,14 @@ export function useUpdateEmpresa() {
 			id: string
 			input: Partial<Omit<CreateEmpresaInput, "userId">>
 		}) => empresaRepository.update(id, input),
-		onSuccess: () => qc.invalidateQueries({ queryKey: empresaKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useDeleteEmpresa() {
-	const qc = useQueryClient()
+	const after = useAfterEntityChange("empresas", empresaKeys.all)
 	return useMutation({
 		mutationFn: (id: string) => empresaRepository.delete(id),
-		onSuccess: () => qc.invalidateQueries({ queryKey: empresaKeys.all }),
+		onSuccess: after,
 	})
 }

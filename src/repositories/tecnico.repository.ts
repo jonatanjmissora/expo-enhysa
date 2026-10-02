@@ -32,6 +32,22 @@ export type CreateTecnicoInput = {
 	userId: string
 }
 
+/** Técnico con `id`/`updatedAt` provistos por la nube (para restore/merge). */
+export type CloudTecnicoInput = {
+	id: string
+	userId: string
+	nombre: string
+	telefono: string
+	localidad: string
+	cargo: string
+	matricula: string
+	matriculaImg: string
+	firmaImg: string
+	empresaLogo: string | null
+	dni: number | null
+	updatedAt: string
+}
+
 const SELECT_COLUMNS = `
 	id,
 	nombre,
@@ -209,5 +225,79 @@ export const tecnicoRepository = {
 		await syncQueueRepository.enqueue(tecnico.userId, "tecnicos", id, "upsert")
 
 		return tecnico
+	},
+
+	async getAllByUserId(userId: string): Promise<TecnicoType[]> {
+		await initializeTecnicosTable()
+
+		const db = await getDatabase()
+
+		return db.getAllAsync<TecnicoType>(
+			`SELECT ${SELECT_COLUMNS} FROM tecnicos WHERE userId = ? ORDER BY updatedAt ASC`,
+			userId
+		)
+	},
+
+	/**
+	 * Aplica registros venidos de la nube **sin encolar** (no se re-sube lo que se
+	 * acaba de bajar). Con `replace` limpia primero el local del usuario (restore);
+	 * sin `replace` hace upsert por `id` (merge).
+	 */
+	async applyCloud(
+		userId: string,
+		items: CloudTecnicoInput[],
+		options: { replace: boolean }
+	): Promise<void> {
+		await initializeTecnicosTable()
+
+		const db = await getDatabase()
+
+		await db.withTransactionAsync(async () => {
+			if (options.replace) {
+				await db.runAsync(`DELETE FROM tecnicos WHERE userId = ?`, userId)
+			}
+
+			for (const item of items) {
+				await db.runAsync(
+					`
+						INSERT OR REPLACE INTO tecnicos (
+							id, nombre, telefono, localidad, cargo, matricula,
+							matriculaImg, firmaImg, empresaLogo, dni, userId, updatedAt
+						)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+					`,
+					item.id,
+					item.nombre,
+					item.telefono,
+					item.localidad,
+					item.cargo,
+					item.matricula,
+					item.matriculaImg,
+					item.firmaImg,
+					item.empresaLogo ?? null,
+					item.dni ?? null,
+					userId,
+					item.updatedAt
+				)
+			}
+		})
+	},
+
+	/**
+	 * Borra localmente los registros indicados **sin encolar** (se usan para
+	 * respetar tombstones de la nube en el merge: no hay que re-subir el borrado).
+	 */
+	async removeLocalByIds(ids: string[]): Promise<void> {
+		if (ids.length === 0) return
+
+		await initializeTecnicosTable()
+
+		const db = await getDatabase()
+		const placeholders = ids.map(() => "?").join(", ")
+
+		await db.runAsync(
+			`DELETE FROM tecnicos WHERE id IN (${placeholders})`,
+			...ids
+		)
 	},
 }

@@ -75,6 +75,19 @@ export const syncQueueRepository = {
 		return row?.cnt ?? 0
 	},
 
+	/** Cantidad de pendientes por entidad: `{ tecnicos: 2, empresas: 1, ... }`. */
+	async getCountsByEntity(userId: string): Promise<Record<string, number>> {
+		await init()
+		const db = await getDatabase()
+		const rows = await db.getAllAsync<{ entity: string; cnt: number }>(
+			`SELECT entity, COUNT(*) AS cnt FROM sync_queue WHERE userId = ? GROUP BY entity`,
+			userId
+		)
+		const counts: Record<string, number> = {}
+		for (const row of rows) counts[row.entity] = row.cnt
+		return counts
+	},
+
 	async remove(id: string): Promise<void> {
 		await init()
 		const db = await getDatabase()
