@@ -1,14 +1,15 @@
 import { Alert, type AlertButton } from "react-native"
 import { apiSyncClear, apiSyncList } from "../api/client"
 import { LOCAL_ENTITIES, type LocalEntity } from "../db/local-entities"
-import { imageExists } from "../media/image-storage"
 import {
 	type LocalSyncRecord,
 	syncLocalRepository,
 } from "../repositories/sync-local.repository"
 import { syncQueueRepository } from "../repositories/sync-queue.repository"
+import { downloadMissingImages } from "./restore-images"
 import {
 	finishSyncActivity,
+	setCurrentSection,
 	setSectionProgress,
 	startSyncActivity,
 } from "./sync-activity"
@@ -20,22 +21,6 @@ type EntitySnapshot = {
 	cloud: CloudItem[]
 	deletedIds: string[]
 	local: LocalSyncRecord[]
-}
-
-function sanitizeImage(value: unknown): string {
-	return typeof value === "string" && value && imageExists(value) ? value : ""
-}
-
-function sanitizeImageArray(value: unknown): string {
-	if (typeof value !== "string" || !value) return ""
-	try {
-		const parsed = JSON.parse(value)
-		if (!Array.isArray(parsed)) return value
-		const kept = parsed.filter(id => typeof id === "string" && imageExists(id))
-		return JSON.stringify(kept)
-	} catch {
-		return value
-	}
 }
 
 function cloudToLocal(
@@ -53,13 +38,15 @@ function cloudToLocal(
 	}
 	for (const column of entity.columns) {
 		const raw = cloud[column] ?? null
-		if (entity.imageFields.includes(column)) {
-			item[column] = sanitizeImage(raw)
-		} else if (entity.imageArrayFields.includes(column)) {
-			item[column] = sanitizeImageArray(raw)
-		} else if (entity.numberFields.includes(column)) {
+		if (entity.numberFields.includes(column)) {
 			item[column] = typeof raw === "number" ? raw : null
+		} else if (column === "createdAt") {
+			// La nube no guarda `createdAt` (columna local NOT NULL): se usa el
+			// `updatedAt` como aproximación.
+			item[column] = typeof raw === "string" && raw ? raw : item.updatedAt
 		} else {
+			// Los campos de imagen conservan el `imageId` (el binario se baja en
+			// un paso posterior; ver `plan-sync-imagenes.md`).
 			item[column] = typeof raw === "string" ? raw : ""
 		}
 	}
@@ -175,6 +162,7 @@ async function restoreAllFromCloud(
 	try {
 		for (const snapshot of snapshots) {
 			if (snapshot.cloud.length === 0) continue
+			setCurrentSection(snapshot.entity.key)
 			await restoreEntity(snapshot.entity, userId, snapshot.cloud)
 			setSectionProgress(snapshot.entity.key, snapshot.cloud.length)
 		}
@@ -269,7 +257,7 @@ function promptGlobal(
 				},
 			},
 			{
-				text: "Trabajar con la nube",
+				text: "Traer datos de la nube",
 				onPress: () => {
 					void restoreAllFromCloud(userId, snapshots).then(resolve)
 				},
@@ -319,4 +307,7 @@ export async function runRestoreFlow(userId: string): Promise<void> {
 	}
 
 	await promptGlobal(userId, snapshots)
+
+	// Con la metadata restaurada, bajar los binarios que falten (UploadThing).
+	await downloadMissingImages(userId)
 }

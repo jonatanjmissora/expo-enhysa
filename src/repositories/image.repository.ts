@@ -12,9 +12,14 @@ export type ImageType = {
 	userId: string
 	createdAt: string
 	updatedAt: string
+	remoteKey: string | null
+	remoteUrl: string | null
 }
 
-export type CreateImageInput = Omit<ImageType, "id" | "updatedAt"> & {
+export type CreateImageInput = Omit<
+	ImageType,
+	"id" | "updatedAt" | "remoteKey" | "remoteUrl"
+> & {
 	id?: string
 }
 
@@ -27,7 +32,9 @@ const SELECT_COLUMNS = `
 	size,
 	userId,
 	createdAt,
-	updatedAt
+	updatedAt,
+	remoteKey,
+	remoteUrl
 `
 
 async function initializeImagesTable() {
@@ -119,6 +126,23 @@ export const imageRepository = {
 		)
 
 		return !!row
+	},
+
+	/** Guarda la referencia a UploadThing (`fileKey`/`url`) tras subir el archivo. */
+	async setRemote(
+		id: string,
+		remoteKey: string,
+		remoteUrl: string
+	): Promise<void> {
+		await initializeImagesTable()
+		const db = await getDatabase()
+		await db.runAsync(
+			`UPDATE images SET remoteKey = ?, remoteUrl = ?, updatedAt = ? WHERE id = ?`,
+			remoteKey,
+			remoteUrl,
+			new Date().toISOString(),
+			id
+		)
 	},
 
 	async update(

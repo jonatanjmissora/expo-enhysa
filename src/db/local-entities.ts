@@ -74,6 +74,24 @@ export const LOCAL_ENTITIES: LocalEntity[] = [
 		imageArrayFields: ["imagenesCalibracion", "imagenes"],
 		label: "instrumentos",
 	},
+	{
+		key: "images",
+		table: "images",
+		columns: [
+			"filename",
+			"mimeType",
+			"width",
+			"height",
+			"size",
+			"remoteKey",
+			"remoteUrl",
+			"createdAt",
+		],
+		numberFields: ["width", "height", "size"],
+		imageFields: [],
+		imageArrayFields: [],
+		label: "imágenes",
+	},
 ]
 
 export function getLocalEntity(key: string): LocalEntity | undefined {

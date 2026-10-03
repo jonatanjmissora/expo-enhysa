@@ -2,6 +2,7 @@ import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_INSTRUMENTOS_TABLE } from "../db/schema/instrumentos"
+import { imageService } from "../media/image-service"
 import { syncQueueRepository } from "./sync-queue.repository"
 
 export type InstrumentoType = {
@@ -44,6 +45,19 @@ const SELECT_COLUMNS = `
 async function initializeInstrumentosTable() {
 	const db = await getDatabase()
 	await db.execAsync(CREATE_INSTRUMENTOS_TABLE)
+}
+
+/** Parsea un JSON array de `imageId` (columna `imagenes*`). */
+function parseImageIds(value: string | null): string[] {
+	if (!value) return []
+	try {
+		const parsed = JSON.parse(value)
+		return Array.isArray(parsed)
+			? parsed.filter((id): id is string => typeof id === "string")
+			: []
+	} catch {
+		return []
+	}
 }
 
 export const instrumentoRepository = {
@@ -205,8 +219,12 @@ export const instrumentoRepository = {
 
 		const db = await getDatabase()
 
-		const row = await db.getFirstAsync<{ userId: string }>(
-			`SELECT userId FROM instrumentos WHERE id = ?`,
+		const row = await db.getFirstAsync<{
+			userId: string
+			imagenesCalibracion: string
+			imagenes: string
+		}>(
+			`SELECT userId, imagenesCalibracion, imagenes FROM instrumentos WHERE id = ?`,
 			id
 		)
 
@@ -219,6 +237,10 @@ export const instrumentoRepository = {
 				id,
 				"delete"
 			)
+			await imageService.deleteImages([
+				...parseImageIds(row.imagenesCalibracion),
+				...parseImageIds(row.imagenes),
+			])
 		}
 	},
 }

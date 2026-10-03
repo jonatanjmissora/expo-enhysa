@@ -19,7 +19,6 @@ import {
 	View,
 } from "react-native"
 import {
-	deleteImageFileByUri,
 	getImageSize,
 	getImageUri,
 	imageExists,
@@ -539,9 +538,12 @@ function PrivateStorage({
 	)
 	const orphans = files.filter(f => (usage[f.uri] ?? []).length === 0)
 
-	const deleteOrphans = () => {
+	const imageIdFromFile = (file: StoredImageFile) =>
+		file.name.replace(/\.jpg$/, "")
+
+	const deleteOrphans = async () => {
 		for (const file of orphans) {
-			deleteImageFileByUri(file.uri)
+			await imageService.deleteImage(imageIdFromFile(file))
 		}
 		loadFiles()
 	}
@@ -590,8 +592,9 @@ function PrivateStorage({
 						</View>
 						<Pressable
 							onPress={() => {
-								deleteImageFileByUri(file.uri)
-								loadFiles()
+								void imageService
+									.deleteImage(imageIdFromFile(file))
+									.then(loadFiles)
 							}}
 							style={styles.fileDelete}
 						>

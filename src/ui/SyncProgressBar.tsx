@@ -1,8 +1,8 @@
 import { theme } from "@/constants/theme"
 import { useEffect, useRef, useState } from "react"
 import {
+	Animated,
 	StyleSheet,
-	Text,
 	type TextStyle,
 	type ViewStyle,
 	View,
@@ -10,7 +10,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
 	type SyncActivity,
-	type SyncSection,
 	getSyncActivity,
 	subscribeSyncActivity,
 } from "../sync/sync-activity"
@@ -18,28 +17,20 @@ import {
 /** Tiempo mínimo visible para que la barra no sea un parpadeo. */
 const MIN_VISIBLE_MS = 700
 
-function capitalize(label: string): string {
-	return label.charAt(0).toUpperCase() + label.slice(1)
-}
-
-function sectionLabelText(section: SyncSection, active: boolean): string {
-	if (!active || section.done >= section.total) {
-		return `${capitalize(section.label)} listo`
-	}
-	return `Sincronizando ${section.label}…`
-}
-
 /**
- * Barra de progreso de sincronización, arriba de la pantalla, dividida en una
- * sección por entidad (técnicos, empresas, instrumentos, ...). Se muestra
- * mientras `SyncBootstrap` drena la cola al arrancar o al recuperar conexión.
- * Las operaciones online normales no la muestran (sync silenciosa).
+ * Barra de progreso de sincronización, arriba de la pantalla. Una sola barra
+ * (progreso total) y debajo un texto que va cambiando por entidad:
+ * "Sincronizando técnicos…", luego "Sincronizando empresas…", etc.
+ *
+ * Se muestra mientras `SyncBootstrap` drena la cola o hace el restore. Las
+ * operaciones online normales no la muestran (sync silenciosa).
  */
 export function SyncProgressBar() {
 	const [activity, setActivity] = useState<SyncActivity>(getSyncActivity)
 	const [visible, setVisible] = useState(false)
 	const shownAt = useRef(0)
 	const lastRunId = useRef(0)
+	const labelOpacity = useRef(new Animated.Value(1)).current
 	const insets = useSafeAreaInsets()
 
 	useEffect(() => subscribeSyncActivity(setActivity), [])
@@ -64,34 +55,48 @@ export function SyncProgressBar() {
 		return () => clearTimeout(timer)
 	}, [activity, visible])
 
+	const currentKey = activity.current
+
+	// Fade-in del texto cada vez que cambia la entidad en curso.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: se re-anima al cambiar currentKey
+	useEffect(() => {
+		labelOpacity.setValue(0)
+		Animated.timing(labelOpacity, {
+			toValue: 1,
+			duration: 250,
+			useNativeDriver: true,
+		}).start()
+	}, [currentKey, labelOpacity])
+
 	if (!visible || activity.sections.length === 0) return null
+
+	const total = activity.sections.reduce(
+		(sum, section) => sum + section.total,
+		0
+	)
+	const done = activity.sections.reduce((sum, section) => sum + section.done, 0)
+	const ratio = total > 0 ? Math.min(1, done / total) : 1
+
+	const currentSection = activity.sections.find(
+		section => section.key === activity.current
+	)
+	const label = activity.active
+		? currentSection
+			? `Sincronizando ${currentSection.label}…`
+			: "Sincronizando…"
+		: "Sincronización completa"
 
 	return (
 		<View style={[styles.host, { paddingTop: insets.top + 10 }]}>
-			<Text style={styles.title}>
-				{activity.active ? "Sincronizando…" : "Sincronización completa"}
-			</Text>
-			<View style={styles.sections}>
-				{activity.sections.map(section => {
-					const ratio =
-						section.total > 0 ? Math.min(1, section.done / section.total) : 1
-					return (
-						<View key={section.key} style={styles.section}>
-							<View style={styles.track}>
-								<View
-									style={[
-										styles.fill,
-										{ width: `${Math.round(ratio * 100)}%` },
-									]}
-								/>
-							</View>
-							<Text style={styles.sectionLabel} numberOfLines={2}>
-								{sectionLabelText(section, activity.active)}
-							</Text>
-						</View>
-					)
-				})}
+			<View style={styles.track}>
+				<View style={[styles.fill, { width: `${Math.round(ratio * 100)}%` }]} />
 			</View>
+			<Animated.Text
+				numberOfLines={1}
+				style={[styles.label, { opacity: labelOpacity }]}
+			>
+				{label}
+			</Animated.Text>
 		</View>
 	)
 }
@@ -112,22 +117,6 @@ const host: ViewStyle = {
 	shadowRadius: 4,
 }
 
-const title: TextStyle = {
-	color: "#fff",
-	fontSize: 12,
-	fontWeight: "600",
-	marginBottom: 8,
-}
-
-const sections: ViewStyle = {
-	flexDirection: "row",
-	gap: 8,
-}
-
-const section: ViewStyle = {
-	flex: 1,
-}
-
 const track: ViewStyle = {
 	height: 4,
 	borderRadius: 2,
@@ -141,19 +130,12 @@ const fill: ViewStyle = {
 	backgroundColor: theme.orange,
 }
 
-const sectionLabel: TextStyle = {
-	color: "rgba(255,255,255,0.85)",
-	fontSize: 9,
-	marginTop: 4,
+const label: TextStyle = {
+	color: "#fff",
+	fontSize: 12,
+	fontWeight: "600",
+	marginTop: 8,
 	textAlign: "center",
 }
 
-const styles = StyleSheet.create({
-	host,
-	title,
-	sections,
-	section,
-	track,
-	fill,
-	sectionLabel,
-})
+const styles = StyleSheet.create({ host, track, fill, label })

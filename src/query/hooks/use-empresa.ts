@@ -4,7 +4,7 @@ import {
 	empresaRepository,
 } from "@/src/repositories/empresa.repository"
 import { useUserId } from "@/src/session/session-context"
-import { useAfterEntityChange } from "@/src/sync/use-after-entity-change"
+import { useAfterSyncChange } from "@/src/sync/use-after-entity-change"
 import { empresaKeys } from "../keys/empresa.keys"
 
 export function useEmpresas() {
@@ -32,7 +32,7 @@ export function useEmpresaById(id: string | undefined) {
 
 export function useCreateEmpresa() {
 	const userId = useUserId()
-	const after = useAfterEntityChange("empresas", empresaKeys.all)
+	const after = useAfterSyncChange(empresaKeys.all)
 	return useMutation({
 		mutationFn: (input: Omit<CreateEmpresaInput, "userId">) =>
 			empresaRepository.create({ ...input, userId }),
@@ -41,7 +41,7 @@ export function useCreateEmpresa() {
 }
 
 export function useUpdateEmpresa() {
-	const after = useAfterEntityChange("empresas", empresaKeys.all)
+	const after = useAfterSyncChange(empresaKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -55,7 +55,7 @@ export function useUpdateEmpresa() {
 }
 
 export function useDeleteEmpresa() {
-	const after = useAfterEntityChange("empresas", empresaKeys.all)
+	const after = useAfterSyncChange(empresaKeys.all)
 	return useMutation({
 		mutationFn: (id: string) => empresaRepository.delete(id),
 		onSuccess: after,

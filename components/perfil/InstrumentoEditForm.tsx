@@ -43,12 +43,13 @@ export default function InstrumentoEditForm({
 
 	const [error, setError] = useState<string | null>(null)
 	const [showDatePicker, setShowDatePicker] = useState(false)
-	const [imagenesCalibracion, setImagenesCalibracion] = useState<string[]>(() =>
-		parseArray(instrumento.imagenesCalibracion)
+	const persistedCalibracion = parseArray(instrumento.imagenesCalibracion)
+	const persistedImagenes = parseArray(instrumento.imagenes)
+
+	const [imagenesCalibracion, setImagenesCalibracion] = useState<string[]>(
+		() => persistedCalibracion
 	)
-	const [imagenes, setImagenes] = useState<string[]>(() =>
-		parseArray(instrumento.imagenes)
-	)
+	const [imagenes, setImagenes] = useState<string[]>(() => persistedImagenes)
 
 	const defaultValues = {
 		nombre: instrumento.nombre ?? "",
@@ -58,8 +59,10 @@ export default function InstrumentoEditForm({
 		fechaCalibracion: instrumento.fechaCalibracion
 			? new Date(instrumento.fechaCalibracion)
 			: new Date(),
-		imagenesCalibracion,
-		imagenes,
+		// Referencia ORIGINAL (persistida), no el estado: así `hasChanges`
+		// detecta cambios solo de imagen.
+		imagenesCalibracion: persistedCalibracion,
+		imagenes: persistedImagenes,
 	}
 
 	const form = useForm({
@@ -137,7 +140,8 @@ export default function InstrumentoEditForm({
 							variant="danger"
 							iconSize={18}
 							onPress={() => {
-								void imageService.deleteImage(img)
+								// Solo se saca de la lista; el borrado real ocurre al
+								// guardar (commitImages compara viejo vs nuevo).
 								setImages(images.filter((_, idx) => idx !== i))
 							}}
 							style={{

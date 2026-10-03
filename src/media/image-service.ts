@@ -1,6 +1,7 @@
 import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { imageRepository } from "../repositories/image.repository"
+import { syncQueueRepository } from "../repositories/sync-queue.repository"
 import { normalizeImage } from "./image-normalizer"
 import {
 	deleteImage as deleteImageFile,
@@ -66,6 +67,13 @@ export const imageService = {
 			userId: options.userId,
 			createdAt: new Date().toISOString(),
 		})
+
+		await syncQueueRepository.enqueue(
+			options.userId,
+			"images",
+			imageId,
+			"upsert"
+		)
 
 		return {
 			imageId,
@@ -160,8 +168,25 @@ export const imageService = {
 	},
 
 	async deleteImage(imageId: string): Promise<void> {
+		const image = await imageRepository.getById(imageId)
 		deleteImageFile(imageId)
 		await imageRepository.delete(imageId)
+
+		if (image?.userId) {
+			await syncQueueRepository.enqueue(
+				image.userId,
+				"images",
+				imageId,
+				"delete"
+			)
+		}
+	},
+
+	/** Borra varias imágenes (para el cascade al eliminar una entidad). */
+	async deleteImages(ids: (string | null | undefined)[]): Promise<void> {
+		for (const id of ids) {
+			if (id) await imageService.deleteImage(id)
+		}
 	},
 
 	getImageUri,

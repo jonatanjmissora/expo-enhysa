@@ -4,7 +4,7 @@ import {
 	tecnicoRepository,
 } from "@/src/repositories/tecnico.repository"
 import { useUserId } from "@/src/session/session-context"
-import { useAfterEntityChange } from "@/src/sync/use-after-entity-change"
+import { useAfterSyncChange } from "@/src/sync/use-after-entity-change"
 import { tecnicoKeys } from "../keys/tecnico.keys"
 
 export function useTecnico() {
@@ -32,7 +32,7 @@ export function useTecnicoById(id: string | undefined) {
 
 export function useCreateTecnico() {
 	const userId = useUserId()
-	const after = useAfterEntityChange("tecnicos", tecnicoKeys.all)
+	const after = useAfterSyncChange(tecnicoKeys.all)
 	return useMutation({
 		mutationFn: (input: Omit<CreateTecnicoInput, "userId">) =>
 			tecnicoRepository.create({ ...input, userId }),
@@ -41,7 +41,7 @@ export function useCreateTecnico() {
 }
 
 export function useUpdateTecnico() {
-	const after = useAfterEntityChange("tecnicos", tecnicoKeys.all)
+	const after = useAfterSyncChange(tecnicoKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -55,7 +55,7 @@ export function useUpdateTecnico() {
 }
 
 export function useDeleteTecnico() {
-	const after = useAfterEntityChange("tecnicos", tecnicoKeys.all)
+	const after = useAfterSyncChange(tecnicoKeys.all)
 	return useMutation({
 		mutationFn: (id: string) => tecnicoRepository.delete(id),
 		onSuccess: after,

@@ -8,6 +8,16 @@ export function setApiSessionToken(token: string | null) {
 	sessionToken = token
 }
 
+/** Token de sesión actual (para las subidas directas a UploadThing). */
+export function getApiSessionToken(): string | null {
+	return sessionToken
+}
+
+/** Token global de la app (`Authorization: Bearer`). */
+export function getApiToken(): string {
+	return API_TOKEN
+}
+
 type UnauthorizedReason = "no_session" | "invalid_session"
 
 let onUnauthorized: ((reason: UnauthorizedReason) => void) | null = null
@@ -199,4 +209,23 @@ export function apiSyncClear(
 	return apiFetch<{ ok: boolean; deleted: number }>(`/sync/${entity}`, {
 		method: "DELETE",
 	})
+}
+
+/** Borra en la nube los tombstones (`deleted_at != null`) del usuario. */
+export function apiPurgeTombstones(
+	entity: string
+): Promise<{ ok: boolean; deleted: number }> {
+	return apiFetch<{ ok: boolean; deleted: number }>(`/sync/${entity}?purge=1`, {
+		method: "DELETE",
+	})
+}
+
+/** URL firmada de un archivo remoto (UploadThing) para descargarlo. */
+export function apiSignUrl(
+	entity: string,
+	key: string
+): Promise<{ url: string }> {
+	return apiFetch<{ url: string }>(
+		`/sync/${entity}?sign=${encodeURIComponent(key)}`
+	)
 }

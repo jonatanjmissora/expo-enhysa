@@ -9,7 +9,8 @@ import { CREATE_USERS_TABLE } from "@/src/db/schema/users"
 import { CREATE_IMAGES_TABLE } from "@/src/db/schema/images"
 import { CREATE_USER_CREDITS_TABLE } from "@/src/db/schema/user-credits"
 import { CREATE_SYNC_QUEUE_TABLE } from "@/src/db/schema/sync-queue"
-import { apiHealth } from "@/src/api/client"
+import { apiHealth, apiPurgeTombstones } from "@/src/api/client"
+import { LOCAL_ENTITIES } from "@/src/db/local-entities"
 import { clearRestoreFlag, isRestoreChecked } from "@/src/sync/restore-flag"
 import { router, useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
@@ -77,6 +78,7 @@ export default function DebugDB() {
 	const [restoreChecked, setRestoreCheckedState] = useState(() =>
 		isRestoreChecked()
 	)
+	const [purging, setPurging] = useState(false)
 
 	const checkBackend = useCallback(async () => {
 		setHealth("probando...")
@@ -261,6 +263,44 @@ export default function DebugDB() {
 			>
 				<Text style={{ color: "#fff", fontWeight: "700" }}>
 					Borrar flag de restore ({restoreChecked ? "seteado" : "libre"})
+				</Text>
+			</Pressable>
+
+			<Pressable
+				disabled={purging}
+				onPress={() => {
+					void (async () => {
+						setPurging(true)
+						let total = 0
+						const failures: string[] = []
+						for (const entity of LOCAL_ENTITIES) {
+							try {
+								const { deleted } = await apiPurgeTombstones(entity.key)
+								total += deleted
+							} catch {
+								failures.push(entity.key)
+							}
+						}
+						setPurging(false)
+						Alert.alert(
+							"Purgar tombstones en la nube",
+							failures.length > 0
+								? `Eliminados: ${total}. Fallaron: ${failures.join(", ")}`
+								: `Eliminados: ${total} tombstones del usuario.`
+						)
+					})()
+				}}
+				style={{
+					backgroundColor: "#e63946",
+					paddingVertical: 12,
+					borderRadius: 8,
+					alignItems: "center",
+					marginBottom: 16,
+					opacity: purging ? 0.6 : 1,
+				}}
+			>
+				<Text style={{ color: "#fff", fontWeight: "700" }}>
+					{purging ? "Purgando..." : "Purgar tombstones en la nube"}
 				</Text>
 			</Pressable>
 

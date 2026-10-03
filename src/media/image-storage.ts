@@ -77,6 +77,18 @@ export async function saveImageFromUri(
 	return file.uri
 }
 
+/** Descarga una imagen remota (UploadThing) al storage privado. */
+export async function saveImageFromUrl(
+	imageId: string,
+	url: string
+): Promise<string> {
+	ensureImagesDirectory()
+	const file = getImageFile(imageId)
+	if (file.exists) file.delete()
+	const downloaded = await File.downloadFileAsync(url, file)
+	return downloaded.uri
+}
+
 export function deleteImage(imageId: string): void {
 	const file = getImageFile(imageId)
 	if (file.exists) file.delete()

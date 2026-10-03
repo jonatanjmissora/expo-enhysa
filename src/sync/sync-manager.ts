@@ -1,5 +1,6 @@
 import { apiSyncPush } from "../api/client"
 import { LOCAL_ENTITIES, getLocalEntity } from "../db/local-entities"
+import { uploadImage } from "../media/image-upload"
 import {
 	type LocalSyncRecord,
 	syncLocalRepository,
@@ -9,6 +10,7 @@ import { showToast } from "../ui/toast"
 import { isOffline } from "../utils/network"
 import {
 	finishSyncActivity,
+	setCurrentSection,
 	setSectionProgress,
 	startSyncActivity,
 } from "./sync-activity"
@@ -42,6 +44,33 @@ function countPending(userId: string): Promise<number> {
 	return syncQueueRepository.getCountByUserId(userId)
 }
 
+/**
+ * Prepara un upsert para la nube. Para `images`, si el binario todavía no se
+ * subió (`remoteKey` vacío), lo sube a UploadThing primero. Devuelve `"missing"`
+ * si el registro ya no existe (se trata como delete) o `"pending"` si falló la
+ * subida (queda en la cola para el próximo intento).
+ */
+async function prepareUpsert(
+	entityKey: string,
+	recordId: string
+): Promise<Record<string, unknown> | "missing" | "pending"> {
+	let record = await syncLocalRepository.getById(entityKey, recordId)
+	if (!record) return "missing"
+
+	if (entityKey === "images" && !record.remoteKey) {
+		try {
+			await uploadImage(recordId)
+		} catch (e) {
+			console.warn("[sync] no se pudo subir la imagen; queda pendiente:", e)
+			return "pending"
+		}
+		record = await syncLocalRepository.getById(entityKey, recordId)
+		if (!record) return "missing"
+	}
+
+	return toCloud(entityKey, record)
+}
+
 /** Drena la cola de UNA entidad (sin lock ni chequeo de conexión). */
 async function flushEntityQueue(
 	entityKey: string,
@@ -65,20 +94,23 @@ async function flushEntityQueue(
 
 		for (const entry of pending) {
 			if (entry.operation === "upsert") {
-				const record = await syncLocalRepository.getById(
-					entityKey,
-					entry.recordId
-				)
-				if (record) {
-					upserts.push(toCloud(entityKey, record))
+				const prepared = await prepareUpsert(entityKey, entry.recordId)
+				if (prepared === "missing") {
+					deletes.push(entry.recordId)
 					doneIds.push(entry.id)
 					continue
 				}
-				// Upsert de un registro que ya no existe: se manda como delete.
+				if (prepared === "pending") continue
+				upserts.push(prepared)
+				doneIds.push(entry.id)
+				continue
 			}
 			deletes.push(entry.recordId)
 			doneIds.push(entry.id)
 		}
+
+		// Nada para enviar (p. ej. todas las subidas fallaron): cortar.
+		if (upserts.length === 0 && deletes.length === 0) break
 
 		await apiSyncPush(entityKey, { upserts, deletes })
 		await syncQueueRepository.removeMany(doneIds)
@@ -175,6 +207,8 @@ export async function flushAll(
 	let synced = 0
 	try {
 		for (const entity of LOCAL_ENTITIES) {
+			if ((counts[entity.key] ?? 0) === 0) continue
+			if (notify) setCurrentSection(entity.key)
 			try {
 				const entitySynced = await runEntityFlush(entity.key, userId)
 				synced += entitySynced

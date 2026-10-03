@@ -530,7 +530,6 @@ export default function IluminacionShowAreaEditContent({
 								variant="danger"
 								iconSize={18}
 								onPress={() => {
-									void imageService.deleteImage(img)
 									setImagenes(prev => prev.filter((_, idx) => idx !== i))
 								}}
 								style={{

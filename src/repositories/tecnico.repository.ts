@@ -2,6 +2,7 @@ import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_TECNICOS_TABLE } from "../db/schema/tecnicos"
+import { imageService } from "../media/image-service"
 import { syncQueueRepository } from "./sync-queue.repository"
 
 export type TecnicoType = {
@@ -155,8 +156,13 @@ export const tecnicoRepository = {
 
 		const db = await getDatabase()
 
-		const row = await db.getFirstAsync<{ userId: string }>(
-			`SELECT userId FROM tecnicos WHERE id = ?`,
+		const row = await db.getFirstAsync<{
+			userId: string
+			matriculaImg: string
+			firmaImg: string
+			empresaLogo: string | null
+		}>(
+			`SELECT userId, matriculaImg, firmaImg, empresaLogo FROM tecnicos WHERE id = ?`,
 			id
 		)
 
@@ -164,6 +170,11 @@ export const tecnicoRepository = {
 
 		if (row?.userId) {
 			await syncQueueRepository.enqueue(row.userId, "tecnicos", id, "delete")
+			await imageService.deleteImages([
+				row.matriculaImg,
+				row.firmaImg,
+				row.empresaLogo,
+			])
 		}
 	},
 

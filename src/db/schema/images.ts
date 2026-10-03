@@ -8,6 +8,8 @@ export const CREATE_IMAGES_TABLE = `
 		size INTEGER NOT NULL,
 		userId TEXT NOT NULL,
 		createdAt TEXT NOT NULL,
-		updatedAt TEXT NOT NULL DEFAULT ''
+		updatedAt TEXT NOT NULL DEFAULT '',
+		remoteKey TEXT,
+		remoteUrl TEXT
 	);
 `

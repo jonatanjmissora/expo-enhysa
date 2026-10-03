@@ -16,9 +16,9 @@ export default function Index() {
   )
 }
 
-- sync con database (decidir si dejo los de local o los de la nube)
-       - barra de progreso cuando empiezo fress
-       - barra de progreso cuando vuelvo del offline y tengo tareas para sincronizar
+- sync con database (falta infromes/areas/localizadas)
+
+- formulario nueva empresa, defaultvalues para ciudad, provincia y cp
 
 - reanimated ?
 
@@ -27,11 +27,6 @@ export default function Index() {
 - iconos hero
 
 - alquiler
-
-- si elimino tecnico, el reporte queda roto, por mas que cree uno nuevo.
-- igual con la empresa o el instrumento asociado.
-
-- eliminar fotos cuando se elimina entrada de la tabla que la utilizaba.
 
 opcionales:
 - dni para recordar si cambias credenciales.

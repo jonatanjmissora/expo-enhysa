@@ -2,6 +2,7 @@ import { randomUUID } from "expo-crypto"
 import { assertWritable } from "../auth/data-guard"
 import { getDatabase } from "../db/client"
 import { CREATE_EMPRESAS_TABLE } from "../db/schema/empresas"
+import { imageService } from "../media/image-service"
 import { syncQueueRepository } from "./sync-queue.repository"
 
 export type EmpresaType = {
@@ -202,8 +203,8 @@ export const empresaRepository = {
 
 		const db = await getDatabase()
 
-		const row = await db.getFirstAsync<{ userId: string }>(
-			`SELECT userId FROM empresas WHERE id = ?`,
+		const row = await db.getFirstAsync<{ userId: string; logo: string }>(
+			`SELECT userId, logo FROM empresas WHERE id = ?`,
 			id
 		)
 
@@ -211,6 +212,7 @@ export const empresaRepository = {
 
 		if (row?.userId) {
 			await syncQueueRepository.enqueue(row.userId, "empresas", id, "delete")
+			await imageService.deleteImages([row.logo])
 		}
 	},
 }
