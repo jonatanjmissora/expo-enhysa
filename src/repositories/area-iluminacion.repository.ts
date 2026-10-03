@@ -6,6 +6,7 @@ import {
 	type AreaIluminacionType,
 } from "../db/schema/areas-iluminacion"
 import { imageService } from "../media/image-service"
+import { syncQueueRepository } from "./sync-queue.repository"
 
 export type CreateAreaIluminacionInput = Omit<
 	AreaIluminacionType,
@@ -168,6 +169,13 @@ export const areaIluminacionRepository = {
 			throw new Error("No se pudo recuperar el área creada")
 		}
 
+		await syncQueueRepository.enqueue(
+			input.userId,
+			"areas_iluminacion",
+			id,
+			"upsert"
+		)
+
 		return mapRow(area)
 	},
 
@@ -263,6 +271,13 @@ export const areaIluminacionRepository = {
 			id
 		)
 
+		await syncQueueRepository.enqueue(
+			area.userId,
+			"areas_iluminacion",
+			id,
+			"upsert"
+		)
+
 		return area
 	},
 
@@ -271,13 +286,22 @@ export const areaIluminacionRepository = {
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<{ imagenes: string }>(
-			`SELECT imagenes FROM areas_iluminacion WHERE id = ?`,
-			id
-		)
+		const existing = await db.getFirstAsync<{
+			userId: string
+			imagenes: string
+		}>(`SELECT userId, imagenes FROM areas_iluminacion WHERE id = ?`, id)
 		const imageIds = existing ? parseStringArray(existing.imagenes) : []
 
 		await db.runAsync(`DELETE FROM areas_iluminacion WHERE id = ?`, id)
+
+		if (existing?.userId) {
+			await syncQueueRepository.enqueue(
+				existing.userId,
+				"areas_iluminacion",
+				id,
+				"delete"
+			)
+		}
 
 		for (const imageId of imageIds) {
 			await imageService.deleteImage(imageId)

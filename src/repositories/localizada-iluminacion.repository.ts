@@ -6,6 +6,7 @@ import {
 	type LocalizadaIluminacionType,
 } from "../db/schema/localizadas-iluminacion"
 import { imageService } from "../media/image-service"
+import { syncQueueRepository } from "./sync-queue.repository"
 
 export type CreateLocalizadaIluminacionInput = Omit<
 	LocalizadaIluminacionType,
@@ -143,6 +144,13 @@ export const localizadaIluminacionRepository = {
 			throw new Error("No se pudo recuperar la medición localizada creada")
 		}
 
+		await syncQueueRepository.enqueue(
+			input.userId,
+			"localizadas_iluminacion",
+			id,
+			"upsert"
+		)
+
 		return mapRow(localizada)
 	},
 
@@ -232,6 +240,13 @@ export const localizadaIluminacionRepository = {
 			id
 		)
 
+		await syncQueueRepository.enqueue(
+			localizada.userId,
+			"localizadas_iluminacion",
+			id,
+			"upsert"
+		)
+
 		return localizada
 	},
 
@@ -240,13 +255,22 @@ export const localizadaIluminacionRepository = {
 
 		const db = await getDatabase()
 
-		const existing = await db.getFirstAsync<{ imagenes: string }>(
-			`SELECT imagenes FROM localizadas_iluminacion WHERE id = ?`,
-			id
-		)
+		const existing = await db.getFirstAsync<{
+			userId: string
+			imagenes: string
+		}>(`SELECT userId, imagenes FROM localizadas_iluminacion WHERE id = ?`, id)
 		const imageIds = existing ? parseStringArray(existing.imagenes) : []
 
 		await db.runAsync(`DELETE FROM localizadas_iluminacion WHERE id = ?`, id)
+
+		if (existing?.userId) {
+			await syncQueueRepository.enqueue(
+				existing.userId,
+				"localizadas_iluminacion",
+				id,
+				"delete"
+			)
+		}
 
 		for (const imageId of imageIds) {
 			await imageService.deleteImage(imageId)

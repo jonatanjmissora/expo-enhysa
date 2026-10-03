@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
 	type CreateInformeConSnapshotInput,
 	type CreateInformesIluminacionInput,
@@ -7,6 +7,7 @@ import {
 	informesIluminacionRepository,
 } from "@/src/repositories/informes-iluminacion.repository"
 import { useUserId } from "@/src/session/session-context"
+import { useAfterSyncChange } from "@/src/sync/use-after-entity-change"
 import { informeIluminacionKeys } from "../keys/informe-iluminacion.keys"
 
 export function useInformesIluminacion() {
@@ -33,18 +34,17 @@ export function useInformeIluminacionById(id: string | undefined) {
 }
 
 export function useCreateInformeIluminacion() {
-	const qc = useQueryClient()
 	const userId = useUserId()
+	const after = useAfterSyncChange(informeIluminacionKeys.all)
 	return useMutation({
 		mutationFn: (input: Omit<CreateInformeConSnapshotInput, "userId">) =>
 			informesIluminacionRepository.createWithSnapshot({ ...input, userId }),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useUpdateInformeIluminacion() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(informeIluminacionKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -53,23 +53,21 @@ export function useUpdateInformeIluminacion() {
 			id: string
 			input: Partial<Omit<CreateInformesIluminacionInput, "userId">>
 		}) => informesIluminacionRepository.update(id, input),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useUpdateInformeSnapshot() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(informeIluminacionKeys.all)
 	return useMutation({
 		mutationFn: ({ id, input }: { id: string; input: UpdateSnapshotInput }) =>
 			informesIluminacionRepository.updateSnapshot(id, input),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useUpdateInformeGeneral() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(informeIluminacionKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -78,16 +76,14 @@ export function useUpdateInformeGeneral() {
 			id: string
 			input: UpdateInformeGeneralInput
 		}) => informesIluminacionRepository.updateGeneral(id, input),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useDeleteInformeIluminacion() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(informeIluminacionKeys.all)
 	return useMutation({
 		mutationFn: (id: string) => informesIluminacionRepository.delete(id),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: informeIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }

@@ -32,6 +32,7 @@ opcionales:
 - dni para recordar si cambias credenciales.
 - pdf para el navegador?
 
+- cuando traigo varios tecnicos, si es que hay varios para el mismo usuario. ejemplo, uno en local y otro en nube, y pongo combinar. Tengo 2 tecnicos, y solo uso uno en vivo. Implementar que el usuario tiene que quedarse con uno solo.
 
 
 

@@ -21,6 +21,7 @@ import {
 	instrumentoRepository,
 } from "./instrumento.repository"
 import { type TecnicoType, tecnicoRepository } from "./tecnico.repository"
+import { syncQueueRepository } from "./sync-queue.repository"
 
 function parseImageIds(value: string): string[] {
 	try {
@@ -279,6 +280,13 @@ export const informesIluminacionRepository = {
 			throw new Error("No se pudo recuperar el informe creado")
 		}
 
+		await syncQueueRepository.enqueue(
+			input.userId,
+			"informes_iluminacion",
+			id,
+			"upsert"
+		)
+
 		return mapRow(row)
 	},
 
@@ -428,6 +436,13 @@ export const informesIluminacionRepository = {
 			id
 		)
 
+		await syncQueueRepository.enqueue(
+			informe.userId,
+			"informes_iluminacion",
+			id,
+			"upsert"
+		)
+
 		return informe
 	},
 
@@ -516,13 +531,31 @@ export const informesIluminacionRepository = {
 		const db = await getDatabase()
 
 		const informe = await this.getById(id)
-		const imageIds = informe
+		const userId = informe?.userId ?? ""
+
+		const areaRows = await db.getAllAsync<{ id: string; imagenes: string }>(
+			`SELECT id, imagenes FROM areas_iluminacion WHERE reportId = ?`,
+			id
+		)
+		const localizadaRows = await db.getAllAsync<{
+			id: string
+			imagenes: string
+		}>(
+			`SELECT id, imagenes FROM localizadas_iluminacion WHERE reportId = ?`,
+			id
+		)
+
+		const snapshotImageIds = informe
 			? [
 					...tecnicoSnapshotImageIds(informe.tecnicoSnapshot),
 					...empresaSnapshotImageIds(informe.empresaSnapshot),
 					...instrumentoSnapshotImageIds(informe.instrumentoSnapshot),
 				]
 			: []
+		const childImageIds = [
+			...areaRows.flatMap(row => parseImageIds(row.imagenes)),
+			...localizadaRows.flatMap(row => parseImageIds(row.imagenes)),
+		]
 
 		await db.withTransactionAsync(async () => {
 			await db.runAsync(`DELETE FROM areas_iluminacion WHERE reportId = ?`, id)
@@ -533,7 +566,34 @@ export const informesIluminacionRepository = {
 			await db.runAsync(`DELETE FROM informes_iluminacion WHERE id = ?`, id)
 		})
 
-		for (const imageId of imageIds) {
+		// Encola los borrados (informe + hijos) para la nube.
+		if (userId) {
+			await syncQueueRepository.enqueue(
+				userId,
+				"informes_iluminacion",
+				id,
+				"delete"
+			)
+			for (const area of areaRows) {
+				await syncQueueRepository.enqueue(
+					userId,
+					"areas_iluminacion",
+					area.id,
+					"delete"
+				)
+			}
+			for (const localizada of localizadaRows) {
+				await syncQueueRepository.enqueue(
+					userId,
+					"localizadas_iluminacion",
+					localizada.id,
+					"delete"
+				)
+			}
+		}
+
+		// Borra las imágenes (snapshots + áreas + localizadas).
+		for (const imageId of [...snapshotImageIds, ...childImageIds]) {
 			await imageService.deleteImage(imageId)
 		}
 	},

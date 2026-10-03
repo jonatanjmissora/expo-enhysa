@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
 	type CreateLocalizadaIluminacionInput,
 	localizadaIluminacionRepository,
 } from "@/src/repositories/localizada-iluminacion.repository"
 import { useUserId } from "@/src/session/session-context"
+import { useAfterSyncChange } from "@/src/sync/use-after-entity-change"
 import { localizadaIluminacionKeys } from "../keys/localizada-iluminacion.keys"
 
 export function useLocalizadasIluminacion(reportId: string | undefined) {
@@ -39,18 +40,17 @@ export function useLocalizadaIluminacionById(id: string | undefined) {
 }
 
 export function useCreateLocalizadaIluminacion() {
-	const qc = useQueryClient()
 	const userId = useUserId()
+	const after = useAfterSyncChange(localizadaIluminacionKeys.all)
 	return useMutation({
 		mutationFn: (input: Omit<CreateLocalizadaIluminacionInput, "userId">) =>
 			localizadaIluminacionRepository.create({ ...input, userId }),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: localizadaIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useUpdateLocalizadaIluminacion() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(localizadaIluminacionKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -59,16 +59,14 @@ export function useUpdateLocalizadaIluminacion() {
 			id: string
 			input: Partial<Omit<CreateLocalizadaIluminacionInput, "userId">>
 		}) => localizadaIluminacionRepository.update(id, input),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: localizadaIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useDeleteLocalizadaIluminacion() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(localizadaIluminacionKeys.all)
 	return useMutation({
 		mutationFn: (id: string) => localizadaIluminacionRepository.delete(id),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: localizadaIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }

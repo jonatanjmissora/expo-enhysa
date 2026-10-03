@@ -12,10 +12,9 @@ forma automática y sin intervención del usuario. La nube de binarios es **Uplo
 
 ## Alcance
 
-- **Sí (esta fase):** imágenes de `tecnicos` (`matriculaImg`, `firmaImg`, `empresaLogo`),
-  `empresas` (`logo`) e `instrumentos` (`imagenesCalibracion`, `imagenes`).
-- **No (paso posterior):** imágenes de `informes_iluminacion`, `areas_iluminacion` y
-  `localizadas_iluminacion`. Se encara después de validar este flujo.
+- **Cubierto:** imágenes de `tecnicos`, `empresas`, `instrumentos` **e** informes
+  (`informes_iluminacion` + `areas_iluminacion` + `localizadas_iluminacion`; las
+  imágenes de snapshots se copian y viajan en `images`).
 
 ## Decisiones (acordadas)
 
@@ -260,6 +259,20 @@ que trae la metadata `remoteKey`/`remoteUrl`):
 - [ ] Reinstalar en otro device → restore trae entidades **y** archivos.
 - [x] Sin conexión: se encola; al reconectar sube (via `flushAll`).
 - [x] Subida desde la app validada end-to-end (UploadThing).
+
+### Fase 6 — Multi-dispositivo (PENDIENTE — nueva implementación)
+Hoy el sync normal al reconectar es **solo-push**; con 2+ dispositivos de la misma
+cuenta puede haber divergencia y conflictos. Falta:
+- [ ] **LWW en el server**: en el upsert comparar `updated_at` e ignorar el entrante más
+      viejo (hoy gana el último en llegar).
+- [ ] **Respetar tombstones en el upsert**: no revivir un `deleted_at` con un entrante
+      más viejo.
+- [ ] **Pull en el sync normal**: bajar `items` + `deletedIds` y reconciliar (reusar el
+      merge que ya existe), no solo subir.
+- [ ] Deletion propagation entre dispositivos (imágenes incluidas).
+
+> Con un dispositivo por usuario no afecta. Se encara cuando el multi-dispositivo sea
+> requisito.
 
 ---
 

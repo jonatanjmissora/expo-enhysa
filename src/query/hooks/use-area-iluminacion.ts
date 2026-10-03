@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
 	type CreateAreaIluminacionInput,
 	areaIluminacionRepository,
 } from "@/src/repositories/area-iluminacion.repository"
 import { useUserId } from "@/src/session/session-context"
+import { useAfterSyncChange } from "@/src/sync/use-after-entity-change"
 import { areaIluminacionKeys } from "../keys/area-iluminacion.keys"
 
 export function useAreasIluminacion(reportId: string | undefined) {
@@ -39,18 +40,17 @@ export function useAreaIluminacionById(id: string | undefined) {
 }
 
 export function useCreateAreaIluminacion() {
-	const qc = useQueryClient()
 	const userId = useUserId()
+	const after = useAfterSyncChange(areaIluminacionKeys.all)
 	return useMutation({
 		mutationFn: (input: Omit<CreateAreaIluminacionInput, "userId">) =>
 			areaIluminacionRepository.create({ ...input, userId }),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: areaIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useUpdateAreaIluminacion() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(areaIluminacionKeys.all)
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -59,16 +59,14 @@ export function useUpdateAreaIluminacion() {
 			id: string
 			input: Partial<Omit<CreateAreaIluminacionInput, "userId">>
 		}) => areaIluminacionRepository.update(id, input),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: areaIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }
 
 export function useDeleteAreaIluminacion() {
-	const qc = useQueryClient()
+	const after = useAfterSyncChange(areaIluminacionKeys.all)
 	return useMutation({
 		mutationFn: (id: string) => areaIluminacionRepository.delete(id),
-		onSuccess: () =>
-			qc.invalidateQueries({ queryKey: areaIluminacionKeys.all }),
+		onSuccess: after,
 	})
 }

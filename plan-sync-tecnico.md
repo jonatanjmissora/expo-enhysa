@@ -326,7 +326,12 @@ Todo dentro de una transacción por request.
 - [x] `empresas` e `instrumentos`: tabla `expo_*` + `SYNC_ENTITIES` (backend),
       `LOCAL_ENTITIES` + repo genérico (app), enqueue en sus repos, flush en sus hooks y
       restore/merge incluidos.
-- [ ] `informes_iluminacion` (+ `areas` + `localizadas`) e `images`.
+- [x] `informes_iluminacion` (+ `areas_iluminacion` + `localizadas_iluminacion`) e
+      `images`: tablas `expo_*` + registro backend, `LOCAL_ENTITIES`, enqueue en los
+      repos (create/update/delete), `flushAll` en los hooks, y **cascade** al borrar un
+      informe (encola área/localizada + borra sus imágenes).
+- [x] Imágenes: subida directa a UploadThing, descarga en restore, borrado remoto y
+      cascade (ver `plan-sync-imagenes.md`).
 
 ---
 
