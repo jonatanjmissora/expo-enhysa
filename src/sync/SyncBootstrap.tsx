@@ -1,7 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
+import { areaIluminacionKeys } from "../query/keys/area-iluminacion.keys"
 import { empresaKeys } from "../query/keys/empresa.keys"
+import { informeIluminacionKeys } from "../query/keys/informe-iluminacion.keys"
 import { instrumentoKeys } from "../query/keys/instrumento.keys"
+import { localizadaIluminacionKeys } from "../query/keys/localizada-iluminacion.keys"
 import { syncKeys } from "../query/keys/sync.keys"
 import { tecnicoKeys } from "../query/keys/tecnico.keys"
 import { useUserId } from "../session/session-context"
@@ -37,6 +40,9 @@ export function SyncBootstrap() {
 				if (!isRestoreChecked()) {
 					await runRestoreFlow(userId)
 					setRestoreChecked()
+					qc.invalidateQueries({ queryKey: informeIluminacionKeys.all })
+					qc.invalidateQueries({ queryKey: areaIluminacionKeys.all })
+					qc.invalidateQueries({ queryKey: localizadaIluminacionKeys.all })
 					qc.invalidateQueries({ queryKey: tecnicoKeys.all })
 					qc.invalidateQueries({ queryKey: empresaKeys.all })
 					qc.invalidateQueries({ queryKey: instrumentoKeys.all })
