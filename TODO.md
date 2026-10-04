@@ -1,5 +1,3 @@
-
-
 - scrollTop ?
 import { useScrollToTop } from "expo-router"
 import { useRef } from "react"
@@ -18,8 +16,6 @@ export default function Index() {
 
 - sync con database (falta infromes/areas/localizadas)
 
-- formulario nueva empresa, defaultvalues para ciudad, provincia y cp
-
 - reanimated ?
 
 - datos de prueba para generar pdf? en user-1 o video explicativo
@@ -35,6 +31,13 @@ opcionales:
 - cuando traigo varios tecnicos, si es que hay varios para el mismo usuario. ejemplo, uno en local y otro en nube, y pongo combinar. Tengo 2 tecnicos, y solo uso uno en vivo. Implementar que el usuario tiene que quedarse con uno solo.
 
 
+Para probar
+Neon: correr los 3 CREATE TABLE nuevos (están en schema.sql).
+Deploy del backend.
+En la app: creá un informe (con empresa/instrumento/técnico), agregá áreas y localizadas con fotos → verificá expo_informes_iluminacion, expo_areas_iluminacion, expo_localizadas_iluminacion y los archivos en UploadThing.
+Editá y borrá el informe → debe cascade: borrar áreas/localizadas (local + nube) y sus imágenes.
+Offline: encolar → toast/indicador → reconectar → barra de progreso y drena.
+¿Probás y me contás? Si algo tira NOT NULL constraint o un campo no llega, lo revisamos.
 
 
 Diseño general de tanstack query + sincronizacion

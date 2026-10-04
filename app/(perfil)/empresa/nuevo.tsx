@@ -15,14 +15,50 @@ import { useForm } from "@tanstack/react-form"
 import { defaultEmpresa, empresaFormValidator } from "@/src/db/schema/empresas"
 
 const FIELDS = [
-	{ key: "razonSocial", label: "Razón Social", placeholder: "Mi Empresa SRL" },
-	{ key: "cuit", label: "CUIT", placeholder: "20304050607" },
-	{ key: "direccion", label: "Dirección", placeholder: "Av. Libertador 1234" },
-	{ key: "localidad", label: "Localidad", placeholder: "Bahía Blanca" },
-	{ key: "provincia", label: "Provincia", placeholder: "Buenos Aires" },
-	{ key: "codigoPostal", label: "Código Postal", placeholder: "8000" },
-	{ key: "horarios", label: "Horarios", placeholder: "Lun-Vie 8:00-17:00" },
+	{
+		key: "razonSocial",
+		label: "Razón Social",
+		placeholder: "Mi Empresa SRL",
+		defaultValue: "",
+	},
+	{ key: "cuit", label: "CUIT", placeholder: "20304050607", defaultValue: "" },
+	{
+		key: "direccion",
+		label: "Dirección",
+		placeholder: "Av. Libertador 1234",
+		defaultValue: "",
+	},
+	{
+		key: "localidad",
+		label: "Localidad",
+		placeholder: "Bahía Blanca",
+		defaultValue: "Bahía Blanca",
+	},
+	{
+		key: "provincia",
+		label: "Provincia",
+		placeholder: "Buenos Aires",
+		defaultValue: "Buenos Aires",
+	},
+	{
+		key: "codigoPostal",
+		label: "Código Postal",
+		placeholder: "8000",
+		defaultValue: "8000",
+	},
+	{
+		key: "horarios",
+		label: "Horarios",
+		placeholder: "Lun-Vie 8:00-17:00",
+		defaultValue: "Lun-Vie 8:00-17:00",
+	},
 ] as const
+
+/** Defaults del form: parte de `defaultEmpresa` y pisa con los `defaultValue` de FIELDS. */
+const EMPRESA_DEFAULTS = {
+	...defaultEmpresa,
+	...Object.fromEntries(FIELDS.map(field => [field.key, field.defaultValue])),
+}
 
 export default function NuevaEmpresa() {
 	return (
@@ -55,7 +91,7 @@ function EmpresaNuevoForm() {
 	const [logo, setLogo] = useState<string | null>(null)
 
 	const form = useForm({
-		defaultValues: defaultEmpresa,
+		defaultValues: EMPRESA_DEFAULTS,
 		validators: { onSubmit: empresaFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)
