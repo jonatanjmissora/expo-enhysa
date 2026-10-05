@@ -4,6 +4,7 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useEmpresas } from "@/src/query/hooks/use-empresa"
 import { useInstrumentos } from "@/src/query/hooks/use-instrumento"
+import { useTecnico } from "@/src/query/hooks/use-tecnico"
 import { router, useLocalSearchParams } from "expo-router"
 import { View, Text } from "react-native"
 
@@ -12,10 +13,15 @@ export default function IluminacionGeneralEditContent() {
 	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
 	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
 		useInstrumentos()
+	const { data: tecnicos, isLoading: isLoadingTecnicos } = useTecnico()
 	const { data: informe, isLoading: isLoadingInforme } =
 		useInformeIluminacionById(id)
 
-	const loading = isLoadingEmpresas || isLoadingInstrumentos || isLoadingInforme
+	const loading =
+		isLoadingEmpresas ||
+		isLoadingInstrumentos ||
+		isLoadingTecnicos ||
+		isLoadingInforme
 
 	if (loading) {
 		return (
@@ -48,6 +54,20 @@ export default function IluminacionGeneralEditContent() {
 				<Button
 					text="Crear instrumento"
 					onPress={() => router.push("/instrumento/nuevo")}
+				/>
+			</View>
+		)
+	}
+
+	if (!tecnicos || tecnicos.length === 0) {
+		return (
+			<View style={{}}>
+				<Text style={{ color: "#cbd5e1", fontSize: 18, fontStyle: "italic" }}>
+					No tenes técnicos cargados
+				</Text>
+				<Button
+					text="Crear técnico"
+					onPress={() => router.push("/tecnico/nuevo")}
 				/>
 			</View>
 		)
@@ -99,6 +119,7 @@ export default function IluminacionGeneralEditContent() {
 			<IluminacionGeneralEditFormContent
 				empresas={empresas}
 				instrumentos={instrumentos}
+				tecnicos={tecnicos}
 				informe={informe}
 			/>
 		</ViewWithLogo>

@@ -3,6 +3,7 @@ import type { EmpresaType } from "@/src/repositories/empresa.repository"
 import type { InformesIluminacionType } from "@/src/repositories/informes-iluminacion.repository"
 import { useUpdateInformeGeneral } from "@/src/query/hooks/use-informe-iluminacion"
 import type { InstrumentoType } from "@/src/repositories/instrumento.repository"
+import type { TecnicoType } from "@/src/repositories/tecnico.repository"
 import { useState } from "react"
 import { useForm } from "@tanstack/react-form"
 import { iluminacionGeneralFormValidator } from "@/src/db/schema/informes-iluminacion"
@@ -17,12 +18,14 @@ import { hasChanges } from "@/src/utils/hasChanges"
 type Props = {
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
+	tecnicos: TecnicoType[]
 	informe: InformesIluminacionType
 }
 
 export default function IluminacionGeneralEditFormContent({
 	empresas,
 	instrumentos,
+	tecnicos,
 	informe,
 }: Props) {
 	const [error, setError] = useState<string | null>(null)
@@ -31,6 +34,7 @@ export default function IluminacionGeneralEditFormContent({
 	const defaultValues = {
 		empresaId: informe.empresaId,
 		instrumentoId: informe.instrumentoId,
+		tecnicoId: informe.tecnicoId,
 		estado: informe.estado,
 		humedad: informe.humedad,
 		temperatura: informe.temperatura,
@@ -53,6 +57,7 @@ export default function IluminacionGeneralEditFormContent({
 					input: {
 						empresaId: value.empresaId,
 						instrumentoId: value.instrumentoId,
+						tecnicoId: value.tecnicoId,
 						estado: value.estado,
 						humedad: value.humedad,
 						temperatura: value.temperatura,
@@ -77,7 +82,54 @@ export default function IluminacionGeneralEditFormContent({
 				<InformeHeaderContent informe={informe} />
 			</View>
 			<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-				<TecnicoContent nombre={informe.tecnicoSnapshot.nombre} />
+				<View
+					style={{
+						justifyContent: "center",
+						alignItems: "center",
+						width: "90%",
+						marginHorizontal: "auto",
+					}}
+				>
+					<Text
+						style={{
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.65,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
+						}}
+					>
+						Técnico
+					</Text>
+					<form.Field name="tecnicoId">
+						{field => (
+							<>
+								<Select
+									data={tecnicos}
+									value={field.state.value}
+									onChange={field.handleChange}
+									placeholder="Seleccionar técnico"
+									renderItem={item =>
+										`${item.nombre}${item.matricula ? ` - ${item.matricula}` : ""}`
+									}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</>
+						)}
+					</form.Field>
+				</View>
 
 				<View
 					style={{
@@ -331,45 +383,6 @@ export default function IluminacionGeneralEditFormContent({
 				)}
 			</View>
 		</ScrollView>
-	)
-}
-
-function TecnicoContent({ nombre }: { nombre: string }) {
-	return (
-		<View
-			style={{
-				justifyContent: "center",
-				alignItems: "center",
-				width: "90%",
-				marginHorizontal: "auto",
-			}}
-		>
-			<Text
-				style={{
-					color: theme.orange,
-					fontWeight: "600",
-					opacity: 0.65,
-					marginRight: "auto",
-					borderBottomWidth: 1,
-					borderBottomColor: theme.orange,
-					width: "100%",
-				}}
-			>
-				Técnico
-			</Text>
-			<Text
-				style={{
-					color: "#ccc",
-					fontSize: 16,
-					fontWeight: "600",
-					letterSpacing: 2,
-					fontStyle: "italic",
-					alignSelf: "flex-end",
-				}}
-			>
-				{String(nombre)?.toUpperCase()}
-			</Text>
-		</View>
 	)
 }
 

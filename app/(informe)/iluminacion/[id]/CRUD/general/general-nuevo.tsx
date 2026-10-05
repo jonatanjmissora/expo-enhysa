@@ -9,7 +9,7 @@ import IluminacionSteps from "@/components/iluminacion/nuevo/IluminacionSteps"
 import ViewWithLogo from "@/components/ViewWithLogo"
 
 export default function IluminacionGeneralNuevo() {
-	const { data: tecnico, isLoading: isLoadingTecnico } = useTecnico()
+	const { data: tecnicos, isLoading: isLoadingTecnico } = useTecnico()
 	const { data: empresas, isLoading: isLoadingEmpresas } = useEmpresas()
 	const { data: instrumentos, isLoading: isLoadingInstrumentos } =
 		useInstrumentos()
@@ -43,7 +43,7 @@ export default function IluminacionGeneralNuevo() {
 					Nuevo Informe
 				</Text>
 			</View>
-			{!tecnico ? (
+			{!tecnicos || tecnicos.length === 0 ? (
 				<NoTecnico />
 			) : !empresas || empresas.length === 0 ? (
 				<EmpresasEmpty />
@@ -53,7 +53,7 @@ export default function IluminacionGeneralNuevo() {
 				<>
 					<IluminacionSteps />
 					<IluminacionGeneralFormContent
-						tecnico={tecnico}
+						tecnicos={tecnicos}
 						empresas={empresas}
 						instrumentos={instrumentos}
 					/>

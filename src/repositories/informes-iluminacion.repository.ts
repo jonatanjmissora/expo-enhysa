@@ -93,6 +93,7 @@ async function buildInstrumentoSnapshot(
 export type InformesIluminacionType = {
 	empresaId: string
 	instrumentoId: string
+	tecnicoId: string
 	estado: string
 	humedad: string
 	temperatura: string
@@ -141,6 +142,7 @@ export type CreateInformeConSnapshotInput = {
 export type UpdateInformeGeneralInput = {
 	empresaId: string
 	instrumentoId: string
+	tecnicoId: string
 	estado: string
 	humedad: string
 	temperatura: string
@@ -157,6 +159,7 @@ const SELECT_COLUMNS = `
 	title,
 	empresaId,
 	instrumentoId,
+	tecnicoId,
 	tecnicoSnapshot,
 	empresaSnapshot,
 	instrumentoSnapshot,
@@ -179,6 +182,7 @@ type InformeRow = {
 	title: string
 	empresaId: string
 	instrumentoId: string
+	tecnicoId: string
 	tecnicoSnapshot: string
 	empresaSnapshot: string
 	instrumentoSnapshot: string
@@ -232,6 +236,7 @@ export const informesIluminacionRepository = {
 					title,
 					empresaId,
 					instrumentoId,
+					tecnicoId,
 					tecnicoSnapshot,
 					empresaSnapshot,
 					instrumentoSnapshot,
@@ -248,12 +253,13 @@ export const informesIluminacionRepository = {
 					creditConsumedAt,
 					updatedAt
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`,
 			id,
 			input.title,
 			input.empresaId,
 			input.instrumentoId,
+			input.tecnicoId,
 			serializeSnapshot(input.tecnicoSnapshot),
 			serializeSnapshot(input.empresaSnapshot),
 			serializeSnapshot(input.instrumentoSnapshot),
@@ -327,6 +333,7 @@ export const informesIluminacionRepository = {
 			title: input.title,
 			empresaId: input.empresaId,
 			instrumentoId: input.instrumentoId,
+			tecnicoId: input.tecnicoId,
 			tecnicoSnapshot,
 			empresaSnapshot,
 			instrumentoSnapshot,
@@ -398,6 +405,7 @@ export const informesIluminacionRepository = {
 					title = ?,
 					empresaId = ?,
 					instrumentoId = ?,
+					tecnicoId = ?,
 					tecnicoSnapshot = ?,
 					empresaSnapshot = ?,
 					instrumentoSnapshot = ?,
@@ -418,6 +426,7 @@ export const informesIluminacionRepository = {
 			informe.title,
 			informe.empresaId,
 			informe.instrumentoId,
+			informe.tecnicoId,
 			serializeSnapshot(informe.tecnicoSnapshot),
 			serializeSnapshot(informe.empresaSnapshot),
 			serializeSnapshot(informe.instrumentoSnapshot),
@@ -481,6 +490,23 @@ export const informesIluminacionRepository = {
 			humedad: input.humedad,
 			temperatura: input.temperatura,
 			title: input.title,
+		}
+
+		if (input.tecnicoId && input.tecnicoId !== existing.tecnicoId) {
+			const tecnico = await tecnicoRepository.getById(input.tecnicoId)
+			if (!tecnico) {
+				throw new Error("No se encontró el técnico")
+			}
+			const oldIds = tecnicoSnapshotImageIds(existing.tecnicoSnapshot)
+			const snapshot = await buildTecnicoSnapshot(tecnico, existing.userId)
+			const newIds = tecnicoSnapshotImageIds(snapshot)
+			for (const imageId of oldIds) {
+				if (!newIds.includes(imageId)) {
+					await imageService.deleteImage(imageId)
+				}
+			}
+			patch.tecnicoId = input.tecnicoId
+			patch.tecnicoSnapshot = snapshot
 		}
 
 		if (input.empresaId !== existing.empresaId) {

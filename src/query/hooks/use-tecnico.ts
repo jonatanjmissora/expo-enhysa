@@ -11,7 +11,7 @@ export function useTecnico() {
 	const userId = useUserId()
 	return useQuery({
 		queryKey: tecnicoKeys.byUserId(userId),
-		queryFn: () => tecnicoRepository.getByUserId(userId),
+		queryFn: () => tecnicoRepository.getAllByUserId(userId),
 		enabled: Boolean(userId),
 	})
 }

@@ -163,6 +163,12 @@ async function initializeDatabase(database: SQLite.SQLiteDatabase) {
 	await ensureColumn(database, "users", "passwordHash", "TEXT")
 	await ensureColumn(database, "images", "remoteKey", "TEXT")
 	await ensureColumn(database, "images", "remoteUrl", "TEXT")
+	await ensureColumn(
+		database,
+		"informes_iluminacion",
+		"tecnicoId",
+		"TEXT NOT NULL DEFAULT ''"
+	)
 }
 
 export function getDatabase(): Promise<SQLite.SQLiteDatabase> {

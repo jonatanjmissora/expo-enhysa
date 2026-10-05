@@ -4,6 +4,7 @@ export const CREATE_INFORMES_ILUMINACION_TABLE = `
 	CREATE TABLE IF NOT EXISTS informes_iluminacion (
 		empresaId TEXT NOT NULL,
 		instrumentoId TEXT NOT NULL,
+		tecnicoId TEXT NOT NULL DEFAULT '',
 		estado TEXT NOT NULL,
 		humedad TEXT NOT NULL,
 		temperatura TEXT NOT NULL,
@@ -29,6 +30,7 @@ export const CREATE_INFORMES_ILUMINACION_TABLE = `
 export const iluminacionGeneralFormValidator = z.object({
 	empresaId: z.string().min(1, "Seleccioná una empresa"),
 	instrumentoId: z.string().min(1, "Seleccioná un instrumento"),
+	tecnicoId: z.string().min(1, "Seleccioná un técnico"),
 	estado: z.string().min(1, "Seleccioná el estado del clima"),
 	humedad: z.string().min(1, "Seleccioná la humedad"),
 	temperatura: z.string().min(1, "Seleccioná la temperatura"),
@@ -41,6 +43,7 @@ export type IluminacionGeneralFormType = z.infer<
 export const defaultIluminacionGeneral = {
 	empresaId: "",
 	instrumentoId: "",
+	tecnicoId: "",
 	estado: "",
 	humedad: "",
 	temperatura: "",

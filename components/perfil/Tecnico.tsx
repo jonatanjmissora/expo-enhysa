@@ -1,28 +1,15 @@
 import { getImageUri } from "@/src/media/image-storage"
 import Button from "@/components/Button"
 import { theme } from "@/constants/theme"
-import { useDeleteTecnico, useTecnico } from "@/src/query/hooks/use-tecnico"
+import { useTecnico } from "@/src/query/hooks/use-tecnico"
 import type { TecnicoType } from "@/src/repositories/tecnico.repository"
-import { useRouter } from "expo-router"
-import { useState } from "react"
-import { Text, View } from "react-native"
+import { router, useRouter } from "expo-router"
+import { Pressable, ScrollView, Text, View } from "react-native"
 import { useDataLockGuard } from "@/src/session/use-data-lock"
 import ImageViewer from "../ImageViewer"
-import ModalDeleteConfirm from "../ModalDeleteConfirm"
-import PictureNotFound from "../PictureNotFound"
-import MenuBtn from "../MenuBtn"
-
-const FIELDS = [
-	{ key: "nombre", label: "Nombre Completo", placeholder: "Juan Pérez" },
-	{ key: "dni", label: "DNI", placeholder: "29123456" },
-	{ key: "telefono", label: "Teléfono", placeholder: "2911234567" },
-	{ key: "localidad", label: "Localidad", placeholder: "Bahía Blanca" },
-	{ key: "cargo", label: "Cargo", placeholder: "Técnico" },
-	{ key: "matricula", label: "Matrícula", placeholder: "MAT-12345" },
-] as const
 
 export default function Tecnico() {
-	const { data: tecnico, isLoading } = useTecnico()
+	const { data: tecnicos, isLoading } = useTecnico()
 	const router = useRouter()
 	const guardCreate = useDataLockGuard()
 
@@ -40,7 +27,7 @@ export default function Tecnico() {
 		)
 	}
 
-	if (!tecnico) {
+	if (!tecnicos || tecnicos.length === 0) {
 		return (
 			<View
 				style={{
@@ -58,7 +45,7 @@ export default function Tecnico() {
 						textAlign: "center",
 					}}
 				>
-					Aún no tenés un técnico cargado.
+					Aún no tenés técnicos cargados.
 				</Text>
 				<Button
 					text="Crear técnico"
@@ -68,170 +55,116 @@ export default function Tecnico() {
 		)
 	}
 
-	return <TecnicoItem tecnico={tecnico} />
-}
-
-function TecnicoItem({ tecnico }: { tecnico: TecnicoType }) {
 	return (
-		<View
+		<ScrollView
+			contentContainerStyle={{
+				justifyContent: "space-between",
+				alignItems: "center",
+				flex: 1,
+			}}
 			style={{
 				flex: 1,
-				padding: 16,
-				gap: 24,
-				paddingVertical: 10,
-				justifyContent: "center",
-				alignItems: "center",
-				paddingBottom: 100,
+				padding: 20,
 			}}
 		>
-			<MenuTecnico tecnico={tecnico} />
+			{tecnicos.length === 0 ? (
+				<Text style={{ color: "#94a3b8" }}>No hay técnicos para mostrar</Text>
+			) : (
+				<View style={{ gap: 12, paddingVertical: 40, width: "90%" }}>
+					{tecnicos.map(tecnico => (
+						<TecnicoCard key={tecnico.id} tecnico={tecnico} />
+					))}
+				</View>
+			)}
+			<Button
+				text="Nuevo Técnico"
+				iconLeft="add-outline"
+				style={{
+					opacity: 0.75,
+				}}
+				onPress={() => guardCreate(() => router.push("/tecnico/nuevo"))}
+			/>
+		</ScrollView>
+	)
+}
 
-			{FIELDS.map(field => (
-				<View
-					key={field.key}
-					style={{
-						justifyContent: "center",
-						alignItems: "center",
-						width: "80%",
-					}}
-				>
+function TecnicoCard({ tecnico }: { tecnico: TecnicoType }) {
+	return (
+		<Pressable
+			style={{
+				padding: 16,
+				gap: 2,
+				borderWidth: 1,
+				borderColor: theme.orangeAlpha,
+				backgroundColor: theme.gray,
+				borderRadius: 4,
+				opacity: 0.75,
+				width: "100%",
+			}}
+			onPress={() => {
+				router.push({
+					pathname: "/tecnico",
+					params: { tecnicoId: tecnico.id },
+				})
+			}}
+		>
+			<Text
+				style={{
+					color: theme.orange,
+					fontWeight: "600",
+					fontSize: 18,
+					textAlign: "center",
+				}}
+			>
+				{tecnico.nombre?.toUpperCase()}
+			</Text>
+			<View
+				style={{
+					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
+					gap: 6,
+					width: "100%",
+				}}
+			>
+				<View>
 					<Text
 						style={{
-							color: theme.orange,
-							fontWeight: "600",
-							opacity: 0.5,
-							marginRight: "auto",
-							borderBottomWidth: 1,
-							borderBottomColor: theme.orange,
-							width: "100%",
+							color: "#ccc",
+							fontSize: 11,
+							textAlign: "right",
 						}}
 					>
-						{field.label}
+						{tecnico.dni}
 					</Text>
 					<Text
 						style={{
 							color: "#ccc",
-							fontSize: 16,
-							fontWeight: "600",
-							letterSpacing: 2,
-							fontStyle: "italic",
-							alignSelf: "flex-end",
+							fontSize: 11,
+							textAlign: "right",
 						}}
 					>
-						{String(tecnico[field.key])?.toUpperCase()}
+						MAT {tecnico.matricula?.toUpperCase()}
+					</Text>
+					<Text
+						style={{
+							color: "#ccc",
+							fontSize: 11,
+							textAlign: "right",
+						}}
+					>
+						{tecnico.cargo?.toUpperCase()}
 					</Text>
 				</View>
-			))}
-			<View style={{ justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
-					Matrícula
-				</Text>
-				{tecnico?.matriculaImg ? (
-					<ImageViewer
-						imgSource={{ uri: getImageUri(tecnico?.matriculaImg ?? "") }}
-						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
-						zoomable
-					/>
-				) : (
-					<PictureNotFound />
-				)}
-			</View>
-			<View style={{ justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
-					Firma Digital
-				</Text>
-				{tecnico?.firmaImg ? (
-					<ImageViewer
-						imgSource={{ uri: getImageUri(tecnico?.firmaImg ?? "") }}
-						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
-					/>
-				) : (
-					<PictureNotFound />
-				)}
-			</View>
-			<View style={{ justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: theme.orange, fontWeight: "600", opacity: 0.5 }}>
-					Empresa Logo
-				</Text>
-				{tecnico?.empresaLogo ? (
-					<ImageViewer
-						imgSource={{ uri: getImageUri(tecnico?.empresaLogo ?? "") }}
-						style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 4 }}
-						zoomable
-					/>
-				) : (
-					<PictureNotFound />
-				)}
-			</View>
-		</View>
-	)
-}
-
-function MenuTecnico({ tecnico }: { tecnico: TecnicoType }) {
-	const [modalVisible, setModalVisible] = useState(false)
-	const [showMenu, setShowMenu] = useState(false)
-	const router = useRouter()
-	const deleteTecnico = useDeleteTecnico()
-
-	const handleDelete = async () => {
-		try {
-			await deleteTecnico.mutateAsync(tecnico.id)
-		} catch (error) {
-			console.error(error)
-		}
-	}
-
-	const confirmDelete = () => setModalVisible(true)
-
-	return (
-		<View
-			style={{
-				width: "90%",
-				marginBottom: 20,
-				opacity: 0.75,
-			}}
-		>
-			<MenuBtn setShowMenu={setShowMenu} />
-			{showMenu && (
-				<View
+				<ImageViewer
+					imgSource={{ uri: getImageUri(tecnico.matriculaImg) }}
 					style={{
-						flexDirection: "row",
-						width: "100%",
-						gap: 8,
+						height: 50,
+						aspectRatio: 4 / 3,
+						borderRadius: 4,
 					}}
-				>
-					<Button
-						variant="danger"
-						text="Eliminar"
-						iconLeft="trash"
-						iconSize={18}
-						size="small"
-						style={{ flex: 1, gap: 4 }}
-						onPress={confirmDelete}
-					/>
-					<Button
-						text="Editar"
-						iconLeft="pencil"
-						iconSize={18}
-						size="small"
-						style={{ flex: 1, gap: 4 }}
-						onPress={() => {
-							setShowMenu(false)
-							router.push({
-								pathname: "/tecnico/editar",
-								params: { tecnicoId: tecnico.id },
-							})
-						}}
-					/>
-				</View>
-			)}
-			<ModalDeleteConfirm
-				visible={modalVisible}
-				title="Eliminar técnico"
-				message="¿Estás seguro de que querés eliminar los datos del técnico? Esta acción no se puede deshacer."
-				onClose={() => setModalVisible(false)}
-				onConfirm={handleDelete}
-			/>
-		</View>
+				/>
+			</View>
+		</Pressable>
 	)
 }

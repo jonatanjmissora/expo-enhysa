@@ -18,11 +18,11 @@ import {
 import { randomUUID } from "expo-crypto"
 
 export default function IluminacionGeneralFormContent({
-	tecnico,
+	tecnicos,
 	empresas,
 	instrumentos,
 }: {
-	tecnico: TecnicoType
+	tecnicos: TecnicoType[]
 	empresas: EmpresaType[]
 	instrumentos: InstrumentoType[]
 }) {
@@ -42,7 +42,7 @@ export default function IluminacionGeneralFormContent({
 				await createInforme.mutateAsync({
 					...value,
 					id: informeId,
-					tecnicoId: tecnico?.id ?? "",
+					tecnicoId: value.tecnicoId,
 					title: titleStr,
 					createdAt: new Date().toISOString(),
 					finishedAt: "",
@@ -68,7 +68,54 @@ export default function IluminacionGeneralFormContent({
 	return (
 		<ScrollView contentContainerStyle={{ paddingBottom: 230 }}>
 			<View style={{ gap: 20, padding: 20, paddingBottom: 40 }}>
-				<TecnicoContent tecnico={tecnico} />
+				<View
+					style={{
+						justifyContent: "center",
+						alignItems: "center",
+						width: "90%",
+						marginHorizontal: "auto",
+					}}
+				>
+					<Text
+						style={{
+							color: theme.orange,
+							fontWeight: "600",
+							opacity: 0.65,
+							marginRight: "auto",
+							borderBottomWidth: 1,
+							borderBottomColor: theme.orange,
+							width: "100%",
+						}}
+					>
+						Técnico
+					</Text>
+					<form.Field name="tecnicoId">
+						{field => (
+							<>
+								<Select
+									data={tecnicos}
+									value={field.state.value}
+									onChange={field.handleChange}
+									placeholder="Seleccionar técnico"
+									renderItem={item =>
+										`${item.nombre}${item.matricula ? ` - ${item.matricula}` : ""}`
+									}
+								/>
+								{!field.state.meta.isValid && (
+									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
+										{field.state.meta.errors
+											.map(err =>
+												typeof err === "string"
+													? err
+													: (err?.message ?? String(err))
+											)
+											.join(",")}
+									</Text>
+								)}
+							</>
+						)}
+					</form.Field>
+				</View>
 
 				<View
 					style={{
@@ -328,44 +375,5 @@ export default function IluminacionGeneralFormContent({
 				/>
 			</View>
 		</ScrollView>
-	)
-}
-
-function TecnicoContent({ tecnico }: { tecnico: TecnicoType }) {
-	return (
-		<View
-			style={{
-				justifyContent: "center",
-				alignItems: "center",
-				width: "90%",
-				marginHorizontal: "auto",
-			}}
-		>
-			<Text
-				style={{
-					color: theme.orange,
-					fontWeight: "600",
-					opacity: 0.65,
-					marginRight: "auto",
-					borderBottomWidth: 1,
-					borderBottomColor: theme.orange,
-					width: "100%",
-				}}
-			>
-				Técnico
-			</Text>
-			<Text
-				style={{
-					color: "#ccc",
-					fontSize: 16,
-					fontWeight: "600",
-					letterSpacing: 2,
-					fontStyle: "italic",
-					alignSelf: "flex-end",
-				}}
-			>
-				{String(tecnico?.nombre)?.toUpperCase()}
-			</Text>
-		</View>
 	)
 }

@@ -99,6 +99,7 @@ export const LOCAL_ENTITIES: LocalEntity[] = [
 			"title",
 			"empresaId",
 			"instrumentoId",
+			"tecnicoId",
 			"estado",
 			"humedad",
 			"temperatura",

@@ -24,6 +24,7 @@ export default function ClimaSnapshotForm({
 	const defaultValues = {
 		empresaId: informe.empresaId,
 		instrumentoId: informe.instrumentoId,
+		tecnicoId: informe.tecnicoId,
 		estado: informe.estado,
 		humedad: informe.humedad,
 		temperatura: informe.temperatura,
