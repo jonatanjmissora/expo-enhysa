@@ -257,3 +257,74 @@ export const resetTimestamps = (largo: number, ancho: number, alto: number) => {
 	const length = getNumeroCeldas(ancho, largo, alto)
 	return Array.from({ length: length }, () => EMPTY_TIMESTAMP)
 }
+
+export type EquipoAlquiler = {
+	id: string
+	nombre: string
+	precio: string
+	detalle?: string
+	imagen?: string | null
+}
+
+export const EQUIPOS: EquipoAlquiler[] = [
+	{
+		id: "telurimetro-tes-1605",
+		nombre: "Telurímetro TES 1605",
+		precio: "$ 49.450",
+		detalle: "x día",
+	},
+	{
+		id: "luxometro-simple",
+		nombre: "Luxómetro simple",
+		precio: "$ 39.200",
+		detalle: "+ IVA",
+	},
+	{
+		id: "luxometro-compuesto",
+		nombre: "Luxómetro compuesto",
+		precio: "$ 42.900",
+		detalle: "+ IVA",
+	},
+	{
+		id: "decibelimetro",
+		nombre: "Decibelímetro",
+		precio: "$ 38.500",
+		detalle: "+ IVA",
+	},
+	{
+		id: "dosimetro-ruido",
+		nombre: "Dosímetro de Ruido",
+		precio: "$ 46.400",
+		detalle: "+ IVA",
+	},
+	{
+		id: "sonometro-bandas-octavas",
+		nombre: "Sonómetro con bandas de octavas",
+		precio: "$ 52.700",
+		detalle: "+ IVA",
+	},
+	{
+		id: "vibrometro-cuerpo-entero",
+		nombre: "Vibrómetro mano cuerpo entero",
+		precio: "$ 51.900",
+		detalle: "+ IVA por día",
+	},
+	{
+		id: "detector-multigases-lel",
+		nombre: "Equipos de detección multigases con límite de explosividad LEL",
+		precio: "$ 47.900",
+		detalle: "+ IVA",
+	},
+	{
+		id: "anemometro-digital",
+		nombre: "Anemómetro digital",
+		precio: "$ 42.900",
+		detalle: "+ IVA",
+	},
+	{
+		id: "medidor-espesores",
+		nombre: "Medidor de espesores",
+		precio: "$ 49.900",
+		detalle: "+ IVA",
+	},
+]

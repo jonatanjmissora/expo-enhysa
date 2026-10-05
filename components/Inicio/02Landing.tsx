@@ -131,7 +131,7 @@ export default function Landing({
 						minutos.
 					</Text>
 
-					<View
+					{/* <View
 						onLayout={e => {
 							positionsY.current.landing2 = e.nativeEvent.layout.y
 						}}
@@ -153,7 +153,7 @@ export default function Landing({
 							text="Ver Módulos Técnicos"
 							onPress={() => scrollTo("modulos")}
 						/>
-					</View>
+					</View> */}
 				</View>
 				<PhoneMockup />
 			</View>

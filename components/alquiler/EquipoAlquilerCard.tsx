@@ -1,15 +1,9 @@
 import ImageViewer from "@/components/ImageViewer"
+import { EquipoAlquiler } from "@/constants"
 import { theme } from "@/constants/theme"
 import { Ionicons } from "@expo/vector-icons"
-import { Text, View } from "react-native"
-
-export type EquipoAlquiler = {
-	id: string
-	nombre: string
-	precio: string
-	detalle?: string
-	imagen?: string | null
-}
+import { router } from "expo-router"
+import { Pressable, Text, View } from "react-native"
 
 export default function EquipoAlquilerCard({
 	equipo,
@@ -17,7 +11,15 @@ export default function EquipoAlquilerCard({
 	equipo: EquipoAlquiler
 }) {
 	return (
-		<View
+		<Pressable
+			onPress={() =>
+				router.push({
+					pathname: `/herramientas/alquiler/[id]`,
+					params: {
+						id: equipo.id,
+					},
+				})
+			}
 			style={{
 				flexDirection: "row",
 				alignItems: "center",
@@ -85,6 +87,6 @@ export default function EquipoAlquilerCard({
 					) : null}
 				</View>
 			</View>
-		</View>
+		</Pressable>
 	)
 }
