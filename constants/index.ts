@@ -96,6 +96,8 @@ export const VALORES_REQUERIDOS = [
 
 export type ValoresRequeridosType = (typeof VALORES_REQUERIDOS)[number]
 
+export const VALORES_REQUERIDOS_ERROR = `No es una opción válida, elija una de las siguientes: ${VALORES_REQUERIDOS.join(", ")}`
+
 export const FECHA_1970 = new Date("1970-01-01")
 
 export const PROTOCOLOS = [
