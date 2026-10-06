@@ -1,11 +1,15 @@
 import { theme } from "@/constants/theme"
 import { useRouter } from "expo-router"
 import { Pressable, Text, useWindowDimensions, View } from "react-native"
+import { FadeInOnScroll } from "../FadeInOnScroll"
+import { SharedValue } from "react-native-reanimated"
 
 export default function Modules({
 	positionsY,
+	scrollY,
 }: {
 	positionsY: React.RefObject<Record<string, number>>
+	scrollY: SharedValue<number>
 }) {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
@@ -112,52 +116,62 @@ export default function Modules({
 						gap: 16,
 					}}
 				>
-					{items.map(item => (
-						<Pressable
-							key={item.title}
-							onPress={() =>
-								router.push({
-									pathname: "/herramientas",
-									params: { t: item.t, from: "landing" },
-								})
-							}
-							style={({ pressed }) => ({
+					{items.map((item, i) => (
+						<FadeInOnScroll
+							key={i}
+							scrollY={scrollY}
+							from="bottom"
+							delay={i * 10}
+							style={{
 								width: isNarrow ? "100%" : "48%",
-								borderRadius: 8,
-								padding: 20,
-								borderWidth: 1,
-								borderColor: `${item.color}50`,
-								backgroundColor: pressed ? "#222" : "#1a1a1a",
-								flexDirection: "row",
-								alignItems: "flex-start",
-								gap: 12,
-							})}
+							}}
 						>
-							<View
-								style={{
-									width: 10,
-									height: 10,
-									borderRadius: 5,
-									backgroundColor: item.color,
-									marginTop: 6,
-								}}
-							/>
-							<View style={{ flex: 1 }}>
-								<Text
+							<Pressable
+								key={item.title}
+								onPress={() =>
+									router.push({
+										pathname: "/herramientas",
+										params: { t: item.t, from: "landing" },
+									})
+								}
+								style={({ pressed }) => ({
+									backgroundColor: pressed ? "#222" : "#1a1a1a",
+									borderRadius: 8,
+									padding: 20,
+									borderWidth: 1,
+									borderColor: `${item.color}50`,
+
+									flexDirection: "row",
+									alignItems: "flex-start",
+									gap: 12,
+								})}
+							>
+								<View
 									style={{
-										fontSize: 16,
-										fontWeight: "600",
-										color: "#fff",
-										marginBottom: 6,
+										width: 10,
+										height: 10,
+										borderRadius: 5,
+										backgroundColor: item.color,
+										marginTop: 6,
 									}}
-								>
-									{item.title}
-								</Text>
-								<Text style={{ fontSize: 14, color: "#aaa", lineHeight: 18 }}>
-									{item.desc}
-								</Text>
-							</View>
-						</Pressable>
+								/>
+								<View style={{ flex: 1 }}>
+									<Text
+										style={{
+											fontSize: 16,
+											fontWeight: "600",
+											color: "#fff",
+											marginBottom: 6,
+										}}
+									>
+										{item.title}
+									</Text>
+									<Text style={{ fontSize: 14, color: "#aaa", lineHeight: 18 }}>
+										{item.desc}
+									</Text>
+								</View>
+							</Pressable>
+						</FadeInOnScroll>
 					))}
 				</View>
 			</View>

@@ -6,6 +6,7 @@ import Plan from "@/components/Inicio/06Plan"
 import ToolsAndServices from "@/components/Inicio/03ToolsAndServices"
 import { useRef } from "react"
 import { ScrollView } from "react-native"
+import { useSharedValue } from "react-native-reanimated"
 import Modules from "@/components/Inicio/05Modules"
 import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
@@ -13,6 +14,7 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 export default function Index() {
 	const scrollViewRef = useRef<ScrollView>(null)
 	const positionsY = useRef<Record<string, number>>({})
+	const scrollY = useSharedValue(0)
 
 	const scrollTo = (section: string) => {
 		const y = positionsY.current[section]
@@ -26,18 +28,24 @@ export default function Index() {
 
 	return (
 		<ViewWithLogo>
-			<ScrollView ref={scrollViewRef}>
+			<ScrollView
+				ref={scrollViewRef}
+				onScroll={e => {
+					scrollY.value = e.nativeEvent.contentOffset.y
+				}}
+				scrollEventThrottle={16}
+			>
 				<Hero positionsY={positionsY} />
 
-				<Landing positionsY={positionsY} scrollTo={scrollTo} />
+				<Landing positionsY={positionsY} scrollY={scrollY} />
 
-				<ToolsAndServices />
+				<ToolsAndServices scrollY={scrollY} />
 
-				<Features />
+				<Features scrollY={scrollY} />
 
-				<Modules positionsY={positionsY} />
+				<Modules positionsY={positionsY} scrollY={scrollY} />
 
-				<Plan />
+				<Plan scrollY={scrollY} />
 
 				<Button
 					variant="secondary"

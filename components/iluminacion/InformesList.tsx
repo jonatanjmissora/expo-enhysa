@@ -5,8 +5,16 @@ import { theme } from "@/constants/theme"
 import { useInformesIluminacion } from "@/src/query/hooks/use-informe-iluminacion"
 import Button from "../Button"
 import InformeCard from "./InformeCard"
+import { SharedValue } from "react-native-reanimated"
+import { FadeInOnScroll } from "../FadeInOnScroll"
 
-export default function InformesList({ qnt }: { qnt: number }) {
+export default function InformesList({
+	qnt,
+	scrollY,
+}: {
+	qnt: number
+	scrollY: SharedValue<number>
+}) {
 	const { data: informes, isLoading: isLoadingInformes } =
 		useInformesIluminacion()
 
@@ -48,15 +56,17 @@ export default function InformesList({ qnt }: { qnt: number }) {
 			</View>
 		)
 	}
-	return <InformesListContent informe={informes} qnt={qnt} />
+	return <InformesListContent informe={informes} qnt={qnt} scrollY={scrollY} />
 }
 
 function InformesListContent({
 	informe,
 	qnt,
+	scrollY,
 }: {
 	informe: InformesIluminacionType[]
 	qnt: number
+	scrollY: SharedValue<number>
 }) {
 	return (
 		<View
@@ -66,8 +76,15 @@ function InformesListContent({
 				width: "100%",
 			}}
 		>
-			{informe.slice(0, qnt).map(informe => (
-				<InformeCard key={informe.id} informe={informe} />
+			{informe.slice(0, qnt).map((informe, i) => (
+				<FadeInOnScroll
+					key={informe.id}
+					scrollY={scrollY}
+					from="bottom"
+					delay={i * 10}
+				>
+					<InformeCard informe={informe} />
+				</FadeInOnScroll>
 			))}
 			{informe.length > qnt && (
 				<View

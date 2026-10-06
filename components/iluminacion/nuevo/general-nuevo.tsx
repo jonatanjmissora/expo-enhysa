@@ -28,8 +28,19 @@ export default function IluminacionGeneralFormContent({
 }) {
 	const [error, setError] = useState<string | null>(null)
 	const createInforme = useCreateInformeIluminacion()
+	const defaultValues: typeof defaultIluminacionGeneral = {
+		...defaultIluminacionGeneral,
+		// Primer opción por defecto en cada select.
+		tecnicoId: tecnicos[0]?.id ?? "",
+		empresaId: empresas[0]?.id ?? "",
+		instrumentoId: instrumentos[0]?.id ?? "",
+		estado: ESTADO[0] ?? "",
+		humedad: HUMEDAD[0] ?? "",
+		temperatura: TEMPERATURA[0] ?? "",
+	}
+
 	const form = useForm({
-		defaultValues: defaultIluminacionGeneral,
+		defaultValues,
 		validators: { onSubmit: iluminacionGeneralFormValidator },
 		onSubmit: async ({ value }) => {
 			setError(null)

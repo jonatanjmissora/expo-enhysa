@@ -1,7 +1,13 @@
 import { theme } from "@/constants/theme"
 import { Text, useWindowDimensions, View } from "react-native"
+import type { SharedValue } from "react-native-reanimated"
+import { FadeInOnScroll } from "@/components/FadeInOnScroll"
 
-export default function Features() {
+export default function Features({
+	scrollY,
+}: {
+	scrollY: SharedValue<number>
+}) {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 
@@ -86,8 +92,11 @@ export default function Features() {
 					}}
 				>
 					{cards.map((card, i) => (
-						<View
+						<FadeInOnScroll
 							key={i}
+							scrollY={scrollY}
+							from="bottom"
+							delay={i * 10}
 							style={{
 								flex: isNarrow ? undefined : 1,
 								borderRadius: 12,
@@ -127,7 +136,7 @@ export default function Features() {
 							<Text style={{ fontSize: 14, color: "#aaa", lineHeight: 20 }}>
 								{card.desc}
 							</Text>
-						</View>
+						</FadeInOnScroll>
 					))}
 				</View>
 			</View>

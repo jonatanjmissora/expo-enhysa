@@ -3,8 +3,10 @@ import { usePathname, useRouter } from "expo-router"
 import { Text, useWindowDimensions, View } from "react-native"
 import Button from "../Button"
 import { theme } from "@/constants/theme"
+import { SharedValue } from "react-native-reanimated"
+import { FadeInOnScroll } from "../FadeInOnScroll"
 
-export default function Plan() {
+export default function Plan({ scrollY }: { scrollY: SharedValue<number> }) {
 	const router = useRouter()
 	const pathname = usePathname()
 	const { width } = useWindowDimensions()
@@ -59,7 +61,8 @@ export default function Plan() {
 					Elige un plan acorde a tus necesidades. Paga sólo lo que consumes y
 					aprovecha los descuentos y promociones vigentes.
 				</Text>
-				<View
+				<FadeInOnScroll
+					scrollY={scrollY}
 					style={{
 						width: isNarrow ? "100%" : "48%",
 						borderRadius: 8,
@@ -108,7 +111,7 @@ export default function Plan() {
 							transform: [{ rotate: "-20deg" }],
 						}}
 					/>
-				</View>
+				</FadeInOnScroll>
 			</View>
 		</View>
 	)

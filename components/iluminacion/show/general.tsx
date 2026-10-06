@@ -234,7 +234,9 @@ export default function GeneralContent({
 								marginTop: 2,
 							}}
 						>
-							{new Date(informe.finishedAt).toLocaleDateString("es-AR")}
+							{informe.finishedAt
+								? new Date(informe.finishedAt).toLocaleDateString("es-AR")
+								: "sin finalizar"}
 						</Text>
 					</View>
 				</View>

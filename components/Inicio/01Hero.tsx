@@ -1,18 +1,12 @@
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { useRouter } from "expo-router"
 import type { Href } from "expo-router/build/typed-routes/types"
-import {
-	Animated,
-	Pressable,
-	Text,
-	useWindowDimensions,
-	View,
-} from "react-native"
+import { Pressable, Text, useWindowDimensions, View } from "react-native"
+import Animated, { FadeInUp } from "react-native-reanimated"
 import HeroImage from "../../assets/images/hero.webp"
 import ImageViewer from "../ImageViewer"
 import { LinearGradient } from "expo-linear-gradient"
 import { theme } from "@/constants/theme"
-import { useEffect, useRef } from "react"
 
 type ItemProps = {
 	id: string
@@ -111,28 +105,10 @@ function HeroIcons() {
 	const router = useRouter()
 	const green = "rgba(18, 201, 58, 1)"
 
-	const fadeAnim = useRef(new Animated.Value(0)).current
-
-	useEffect(() => {
-		Animated.timing(fadeAnim, {
-			toValue: 1,
-			duration: 600,
-			useNativeDriver: true,
-		}).start()
-	}, [fadeAnim])
-
 	return (
 		<Animated.View
+			entering={FadeInUp.duration(600)}
 			style={{
-				opacity: fadeAnim,
-				transform: [
-					{
-						translateY: fadeAnim.interpolate({
-							inputRange: [0, 1],
-							outputRange: [20, 0],
-						}),
-					},
-				],
 				flexDirection: "row",
 				justifyContent: "center",
 				alignItems: "center",

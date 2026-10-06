@@ -1,22 +1,23 @@
 import { useFocusEffect } from "expo-router"
 import { useState } from "react"
 import { Text, useWindowDimensions, View } from "react-native"
+import type { SharedValue } from "react-native-reanimated"
 import ImageViewer from "@/components/ImageViewer"
 
 import Animation1 from "../../assets/images/animation1.webp"
 import Animation2 from "../../assets/images/animation2.webp"
 import Animation3 from "../../assets/images/animation3.webp"
 import Animation4 from "../../assets/images/animation4.webp"
-import Button from "../Button"
 import { theme } from "@/constants/theme"
 import { LinearGradient } from "expo-linear-gradient"
+import { FadeInOnScroll } from "@/components/FadeInOnScroll"
 
 export default function Landing({
 	positionsY,
-	scrollTo,
+	scrollY,
 }: {
 	positionsY: React.RefObject<Record<string, number>>
-	scrollTo: (section: string) => void
+	scrollY: SharedValue<number>
 }) {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
@@ -86,7 +87,10 @@ export default function Landing({
 						</Text>
 					</View>
 
-					<View style={{ marginBlock: 40, flexDirection: "column", gap: 10 }}>
+					<FadeInOnScroll
+						scrollY={scrollY}
+						style={{ marginBlock: 40, flexDirection: "column", gap: 10 }}
+					>
 						<Text
 							style={{
 								fontSize: isNarrow ? 30 : 34,
@@ -109,7 +113,7 @@ export default function Landing({
 						>
 							de Seguridad e Higiene
 						</Text>
-					</View>
+					</FadeInOnScroll>
 
 					<Text
 						style={{

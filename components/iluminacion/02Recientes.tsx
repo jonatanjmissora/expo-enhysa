@@ -6,8 +6,13 @@ import InformesList from "./InformesList"
 import { router } from "expo-router"
 import { randomUUID } from "expo-crypto"
 import { useDataLockGuard } from "@/src/session/use-data-lock"
+import { SharedValue } from "react-native-reanimated"
 
-export default function Recientes() {
+export default function Recientes({
+	scrollY,
+}: {
+	scrollY: SharedValue<number>
+}) {
 	const guardCreate = useDataLockGuard()
 
 	return (
@@ -43,7 +48,7 @@ export default function Recientes() {
 					Informes Recientes
 				</Text>
 
-				<InformesList qnt={3} />
+				<InformesList qnt={3} scrollY={scrollY} />
 
 				<Button
 					iconLeft="add-sharp"

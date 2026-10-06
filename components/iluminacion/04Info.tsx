@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet } from "react-native"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { ComponentProps } from "react"
+import { FadeInOnScroll } from "../FadeInOnScroll"
+import { SharedValue } from "react-native-reanimated"
 
 type IconName = ComponentProps<typeof Ionicons>["name"]
 
@@ -10,7 +12,7 @@ const amberText = "#d97706"
 const cardBg = "rgba(234,179,8,0.10)"
 const cardBorder = "rgba(180,120,20,0.40)"
 
-export default function Info() {
+export default function Info({ scrollY }: { scrollY: SharedValue<number> }) {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.paragraph}>
@@ -34,24 +36,28 @@ export default function Info() {
 					title="Finalidad"
 					align="left"
 					body="Medir la iluminancia (en luxes) en puestos de trabajo para asegurar que cumple con la Resolución 295/03, garantizando confort visual y seguridad."
+					scrollY={scrollY}
 				/>
 				<Card
 					icon="briefcase-outline"
 					title="Obligatorio"
 					align="right"
 					body="Aplica a todos los establecimientos con trabajadores en relación de dependencia."
+					scrollY={scrollY}
 				/>
 				<Card
 					icon="pie-chart-outline"
 					title="Metodo"
 					align="left"
 					body="Establece un método estandarizado de medición (método de la cuadrícula) y un formato de planilla unificado (Planilla A) para que los resultados sean válidos ante la ART o el Ministerio de Trabajo."
+					scrollY={scrollY}
 				/>
 				<Card
 					icon="calendar-outline"
 					title="Validez"
 					align="right"
 					body="Las mediciones tienen una validez de 12 meses, o menos si se modifican los puestos de tabajo. Contenido: El informe incluye datos del establecimiento, el luxómetro utilizado, croquis del lugar, resultados de las mediciones y la firma del profesional responsable."
+					scrollY={scrollY}
 				/>
 				<Text style={styles.paragraph}>
 					El incumplimiento de este protocolo puede derivar en observaciones de
@@ -67,21 +73,31 @@ function Card({
 	title,
 	align,
 	body,
+	scrollY,
 }: {
 	icon: IconName
 	title: string
 	align: "left" | "right"
 	body: string
+	scrollY: SharedValue<number>
 }) {
 	const isRight = align === "right"
 	return (
 		<View
 			style={[styles.cardRow, isRight ? styles.cardRight : styles.cardLeft]}
 		>
-			<View style={styles.cardBox}>
-				<Ionicons name={icon} size={30} color={amberText} />
-				<Text style={[styles.cardTitle, { color: amberText }]}>{title}</Text>
-			</View>
+			<FadeInOnScroll scrollY={scrollY} from={align} style={styles.cardBox}>
+				<View
+					style={{
+						alignItems: "center",
+						justifyContent: "center",
+						gap: 4,
+					}}
+				>
+					<Ionicons name={icon} size={30} color={amberText} />
+					<Text style={[styles.cardTitle, { color: amberText }]}>{title}</Text>
+				</View>
+			</FadeInOnScroll>
 			<Text style={styles.cardBody}>{body}</Text>
 		</View>
 	)
@@ -129,15 +145,13 @@ const styles = StyleSheet.create({
 		flexDirection: "row-reverse",
 	},
 	cardBox: {
-		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "center",
-		gap: 8,
 		backgroundColor: cardBg,
 		borderWidth: 1,
 		borderColor: cardBorder,
 		borderRadius: 6,
-		padding: 16,
+		padding: 10,
 		marginRight: 16,
 		alignSelf: "stretch",
 	},

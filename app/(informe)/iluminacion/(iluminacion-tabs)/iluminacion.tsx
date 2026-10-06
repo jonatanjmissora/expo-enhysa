@@ -8,9 +8,11 @@ import ViewWithLogo from "@/components/ViewWithLogo"
 import { router } from "expo-router"
 import { useRef } from "react"
 import { ScrollView } from "react-native"
+import { useSharedValue } from "react-native-reanimated"
 
 export default function Iluminacion() {
 	const scrollViewRef = useRef<ScrollView>(null)
+	const scrollY = useSharedValue(0)
 	return (
 		<ViewWithLogo>
 			<Button
@@ -27,13 +29,17 @@ export default function Iluminacion() {
 			/>
 			<ScrollView
 				ref={scrollViewRef}
+				onScroll={e => {
+					scrollY.value = e.nativeEvent.contentOffset.y
+				}}
+				scrollEventThrottle={16}
 				contentContainerStyle={{ paddingVertical: 30 }}
 			>
 				<IluminacionHero />
-				<Recientes />
+				<Recientes scrollY={scrollY} />
 				<AlquilerIluminacion />
-				<Info />
-				<Plan />
+				<Info scrollY={scrollY} />
+				<Plan scrollY={scrollY} />
 				<Button
 					variant="secondary"
 					size="xsmall"

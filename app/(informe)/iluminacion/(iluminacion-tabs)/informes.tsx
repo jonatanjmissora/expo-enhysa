@@ -6,9 +6,11 @@ import { randomUUID } from "expo-crypto"
 import { router } from "expo-router"
 import { ScrollView, Text, View } from "react-native"
 import { useDataLockGuard } from "@/src/session/use-data-lock"
+import { useSharedValue } from "react-native-reanimated"
 
 export default function Informes() {
 	const guardCreate = useDataLockGuard()
+	const scrollY = useSharedValue(0)
 	return (
 		<ViewWithLogo>
 			<Button
@@ -28,6 +30,10 @@ export default function Informes() {
 				style={{
 					flex: 1,
 				}}
+				onScroll={e => {
+					scrollY.value = e.nativeEvent.contentOffset.y
+				}}
+				scrollEventThrottle={16}
 			>
 				<View style={{ padding: 30, gap: 40 }}>
 					<Text
@@ -43,7 +49,7 @@ export default function Informes() {
 						Informes de Iluminación
 					</Text>
 
-					<InformesList qnt={100} />
+					<InformesList qnt={100} scrollY={scrollY} />
 
 					<Button
 						iconLeft="add-sharp"
@@ -81,7 +87,7 @@ export default function Informes() {
 						textDecorationLine: "underline",
 					}}
 				/>
-				<Plan />
+				<Plan scrollY={scrollY} />
 			</ScrollView>
 		</ViewWithLogo>
 	)

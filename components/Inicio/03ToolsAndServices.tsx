@@ -1,12 +1,18 @@
 import { useWindowDimensions, View, Text } from "react-native"
+import type { SharedValue } from "react-native-reanimated"
 import ImageViewer from "../ImageViewer"
 import CotizacionImage from "../../assets/images/cotizacion.webp"
 import EquiposImage from "../../assets/images/equipos.webp"
 import Button from "../Button"
 import { theme } from "@/constants/theme"
 import { router } from "expo-router"
+import { FadeInOnScroll } from "@/components/FadeInOnScroll"
 
-export default function ToolsAndServices() {
+export default function ToolsAndServices({
+	scrollY,
+}: {
+	scrollY: SharedValue<number>
+}) {
 	const { width } = useWindowDimensions()
 	const isNarrow = width < 600
 	return (
@@ -18,7 +24,9 @@ export default function ToolsAndServices() {
 				gap: 140,
 			}}
 		>
-			<View
+			<FadeInOnScroll
+				scrollY={scrollY}
+				from="right"
 				style={{
 					marginLeft: "auto",
 					alignItems: "center",
@@ -88,9 +96,11 @@ export default function ToolsAndServices() {
 					cotizaciones segun tu trabajo. Precios personalizados. Lista de
 					precios.
 				</Text>
-			</View>
+			</FadeInOnScroll>
 
-			<View
+			<FadeInOnScroll
+				scrollY={scrollY}
+				from="left"
 				style={{
 					marginLeft: "auto",
 					alignItems: "center",
@@ -134,7 +144,7 @@ export default function ToolsAndServices() {
 					Cubrimos una amplia gama de equipos y herramientas para la elaboracion
 					de tus informes. Consulta nuestra lista de precios.
 				</Text>
-			</View>
+			</FadeInOnScroll>
 		</View>
 	)
 }
