@@ -35,6 +35,7 @@ export default function IluminacionConclusionEditContent({
 }) {
 	const [error, setError] = useState<string | null>(null)
 	const updateInforme = useUpdateInformeIluminacion()
+	const locked = informeIluminacion.creditConsumed
 
 	const form = useForm({
 		defaultValues: {
@@ -44,6 +45,7 @@ export default function IluminacionConclusionEditContent({
 		},
 		validators: { onSubmit: iluminacionConclusionFormValidator },
 		onSubmit: async ({ value }) => {
+			if (locked) return
 			setError(null)
 			const sinCambios =
 				value.observacion === informeIluminacion.observacion &&
@@ -118,6 +120,7 @@ export default function IluminacionConclusionEditContent({
 									placeholder={f.placeholder}
 									value={field.state.value}
 									onChangeText={field.handleChange}
+									editable={!locked}
 								/>
 								{!field.state.meta.isValid && (
 									<Text style={{ color: "#fc4444", fontStyle: "italic" }}>
@@ -143,19 +146,26 @@ export default function IluminacionConclusionEditContent({
 						marginVertical: 40,
 					}}
 				>
-					<form.Subscribe selector={state => state.isSubmitting}>
-						{isSubmitting => (
-							<Button
-								text={isSubmitting ? "Guardando..." : "Guardar"}
-								disabled={isSubmitting}
-								onPress={form.handleSubmit}
-								style={{
-									marginHorizontal: "auto",
-									width: "90%",
-								}}
-							/>
-						)}
-					</form.Subscribe>
+					{locked ? (
+						<Text style={{ color: theme.orange, textAlign: "center" }}>
+							El informe está desbloqueado: la conclusión quedó congelada y no
+							se puede editar.
+						</Text>
+					) : (
+						<form.Subscribe selector={state => state.isSubmitting}>
+							{isSubmitting => (
+								<Button
+									text={isSubmitting ? "Guardando..." : "Guardar"}
+									disabled={isSubmitting}
+									onPress={form.handleSubmit}
+									style={{
+										marginHorizontal: "auto",
+										width: "90%",
+									}}
+								/>
+							)}
+						</form.Subscribe>
+					)}
 					{error && (
 						<Text style={{ color: "#fc4444", textAlign: "center" }}>
 							{error}

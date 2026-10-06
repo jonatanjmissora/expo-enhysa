@@ -6,7 +6,18 @@ import {
 	type LocalizadaIluminacionType,
 } from "../db/schema/localizadas-iluminacion"
 import { imageService } from "../media/image-service"
+import { informesIluminacionRepository } from "./informes-iluminacion.repository"
 import { syncQueueRepository } from "./sync-queue.repository"
+
+/** Bloquea altas/ediciones/borrados de localizadas si el informe está desbloqueado. */
+async function assertLocalizadaEditable(reportId: string): Promise<void> {
+	const informe = await informesIluminacionRepository.getById(reportId)
+	if (informe?.creditConsumed) {
+		throw new Error(
+			"El informe está desbloqueado: las mediciones localizadas quedaron congeladas y no se pueden modificar."
+		)
+	}
+}
 
 export type CreateLocalizadaIluminacionInput = Omit<
 	LocalizadaIluminacionType,
@@ -92,6 +103,7 @@ export const localizadaIluminacionRepository = {
 		input: CreateLocalizadaIluminacionInput
 	): Promise<LocalizadaIluminacionType> {
 		await assertWritable(input.userId)
+		await assertLocalizadaEditable(input.reportId)
 		await initializeLocalizadasIluminacionTable()
 
 		const db = await getDatabase()
@@ -199,6 +211,7 @@ export const localizadaIluminacionRepository = {
 		if (!existing) {
 			throw new Error("No se encontró la medición localizada a actualizar")
 		}
+		await assertLocalizadaEditable(existing.reportId)
 
 		const localizada: LocalizadaIluminacionType = {
 			...mapRow(existing),
@@ -257,8 +270,15 @@ export const localizadaIluminacionRepository = {
 
 		const existing = await db.getFirstAsync<{
 			userId: string
+			reportId: string
 			imagenes: string
-		}>(`SELECT userId, imagenes FROM localizadas_iluminacion WHERE id = ?`, id)
+		}>(
+			`SELECT userId, reportId, imagenes FROM localizadas_iluminacion WHERE id = ?`,
+			id
+		)
+		if (existing?.reportId) {
+			await assertLocalizadaEditable(existing.reportId)
+		}
 		const imageIds = existing ? parseStringArray(existing.imagenes) : []
 
 		await db.runAsync(`DELETE FROM localizadas_iluminacion WHERE id = ?`, id)

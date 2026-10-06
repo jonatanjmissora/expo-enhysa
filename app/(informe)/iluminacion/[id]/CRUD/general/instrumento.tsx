@@ -72,7 +72,7 @@ function InstrumentoItem({ informe }: { informe: InformesIluminacionType }) {
 				alignItems: "center",
 			}}
 		>
-			<MenuInstrumento id={informe.id} />
+			{!informe.creditConsumed && <MenuInstrumento id={informe.id} />}
 
 			{FIELDS.map(field => (
 				<View

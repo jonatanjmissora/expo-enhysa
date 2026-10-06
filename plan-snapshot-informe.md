@@ -224,8 +224,13 @@ descartan.
 5. **Nombres**: `createWithSnapshot`, `updateSnapshot`, `*Snapshot` types.
 6. **`title`**: se calcula al crear (desde la empresa viva) y se **congela** en la
    fila; en `general-edit` se recalcula solo si cambia la empresa.
-7. **Técnico**: fijo al del perfil (`useTecnico()`), sin Select por informe.
-8. **Sync**: `informes_iluminacion` **no** entra al sync todavía; el sync queda
-   solo para los vivos (`plan-sync-tecnico.md`).
+7. **Técnico**: ~~fijo al del perfil (`useTecnico()`), sin Select por informe~~ →
+   **actualizado**: ahora los técnicos son un array y el informe tiene un
+   **Select de técnico** en `general-nuevo`/`general-edit`, con `tecnicoId`
+   guardado en la fila (`informes_iluminacion.tecnicoId`). Al cambiar el técnico se
+   re-genera su snapshot.
+8. **Sync**: ~~`informes_iluminacion` no entra al sync todavía~~ → **actualizado**:
+   `informes_iluminacion`, `areas_iluminacion` y `localizadas_iluminacion`
+   **entran al sync** (ver `plan-sync-tecnico.md` Fase 6 y `plan-sync-imagenes.md`).
 9. **`instrumentoId`**: vive **en ambos**: columna `instrumentoId` en la fila y
    `instrumentoSnapshot.instrumentoId` dentro del JSON.

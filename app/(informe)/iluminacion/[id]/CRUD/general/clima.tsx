@@ -55,7 +55,7 @@ function ClimaItem({ informe }: { informe: InformesIluminacionType }) {
 				alignItems: "center",
 			}}
 		>
-			<MenuClima id={informe.id} />
+			{!informe.creditConsumed && <MenuClima id={informe.id} />}
 
 			{FIELDS.map(field => (
 				<View

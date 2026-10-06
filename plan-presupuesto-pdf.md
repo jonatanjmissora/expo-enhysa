@@ -115,23 +115,26 @@ form (RN) → PresupuestoData
 - [x] `src/pdf/documents/presupuesto.ts` (tipos + honorariosDb + builder).
 - [x] Pantalla RN `app/herramientas/presupuesto.tsx` (form + botón Generar PDF).
 - [x] `app/herramientas/_layout.tsx` + acceso desde el índice.
-- [ ] Verificar `biome` + `tsc` + prueba en device.
+- [x] Verificar `biome` + `tsc` + prueba en device.
 
-### Fase 2 — Informes (agente dedicado)
+### Fase 2 — Informes
 
-Base ya lista (styles/primitives/generate/assets). Por cada informe:
+Base ya lista (styles/primitives/generate/assets). Implementado para **iluminación**
+(`src/pdf/documents/informe-iluminacion/`) leyendo los **snapshots** del informe
+(no los repos vivos), con anexos, grilla de puntos, conclusiones, firma y marca de
+agua. Botón "Generar PDF" en `components/iluminacion/show/pdf.tsx`.
 
-- [ ] `src/pdf/documents/informe-<tipo>.ts` con su builder puro.
-- [ ] Mapear datos desde repositorios: `InformeIluminacionType`, `Empresa`,
-      `Tecnico`, `Instrumento`, áreas/localizadas/puntos.
-- [ ] Header con logo de la empresa + datos del establecimiento.
-- [ ] Tablas de mediciones, grilla de puntos, conclusiones, firma (base64).
-- [ ] Botón "Generar PDF" en la pantalla de cada informe.
+- [x] `src/pdf/documents/informe-<tipo>.ts` con su builder puro.
+- [x] Mapear datos desde el informe (snapshots en JSON).
+- [x] Header con logo de la empresa + datos del establecimiento.
+- [x] Tablas de mediciones, grilla de puntos, conclusiones, firma (base64).
+- [x] Botón "Generar PDF" (y marca de agua condicional) en la pantalla del informe.
+- [ ] Otros tipos de informe (ruido, PAT, etc.): pendiente (mismo patrón).
 
 ### Fase 3 — Pulido
 
 - [ ] Fuentes embebidas (`@font-face` base64) si hace falta.
-- [ ] Redimensionado de imágenes (`expo-image-manipulator`).
+- [x] Redimensionado de imágenes (ya en `image-normalizer`, máx 3000px).
 - [ ] Guardado persistente / historial de PDFs.
 - [ ] (Opcional) subida a backend.
 

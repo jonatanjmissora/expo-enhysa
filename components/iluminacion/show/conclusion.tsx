@@ -88,6 +88,9 @@ function InformeHeader({ informe }: { informe: InformesIluminacionType }) {
 function MenuInforme({ informe }: { informe: InformesIluminacionType }) {
 	const [showMenu, setShowMenu] = useState(false)
 
+	// Informe desbloqueado: la conclusión quedó congelada.
+	if (informe.creditConsumed) return null
+
 	return (
 		<View
 			style={{

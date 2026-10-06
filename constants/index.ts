@@ -175,8 +175,7 @@ export const PLANS = [
 	{
 		id: "por-informe",
 		title: "Por Informe",
-		// price: 18000,
-		price: 18,
+		price: 18000,
 		credits: 1,
 		subtitle: "Paga solo lo que consumes.",
 		benefits: [
@@ -191,8 +190,7 @@ export const PLANS = [
 	{
 		id: "mensual",
 		title: "Mensual",
-		// price: 55000,
-		price: 55,
+		price: 55000,
 		credits: 7,
 		subtitle: "Accede a todo.",
 		benefits: [
@@ -206,8 +204,7 @@ export const PLANS = [
 	{
 		id: "anual",
 		title: "Anual",
-		// price: 560000,
-		price: 560,
+		price: 560000,
 		credits: 100,
 		subtitle: "Accede a todo.",
 		benefits: [

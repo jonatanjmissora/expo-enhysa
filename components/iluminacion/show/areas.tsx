@@ -6,6 +6,7 @@ import { Pressable, Text, View } from "react-native"
 import ImageViewer from "@/components/ImageViewer"
 import Button from "@/components/Button"
 import { randomUUID } from "expo-crypto"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 
 export default function AreasShowContent({
 	areasIluminacion,
@@ -14,6 +15,9 @@ export default function AreasShowContent({
 	areasIluminacion: AreaIluminacionType[]
 	id: string
 }) {
+	const { data: informe } = useInformeIluminacionById(id)
+	const locked = informe?.creditConsumed ?? false
+
 	return (
 		<View style={{ flex: 1, marginBottom: 20 }}>
 			<View
@@ -36,20 +40,23 @@ export default function AreasShowContent({
 				>
 					Mediciones en Areas
 				</Text>
-				<Button
-					text="Añadir"
-					variant="secondary"
-					size="xsmall"
-					iconLeft="add"
-					iconSize={10}
-					onPress={() => {
-						const areaId = randomUUID()
-						router.push({
-							pathname: "/(informe)/iluminacion/[id]/area/[areaId]/area-nuevo",
-							params: { id, areaId },
-						})
-					}}
-				/>
+				{!locked && (
+					<Button
+						text="Añadir"
+						variant="secondary"
+						size="xsmall"
+						iconLeft="add"
+						iconSize={10}
+						onPress={() => {
+							const areaId = randomUUID()
+							router.push({
+								pathname:
+									"/(informe)/iluminacion/[id]/area/[areaId]/area-nuevo",
+								params: { id, areaId },
+							})
+						}}
+					/>
+				)}
 			</View>
 			{areasIluminacion.length > 0 ? (
 				<AreasList areasIluminacion={areasIluminacion} id={id} />

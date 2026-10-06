@@ -6,7 +6,18 @@ import {
 	type AreaIluminacionType,
 } from "../db/schema/areas-iluminacion"
 import { imageService } from "../media/image-service"
+import { informesIluminacionRepository } from "./informes-iluminacion.repository"
 import { syncQueueRepository } from "./sync-queue.repository"
+
+/** Bloquea altas/ediciones/borrados de áreas si el informe ya está desbloqueado. */
+async function assertAreaEditable(reportId: string): Promise<void> {
+	const informe = await informesIluminacionRepository.getById(reportId)
+	if (informe?.creditConsumed) {
+		throw new Error(
+			"El informe está desbloqueado: las mediciones en áreas quedaron congeladas y no se pueden modificar."
+		)
+	}
+}
 
 export type CreateAreaIluminacionInput = Omit<
 	AreaIluminacionType,
@@ -111,6 +122,7 @@ export const areaIluminacionRepository = {
 		input: CreateAreaIluminacionInput
 	): Promise<AreaIluminacionType> {
 		await assertWritable(input.userId)
+		await assertAreaEditable(input.reportId)
 		await initializeAreasIluminacionTable()
 
 		const db = await getDatabase()
@@ -224,6 +236,7 @@ export const areaIluminacionRepository = {
 		if (!existing) {
 			throw new Error("No se encontró el área a actualizar")
 		}
+		await assertAreaEditable(existing.reportId)
 
 		const area: AreaIluminacionType = {
 			...mapRow(existing),
@@ -288,8 +301,15 @@ export const areaIluminacionRepository = {
 
 		const existing = await db.getFirstAsync<{
 			userId: string
+			reportId: string
 			imagenes: string
-		}>(`SELECT userId, imagenes FROM areas_iluminacion WHERE id = ?`, id)
+		}>(
+			`SELECT userId, reportId, imagenes FROM areas_iluminacion WHERE id = ?`,
+			id
+		)
+		if (existing?.reportId) {
+			await assertAreaEditable(existing.reportId)
+		}
 		const imageIds = existing ? parseStringArray(existing.imagenes) : []
 
 		await db.runAsync(`DELETE FROM areas_iluminacion WHERE id = ?`, id)

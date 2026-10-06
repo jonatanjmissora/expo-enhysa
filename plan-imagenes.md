@@ -1161,23 +1161,16 @@ src/
 
 ---
 
-## Fase 9 — Integración Backup (pendiente)
+## Fase 9 — Integración Backup (✅ hecha vía sync con la nube)
 
-Implementar posteriormente:
+Se resolvió con la **sincronización con la nube** (UploadThing + Neon), no con
+carpeta `backup/` local. Ver `plan-sync-imagenes.md`:
+- Subida directa del JPEG a UploadThing + metadata en `expo_images`.
+- Restore: baja los binarios faltantes.
+- Borrado remoto y cascade.
 
-```text
-imageId
-  ↓
-ImageStorage
-  ↓
-backup/images/*.jpg
-```
-
-El backup deberá incluir las imágenes que realmente pertenecen a los datos respaldados.
-
-Incluye el **Restore** (sección 23): `database.json` + `images/` → SQLite + `ImageStorage`, manteniendo los `imageId` estables.
-
-La **nube** (sincronización) queda fuera de alcance por ahora.
+El backup local (`database.json` + `images/`) queda como alternativa futura; no es
+necesario ahora que la nube es el backup.
 
 ---
 

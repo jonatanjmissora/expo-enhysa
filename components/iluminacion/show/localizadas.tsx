@@ -6,6 +6,7 @@ import { Pressable, Text, View } from "react-native"
 import Button from "@/components/Button"
 import { randomUUID } from "expo-crypto"
 import ImageViewer from "@/components/ImageViewer"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 
 export default function LocalizadasShowContent({
 	localizadasIluminacion,
@@ -24,6 +25,9 @@ function Localizadas({
 	localizadasIluminacion: LocalizadaIluminacionType[]
 	id: string
 }) {
+	const { data: informe } = useInformeIluminacionById(id)
+	const locked = informe?.creditConsumed ?? false
+
 	return (
 		<View style={{ flex: 1, marginBottom: 20 }}>
 			<View
@@ -46,21 +50,23 @@ function Localizadas({
 				>
 					Mediciones Localizadas
 				</Text>
-				<Button
-					text="Añadir"
-					variant="secondary"
-					size="xsmall"
-					iconLeft="add"
-					iconSize={10}
-					onPress={() => {
-						const localizedId = randomUUID()
-						router.push({
-							pathname:
-								"/(informe)/iluminacion/[id]/localizada/[localizadaId]/localizada-nuevo",
-							params: { id, localizedId },
-						})
-					}}
-				/>
+				{!locked && (
+					<Button
+						text="Añadir"
+						variant="secondary"
+						size="xsmall"
+						iconLeft="add"
+						iconSize={10}
+						onPress={() => {
+							const localizedId = randomUUID()
+							router.push({
+								pathname:
+									"/(informe)/iluminacion/[id]/localizada/[localizadaId]/localizada-nuevo",
+								params: { id, localizedId },
+							})
+						}}
+					/>
+				)}
 			</View>
 			{localizadasIluminacion.length > 0 ? (
 				<LocalizadasList

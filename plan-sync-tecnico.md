@@ -305,8 +305,9 @@ Todo dentro de una transacción por request.
 - [x] Toast offline (naranja): "Sin conexión. Se sincronizará cuando vuelvas online."
 - [x] Barra de progreso al arrancar/recuperar conexión (`SyncProgressBar`); online
       normal sincroniza en silencio (sin toast).
-- [ ] Indicador persistente de pendientes (`useSyncStatus`) en la UI.
-- [ ] Popup de pendientes cuando vuelve la conexión.
+- [x] Indicador persistente de pendientes (`useSyncStatus`) en el header.
+- [x] Al volver la conexión se drena solo (`SyncBootstrap` + barra de progreso). Se
+      descartó el popup de pendientes.
 
 ### Fase 5 — Restore / Merge
 - [x] Detección **global** (todas las entidades) al establecer sesión, post-migración

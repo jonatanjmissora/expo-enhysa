@@ -75,7 +75,7 @@ function EmpresaItem({ informe }: { informe: InformesIluminacionType }) {
 				alignItems: "center",
 			}}
 		>
-			<MenuEmpresa id={informe.id} />
+			{!informe.creditConsumed && <MenuEmpresa id={informe.id} />}
 
 			{FIELDS.map(field => (
 				<View

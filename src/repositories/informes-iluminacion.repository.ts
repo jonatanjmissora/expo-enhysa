@@ -393,6 +393,12 @@ export const informesIluminacionRepository = {
 			throw new Error("No se encontró el informe a actualizar")
 		}
 
+		if (existingRow.creditConsumed) {
+			throw new Error(
+				"El informe está desbloqueado: los datos quedaron congelados y no se pueden editar."
+			)
+		}
+
 		const informe = {
 			...mapRow(existingRow),
 			...input,

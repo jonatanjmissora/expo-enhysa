@@ -7,6 +7,7 @@ import { useState } from "react"
 import { router } from "expo-router"
 import Button from "@/components/Button"
 import { useDeleteLocalizadaIluminacion } from "@/src/query/hooks/use-localizada-iluminacion"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import MenuBtn from "@/components/MenuBtn"
 
@@ -131,6 +132,9 @@ function MenuLocalizada({
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const deleteLocalizada = useDeleteLocalizadaIluminacion()
+	const { data: informe } = useInformeIluminacionById(
+		localizadaIluminacion.reportId
+	)
 
 	const handleDelete = async () => {
 		try {
@@ -143,6 +147,9 @@ function MenuLocalizada({
 
 	const confirmDelete = () => setModalVisible(true)
 	const modalTitle = `${localizadaIluminacion.nombre} - ${new Date(localizadaIluminacion.tipo).toLocaleDateString("es-AR")}`
+
+	// Informe desbloqueado: la medición localizada quedó congelada.
+	if (informe?.creditConsumed) return null
 
 	return (
 		<View

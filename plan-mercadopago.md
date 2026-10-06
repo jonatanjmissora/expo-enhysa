@@ -119,13 +119,13 @@ secretos**). El Access Token y el Webhook Secret viven **solo** en el backend.
 
 ### 2.4. Checklist de Fase 0
 
-- [ ] Proyecto Neon creado y `DATABASE_URL` obtenida.
-- [ ] Backend desplegado con `GET /health` funcionando.
-- [ ] Variables del backend cargadas en el hosting.
-- [ ] `.env` local + `.env.example` en el repo.
-- [ ] `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_API_TOKEN` en `.env` y en `eas.json`.
-- [ ] `src/api/` con el cliente HTTP y un ping al `/health`.
-- [ ] Deep link `expoenhysa://` probado.
+- [x] Proyecto Neon creado y `DATABASE_URL` obtenida.
+- [x] Backend desplegado con `GET /health` funcionando.
+- [x] Variables del backend cargadas en el hosting.
+- [x] `.env` local + `.env.example` en el repo.
+- [x] `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_API_TOKEN` en `.env` y en `eas.json`.
+- [x] `src/api/` con el cliente HTTP y un ping al `/health`.
+- [ ] Deep link `expoenhysa://pago` probado end-to-end en producción.
 
 ---
 
@@ -242,24 +242,40 @@ La **nube es la fuente de verdad**. El ledger vive en la nube; la app lo
 
 ## 7. Fases (después de la Fase 0)
 
-### Fase 1 — Backend base (Neon)
-- Schema de las 3 tablas en Neon.
-- Endpoints: `GET /health`, `POST /preference`, `POST /webhook`, `GET /credits`.
-- Auth mínima por `API_TOKEN`.
+### Fase 1 — Backend base (Neon) ✅
+- [x] Schema de las 3 tablas en Neon.
+- [x] Endpoints: `GET /health`, `POST /preference`, `POST /webhook`, `GET /credits`
+      (+ `POST /consume` para el desbloqueo).
+- [x] Auth mínima por `API_TOKEN`.
 
-### Fase 2 — Cliente de pagos en la app
-- `src/payments/`: crear preferencia, abrir `WebBrowser`, manejar retorno.
-- Deep link `expoenhysa://pago`.
-- Conectar `Suscription.tsx`.
+### Fase 2 — Cliente de pagos en la app ✅
+- [x] `src/payments/checkout.ts` (`startCheckout`: preferencia + `WebBrowser`).
+- [x] Deep link `expoenhysa://pago` (`app/pago.tsx`).
+- [x] Conectar `Suscription.tsx` / `/suscripcion`.
 
-### Fase 3 — Créditos y sync (local + nube)
-- Tablas locales `user_credits`, `credit_history`, `pending_payments`.
-- Sync del ledger (**bajar** de la nube; el local es espejo).
-- Mostrar saldo en `/suscripcion`.
+### Fase 3 — Créditos y sync (local + nube) ✅ (con desvío)
+- [x] Espejo local `user_credits` (`src/db/schema/user-credits.ts`).
+- [x] El ledger vive en la nube; la app lo **baja** (`useCredits`).
+- [x] Mostrar saldo en `/suscripcion` y `/cuenta`.
+- Desvío: NO se conservan `credit_history` / `pending_payments` locales (se
+  dropearon: el ledger es solo de nube).
 
-### Fase 4 — Desbloqueo / marca de agua
-- Marca de agua condicional en `src/pdf/documents/informe-iluminacion/`.
-- Botón de desbloqueo (consume 1 crédito).
+### Fase 4 — Desbloqueo / marca de agua ✅
+- [x] Marca de agua condicional (`!creditConsumed`) en
+      `src/pdf/documents/informe-iluminacion/`.
+- [x] Botón de desbloqueo (`apiConsumeCredit`, 1 crédito) en
+      `components/iluminacion/show/pdf.tsx`.
+
+### Fase 5 — Testing (pendiente)
+- [ ] Usuarios de prueba MP: **seller** + **buyer** (no pagarse a sí mismo).
+- [ ] Tarjetas: `APRO` / `OTHE` / `FUND` / `CONT`.
+- [ ] Casos: aprobado, rechazado, doble webhook (no duplica), desbloqueo idempotente.
+- [ ] Pagos de prueba no disparan webhooks → simular.
+
+### Fase 6 — Producción (pendiente)
+- [ ] Credenciales `APP_USR` reales (cuenta productiva verificada).
+- [ ] Webhook al dominio real; logs de `preferenceId` / `init_point`.
+- [ ] Probar deep link `expoenhysa://pago` end-to-end.
 
 ### Fase 5 — Testing
 - Usuarios de prueba MP: **seller** + **buyer** (no pagarse a sí mismo).
@@ -296,8 +312,9 @@ La **nube es la fuente de verdad**. El ledger vive en la nube; la app lo
 2. **Identidad**: **`user-1` no puede comprar**. Solo usuarios **registrados**
    con un `userId` válido. Se usa un **id de dispositivo único** para asociar la
    compra. El default local queda excluido.
-3. **Marca de agua**: **por ahora no**. El foco es compra de créditos + sync. El
-   desbloqueo/marca de agua queda para más adelante.
+3. **Marca de agua**: ~~por ahora no~~ → **implementada**: el PDF se genera con
+   marca de agua si `!creditConsumed`, y el botón "Desbloquear (1 crédito)" llama a
+   `POST /consume` (idempotente por `reportId`).
 
 ---
 

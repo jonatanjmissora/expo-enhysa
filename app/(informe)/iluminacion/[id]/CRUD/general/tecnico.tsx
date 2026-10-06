@@ -74,7 +74,7 @@ function TecnicoItem({ informe }: { informe: InformesIluminacionType }) {
 				alignItems: "center",
 			}}
 		>
-			<MenuTecnico id={informe.id} />
+			{!informe.creditConsumed && <MenuTecnico id={informe.id} />}
 
 			{FIELDS.map(field => (
 				<View

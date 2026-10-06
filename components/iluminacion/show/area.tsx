@@ -8,6 +8,7 @@ import Button from "@/components/Button"
 import ModalDeleteConfirm from "@/components/ModalDeleteConfirm"
 import type { AreaIluminacionType } from "@/src/db/schema/areas-iluminacion"
 import { useDeleteAreaIluminacion } from "@/src/query/hooks/use-area-iluminacion"
+import { useInformeIluminacionById } from "@/src/query/hooks/use-informe-iluminacion"
 import { useMedicionArea } from "../puntos/puntos-hooks"
 import { getColoresEstado, getEstadoCelda } from "../puntos/puntos-utils"
 import {
@@ -181,6 +182,7 @@ function MenuArea({
 	const [modalVisible, setModalVisible] = useState(false)
 	const [showMenu, setShowMenu] = useState(false)
 	const deleteArea = useDeleteAreaIluminacion()
+	const { data: informe } = useInformeIluminacionById(areaIluminacion.reportId)
 
 	const handleDelete = async () => {
 		try {
@@ -193,6 +195,9 @@ function MenuArea({
 
 	const confirmDelete = () => setModalVisible(true)
 	const modalTitle = `${areaIluminacion.nombre} - ${new Date(areaIluminacion.tipo).toLocaleDateString("es-AR")}`
+
+	// Informe desbloqueado: el área quedó congelada.
+	if (informe?.creditConsumed) return null
 
 	return (
 		<View

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSE Control Pro - EnHySa Check</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root { --bg-color: #f4f6f9; --text-color: #333; --sidebar-bg: #1e293b; --sidebar-text: #fff; --card-bg: #fff; --border-color: #cbd5e1; --primary: #2563eb; }
+    [data-theme="dark"] { --bg-color: #0f172a; --text-color: #f8fafc; --sidebar-bg: #020617; --sidebar-text: #f8fafc; --card-bg: #1e293b; --border-color: #334155; --primary: #3b82f6; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { display: flex; height: 100vh; background-color: var(--bg-color); color: var(--text-color); }
+    #sidebar { width: 320px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; overflow-y: auto; }
+    #sidebar h2 { padding: 15px; font-size: 1.1rem; background: #0f172a; text-align: center; border-bottom: 1px solid var(--border-color); }
+    .nav-item { padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #334155; transition: 0.2s; font-size: 0.95rem; }
+    .nav-item:hover, .nav-item.active { background-color: var(--primary); color: white; }
+    #main-content { flex: 1; padding: 20px; overflow-y: auto; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .theme-toggle { padding: 8px 16px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 4px; font-weight: bold; }
+    .header-card h3, .table-card h3 { font-size: 0.95rem; margin-bottom: 6px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    input, textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color); }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+    th, td { border: 1px solid var(--border-color); padding: 6px 8px !important; text-align: left; vertical-align: middle; font-size: 0.85rem; }
+    th { background-color: var(--primary); color: white; }
+    .radio-group { display: flex; gap: 15px; justify-content: center; }
+    .btn-submit { width: 100%; padding: 12px; background: #16a34a; color: white; font-size: 1rem; border: none; border-radius: 6px; cursor: pointer; margin-top: 15px; font-weight: bold; }
+    .file-input { width: 100%; padding: 4px; margin-top: 4px; font-size: 0.8rem; border: 1px dashed var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color); cursor: pointer; }
+    .img-preview-container img { max-width: 65px !important; max-height: 65px !important; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
+    #pdf-container { padding: 5px; background: var(--card-bg); }
+    #sec-documental { page-break-inside: auto !important; break-inside: auto !important; }
+    #sec-documental h3 { font-size: 0.95rem; margin-bottom: 6px; }
+    .header-card, .table-card { background: var(--card-bg); padding: 8px 12px !important; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 8px !important; page-break-inside: auto !important; break-inside: auto !important; }
+    .header-card h3, .table-card h3 { font-size: 0.95rem; margin-bottom: 6px; }
+    input[type="text"], textarea { padding: 4px 6px !important; margin-top: 2px !important; font-size: 0.85rem; }
+    .grid-2, .grid-3 { gap: 6px !important; }
+    table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    th, td { border: 1px solid var(--border-color); padding: 4px 6px !important; font-size: 0.8rem; vertical-align: middle; }
+    tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+    @media print { .btn-submit, .top-bar button { display: none !important; } }
+    @media(max-width: 768px) { body { flex-direction: column; } #sidebar { width: 100%; height: 220px; } .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div id="sidebar">
+    <h2>📋 SECCIONES HSE</h2>
+    <div class="nav-item active" onclick='loadSection("Andamios", "🪜", this)'>🪜 Andamios</div>
+    <div class="nav-item" onclick='loadSection("Apilador Eléctrico", "🚜", this)'>🚜 Apilador Eléctrico</div>
+    <div class="nav-item" onclick='loadSection("Autoelevadores", "🚜", this)'>🚜 Autoelevadores</div>
+    <div class="nav-item" onclick='loadSection("Chequeo Inicial al Cliente", "📋", this)'>📋 Chequeo Inicial al Cliente</div>
+    <div class="nav-item" onclick='loadSection("Compresores", "💨", this)'>💨 Compresores</div>
+    <div class="nav-item" onclick='loadSection("Dispositivos Anticaídas", "🪢", this)'>🪢 Dispositivos Anticaídas</div>
+    <div class="nav-item" onclick='loadSection("Equipos de Izaje", "🏗️", this)'>🏗️ Equipos de Izaje</div>
+    <div class="nav-item" onclick='loadSection("Extintores", "🧯", this)'>🧯 Extintores</div>
+    <div class="nav-item" onclick='loadSection("Fresadora y Torno Mecánico", "⚙️", this)'>⚙️ Fresadora y Torno Mecánico</div>
+    <div class="nav-item" onclick='loadSection("Generadores Grandes y Portátiles", "⚡", this)'>⚡ Generadores Grandes y Portátiles</div>
+    <div class="nav-item" onclick='loadSection("Herramientas Eléctricas", "🔧", this)'>🔧 Herramientas Eléctricas</div>
+    <div class="nav-item" onclick='loadSection("Herramientas Manuales", "🛠️", this)'>🛠️ Herramientas Manuales</div>
+    <div class="nav-item" onclick='loadSection("Inspección de Equipos Viales", "🚜", this)'>🚜 Inspección de Equipos Viales</div>
+    <div class="nav-item" onclick='loadSection("Inspección de Frente de Obra", "🏗️", this)'>🏗️ Inspección de Frente de Obra</div>
+    <div class="nav-item" onclick='loadSection("Lijadora de Banco", "🪨", this)'>🪨 Lijadora de Banco</div>
+    <div class="nav-item" onclick='loadSection("Manipulador Telescópico", "🚜", this)'>🚜 Manipulador Telescópico</div>
+    <div class="nav-item" onclick='loadSection("Máquina de Soldar Eléctrica", "⚡", this)'>⚡ Máquina de Soldar Eléctrica</div>
+    <div class="nav-item" onclick='loadSection("Oxicorte", "🔥", this)'>🔥 Oxicorte</div>
+    <div class="nav-item" onclick='loadSection("Piedra de Amolado / Amoladora", "🪨", this)'>🪨 Piedra de Amolado</div>
+    <div class="nav-item" onclick='loadSection("Plataforma Elevadora de Personas", "🏗️", this)'>🏗️ Plataforma Elevadora (PEMP)</div>
+    <div class="nav-item" onclick='loadSection("Tableros Eléctricos", "⚡", this)'>⚡ Tableros Eléctricos</div>
+    <div class="nav-item" onclick='loadSection("Tablero Eléctrico Portátil", "🔌", this)'>🔌 Tablero Eléctrico Portátil</div>
+    <div class="nav-item" onclick='loadSection("Vehículo Liviano (Auto/Camioneta)", "🚗", this)'>🚗 Vehículo Liviano</div>
+  </div>
+
+  <div id="main-content">
+    <div class="top-bar">
+      <button class="theme-toggle no-pdf" onclick="toggleTheme()">🌓 Modo Día / Noche</button>
+    </div>
+    <div id="pdf-container">
+    <h1 id="section-title">🪜 CHECK LIST: ANDAMIOS</h1>
+    <div class="header-card">
+      <h3>DATOS DEL ESTABLECIMIENTO Y OBJETO</h3>
+      <div class="grid-2" style="margin-top:10px;">
+        <div><label>Empresa Dueña:</label><input type="text" placeholder="Razón Social"></div>
+        <div><label>Dirección:</label><input type="text" placeholder="Planta / Obra / Ubicación"></div>
+        <div><label>CUIT:</label><input type="text" placeholder="30-XXXXXXXX-X"></div>
+        <div><label>Persona a Cargo:</label><input type="text" placeholder="Responsable del Área"></div>
+      </div>
+      <div class="grid-3" style="margin-top:10px;">
+        <div><label>Marca / Modelo:</label><input type="text"></div>
+        <div><label>N° Serie / Patente:</label><input type="text"></div>
+        <div>
+          <label>Inspección Documental:</label><br>
+          <input type="checkbox" id="doc_al_dia" onchange="toggleDocumental()" style="width: auto; margin-top:12px;"> Habilitaciones / PTS / Registros al día
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <label>Detalle de la Inspección:</label>
+        <textarea rows="2" placeholder="Describa el sector o motivo de la inspección..."></textarea>
+      </div>
+    </div>
+    <div id="sec-documental" style="display: none;"></div>
+    <div class="table-card">
+      <h3>LISTA DE CHEQUEO TÉCNICO</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 35%;">Ítem / Pregunta de Verificación HSE</th>
+            <th style="width: 15%; text-align: center;">Evaluación</th>
+            <th style="width: 30%;">Observaciones</th>
+            <th style="width: 20%; text-align: center;">Evidencia Fotográfica / Adjunto</th>
+          </tr>
+        </thead>
+        <tbody id="checklist-body"></tbody>
+      </table>
+    </div>
+    <div class="header-card">
+      <h3>DICTAMEN FINAL Y FIRMA DEL INSPECTOR</h3>
+      <div style="margin: 10px 0;">
+        <label><input type="radio" name="dictamen" value="SATISFACTORIA"> 🟢 SATISFACTORIA (Apto para operar)</label><br>
+        <label><input type="radio" name="dictamen" value="CONDICIONADA"> 🟡 REQUIERE MEJORAS (Apto con correcciones)</label><br>
+        <label><input type="radio" name="dictamen" value="FUERA_DE_SERVICIO"> 🔴 FUERA DE SERVICIO (Inoperativo / Bloqueado)</label>
+      </div>
+      <div class="grid-2">
+        <div><label>Nombre y Apellido del Inspector HSE:</label><input type="text"></div>
+        <div><label>Cargo / Matrícula / Registro N°:</label><input type="text"></div>
+      </div>
+      <button class="btn-submit" onclick="downloadPDF()">📄 DESCARGAR CHECKLIST EN PDF</button>
+    </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSection = 'Andamios';
+
+    const CHECKLIST_DATA = {
+      "Andamios": [
+        "¿La estructura se encuentra asentada sobre bases firmes, niveladas y con placas de apoyo (soleras)?",
+        "¿Los tubos, cuerpos y diagonales están exentos de deformaciones, fisuras o corrosión severa?",
+        "¿Dispone de nudos, grapas y crucetas de ajuste en perfecto estado de traba?",
+        "¿Las plataformas de trabajo ocupan la totalidad del ancho del andamio y están amarradas?",
+        "¿Posee barandas de seguridad dobles (1,00 m y 0,50 m) y zócalos de contención (0,15 m en el perímetro)?",
+        "¿Posee escalera de acceso interior de mano fijada y libre de obstáculos?",
+        "¿Se encuentra amarrado a una estructura fija resistente conforme a la altura alcanzada?",
+        "¿Posee tarjeta visible de habilitación (Verde: Apto / Roja: Prohibido Usar)?"
+      ],
+      "Apilador Eléctrico": [
+        "¿El indicador de estado de batería, horómetro y panel de control funcionan adecuadamente?",
+        "¿Las ruedas de tracción y de carga están libres de desgastes irregulares, grietas o desgarraduras?",
+        "¿El timón de mando posee botón de parada de emergencia por aprisionamiento (Ombligo de seguridad)?",
+        "¿Funciona correctamente la bocina y el aviso sonoro/Luz estroboscópica de movimiento?",
+        "¿Los sistemas de elevación (cadenas, cilindros hidráulicos y mangueras) no registran fugas ni desgaste?",
+        "¿El sistema de frenado automático al soltar o verticalizar el timón actúa inmediatamente?",
+        "¿La placa de identificación de capacidad máxima de carga es legible?",
+        "¿Las horquillas están alineadas, sin soldaduras no originales ni deformaciones?"
+      ],
+      "Autoelevadores": [
+        "¿Posee estructura de protección de la cabina contra caída de objetos (FOPS) y vuelco (ROPS)?",
+        "¿Cuenta con cinturón de seguridad de tres puntos en buen estado y de uso obligatorio?",
+        "¿Las luces principales, de posición, de stop y la alarma de reversa sonora/luminosa funcionan correctamente?",
+        "¿El sistema hidráulico (mangueras, cilindros, conexiones) está libre de fugas de fluido?",
+        "¿Los frenos de servicio y de estacionamiento operan de forma efectiva?",
+        "¿Las horquillas y la cadena de elevación no presentan grietas, fisuras ni soldaduras precarias?",
+        "¿Posee matafuegos reglamentario ABC de 1 kg con carga vigente y fijado con soporte seguro?",
+        "¿El espejo retrovisor, la bocina y el limpiaparabrisas están operativos?"
+      ],
+      "Chequeo Inicial al Cliente": [
+        "¿Dispone del Servicio de Higiene y Seguridad y cumple con las horas profesionales según la legislación?",
+        "¿Posee documentación actualizada sobre análisis de riesgos y medidas preventivas por puesto?",
+        "¿Dispone del Servicio de Medicina del Trabajo y realiza los exámenes médicos periódicos?",
+        "¿Posee documentación de educación sanitaria, socorrismo, vacunación y ausentismo por morbilidad?",
+        "¿Las herramientas y máquinas poseen las protecciones/guardas para evitar riesgos al trabajador?",
+        "¿Existen dispositivos de parada de emergencia y sistemas de bloqueo (LOTO) para mantenimiento?",
+        "¿Tienen las máquinas e instalaciones eléctricas sistema de puesta a tierra medido y registrado?",
+        "¿Existe orden y limpieza en los puestos y depósitos de residuos adecuados?",
+        "¿Cuenta con estudio de carga de fuego y dotación de extintores acorde, con recarga y prueba hidráulica vigente?",
+        "¿Existen vías de escape/salidas de emergencia adecuadas, señalizadas y libres de obstáculos?",
+        "¿Se realiza y acredita la ejecución periódica de simulacros de evacuación?",
+        "¿Existe un plan de contingencia/emergencias confeccionado y visible?",
+        "¿Todas las sustancias químicas utilizadas poseen sus Hojas de Datos de Seguridad (FDS/MSDS)?",
+        "¿Existen duchas de emergencia y/o lavaojos en los sectores de manipulación de químicos?",
+        "¿Se provee de los EPP adecuados a los trabajadores según la exposición a riesgos y se registra su entrega (Res. SRT 299/11)?",
+        "¿Existen botiquines de primeros auxilios equipados según los riesgos existentes?",
+        "Herramientas: ¿Las herramientas están en estado de conservación adecuado?",
+        "Herramientas: ¿La empresa provee herramientas aptas y seguras?",
+        "Herramientas: ¿Las herramientas corto-punzantes poseen fundas o vainas?",
+        "Herramientas: ¿Existe un lugar destinado para la ubicación ordenada de las herramientas?",
+        "Herramientas: ¿Las portátiles eléctricas poseen protecciones para evitar riesgos?",
+        "Herramientas: ¿Las neumáticas e hidráulicas poseen válvulas de cierre automático al dejar de accionarla?",
+        "Máquinas: ¿Tienen todas las máquinas y herramientas, protecciones para evitar riesgos al trabajador?",
+        "Máquinas: ¿Existen dispositivos de parada de emergencia?",
+        "Máquinas: ¿Se han previsto sistema de bloqueo de la máquina para operaciones de mantenimiento?",
+        "Máquinas: ¿Tienen las máquinas eléctricas, sistema de puesta a tierra?",
+        "Máquinas: ¿Están identificadas conforme a normas reglamentarias todas las partes de máquinas y equipos que en accionamiento puedan causar daño a los trabajadores?",
+        "Espacios de Trabajo: ¿Existe orden y limpieza en los puestos de trabajo?",
+        "Espacios de Trabajo: ¿Existen depósito de residuos en los puestos de trabajo?",
+        "Espacios de Trabajo: ¿Tienen las salientes y partes móviles de máq. y/o instalaciones, señalización y protección?",
+        "Ergonomía: ¿Se desarrolla un Programa de Ergonomía Integrado para los distintos puestos de trabajo?",
+        "Ergonomía: ¿Se realizan controles de ingeniería a los puestos de trabajo?",
+        "Ergonomía: ¿Se realizan controles administrativos y seguimientos a los puestos de trabajo?",
+        "Protección contra Incendios: ¿Existen medios o vías de escape adecuadas en caso de incendio?",
+        "Protección contra Incendios: ¿Cuentan con estudio de carga de fuego?",
+        "Protección contra Incendios: ¿La Cantidad de matafuegos es acorde a la carga de fuego?",
+        "Protección contra Incendios: ¿Se registra el control de recargas y/o reparación?",
+        "Protección contra Incendios: ¿Se registra el control de prueba hidráulica de carros y/o matafuegos?",
+        "Protección contra Incendios: ¿Existen sistemas de detección de incendios?",
+        "Protección contra Incendios: ¿Cuentan con habilitación, los carros y/o matafuegos y demás instalaciones para extinción?",
+        "Protección contra Incendios: ¿El depósito de combustibles cumple con la legislación vigente?",
+        "Protección contra Incendios: ¿Se acredita la realización periódica de simulacros de evacuación?",
+        "Protección contra Incendios: ¿Se disponen de estanterías o elem. Equivalentes de material no combustible o metálico?",
+        "Protección contra Incendios: ¿Se separan en forma correcta según tabla de compatibilidad, lo materiales que puedan reaccionar entre sí?",
+        "almacenaje: ¿Se almacenan los productos respetando la distancia mínima entre la parte superior de las estibas y el techo?",
+        "almacenaje: ¿Los sistemas de almacenaje permiten una adecuada circulación y son seguros?",
+        "almacenaje: ¿En los almacenajes a granel, las estibas cuentan con elementos de contención?",
+        "almacenaje de sustancias peligrosas: ¿Se encuentran separados los productos incompatibles?",
+        "almacenaje de sustancias peligrosas: ¿Se identifican los productos riesgosos almacenados?",
+        "almacenaje de sustancias peligrosas: ¿Se proveen elementos de protección adecuados al personal?",
+        "almacenaje de sustancias peligrosas: ¿Existen duchas de emergencia y/o lava ojos en los sectores con productos peligrosos?",
+        "almacenaje de sustancias peligrosas: ¿En atmósferas inflamables la instalación eléctrica es antiexplosiva?",
+        "almacenaje de sustancias peligrosas: ¿Existe un sistema para control de derrames de productos peligrosos?",
+        "Sustancias Peligrosas: ¿Su fabricación y/o manipuleo cumplimenta la legislación vigente?",
+        "Sustancias Peligrosas: ¿Todas las sustancias que se utilizan poseen sus respectivas hojas de seguridad?",
+        "Sustancias Peligrosas: ¿Las instalaciones y equipos se encuentran protegidos contra el efecto corrosivo de las sustancias empleadas?",
+        "Sustancias Peligrosas: ¿Se fabrican, depositan o manipulan sustancias explosivas, teniendo en cuenta lo reglamentado por Fabricaciones Militares?",
+        "Sustancias Peligrosas: ¿Existen dispositivos de alarma acústico y visuales donde se manipulen sustancias infectantes y/o contaminantes?",
+        "Sustancias Peligrosas: ¿Se ha señalizado y resguardado la zona o los elementos afectados ante casos de derrame de sustancias corrosivas?",
+        "Sustancias Peligrosas: ¿Se ha evitado la acumulación de desechos orgánicos en estado de putrefacción, e implementado la desinfección correspondiente?",
+        "Sustancias Peligrosas: ¿Se confeccionó un plan de seguid. Para casos de emergencia, y se colocó en lugar visible?",
+        "Riesgo Eléctrico: ¿Las tareas de mantenimiento son efectuadas por personal capacitado y autorizado por la empresa?",
+        "Riesgo Eléctrico: ¿Se efectúa y registra los resultados del mantenimiento de las instalaciones, en base a programas confeccionados de acuerdo a normas de seguridad?",
+        "Riesgo Eléctrico: ¿Los proyectos de instalaciones y equipos eléctricos de más de 1000 voltios cumplimentan con lo establecido en la legislación vigente y están aprobados por el responsable de Higiene y Seguridad en el rubro de su competencia?",
+        "Riesgo Eléctrico: ¿Se adoptan las medidas de seguridad en locales donde se manipule sustancias corrosivas, inflamables y/o explosivas ó de alto riesgo y en locales húmedos?",
+        "Riesgo Eléctrico: ¿Se han adoptado las medidas para la protección contra riesgos de contactos directos e indirectos?",
+        "Riesgo Eléctrico: ¿Se han adoptado medidas para eliminar la electricidad estática en todas las operaciones que pueda producirse?",
+        "Riesgo Eléctrico: ¿Posee instalación para prevenir sobretensiones producidas por descargas atmosféricas (pararrayos)?",
+        "Riesgo Eléctrico: ¿Poseen las instalaciones tomas a tierra independientes de la instalada para descargas atmosféricas?",
+        "Riesgo Eléctrico: ¿Las puestas a tierra se verifican periódicamente mediante mediciones?",
+        "Aparatos Sometidos a Presión: ¿Se realizan los controles e inspecciones periódicas establecidos en calderas y todo otro aparato sometido a presión?",
+        "Aparatos Sometidos a Presión: ¿Se han fijado las instrucciones detalladas con esquemas de la instalación, y los procedimientos operativos?",
+        "Aparatos Sometidos a Presión: ¿Se protegen los hornos, calderas, etc., para evitar la acción del calor?",
+        "Aparatos Sometidos a Presión: ¿Están los cilindros que contengan gases sometidos a presión adecuadamente almacenados?",
+        "Aparatos Sometidos a Presión: ¿Los restantes aparatos sometidos a presión, cuentan con dispositivos de proteccióny seguridad?",
+        "Aparatos Sometidos a Presión: ¿Cuenta el operador con la capacitación y/o habilitación pertinente?",
+        "Aparatos Sometidos a Presión: ¿Están aislados y convenientemente ventilados los aparatos capaces de producir frío, con posibilidad de desprendimiento de contaminantes?",
+        "Equipos y Elementos de protección personal (E.P.P.): ¿Se provee a todos los trabajadores, de los elementos de protección personal adecuada, acorde a los riesgos a los que se hallan expuestos?",
+        "Equipos y Elementos de protección personal (E.P.P.): ¿Existen señalizaciones visibles en los puestos y/o lugares de trabajo sobre la obligatoriedad del uso de los elementos de protección personal?",
+        "Equipos y Elementos de protección personal (E.P.P.): ¿Se verifica la existencia de registros de entrega de los E.P.P.?",
+        "Equipos y Elementos de protección personal (E.P.P.): ¿Se realizó un estudio por puesto de trabajo o sector donde se detallen los E.P.P. necesarios?",
+        "Iluminación y Color: ¿Se cumple con los requisitos de iluminación establecidos en la legislación vigente?",
+        "Iluminación y Color: ¿Se ha instalado un sistema de iluminación de emergencia, en casos necesarios, acorde a los requerimientos de la legislación vigente?",
+        "Iluminación y Color: ¿Se registran las mediciones en los puestos y/o lugares de trabajo?",
+        "Iluminación y Color: ¿Los niveles existentes cumplen con la legislación vigente?",
+        "Iluminación y Color: ¿Existe marcación visible de pasillos, circulaciones de tránsito y lugares de cruce donde circulen cargas suspendidas y otros elementos de transporte?",
+        "Iluminación y Color: ¿Se encuentran señalizados los caminos de evacuación en caso de peligro e indicadas las salidas normales y de emergencia?",
+        "Iluminación y Color: ¿Se encuentran identificadas las cañerías?",
+        "Condiciones Higrotérmicas: ¿Se registran las mediciones en los puestos y/o lugares de trabajo?",
+        "Condiciones Higrotérmicas: ¿El personal sometido a estrés por frío, está protegido adecuadamente?",
+        "Condiciones Higrotérmicas: ¿Se adoptaron las correcciones en los puestos y/o lugares de trabajo del personal sometido a estrés por frío?",
+        "Condiciones Higrotérmicas: ¿El personal sometido a estrés térmico y tensión térmica, está protegido adecuadamente?",
+        "Condiciones Higrotérmicas: ¿Se adoptaron las correcciones en los puestos y/o lugares de trabajo del personal sometido a estrés térmico tensión térmica?",
+        "Radiaciones Ionizantes: ¿En caso de existir fuentes generadoras de radiaciones ionizantes (Ej. Rayos X en radiografías), los trabajadores y las fuentes cuentan con la autorizac. Del organismo competente?",
+        "Radiaciones Ionizantes: ¿Se encuentran habilitados los operadores y los equipos generadores de radiaciones ionizantes ante el organismo competente?",
+        "Radiaciones Ionizantes: ¿Se lleva el control y registro de las dosis individuales?",
+        "Radiaciones Ionizantes: ¿Los valores hallados, se encuentran dentro de lo establecido en la normativa vigente?",
+        "Láseres: ¿Se han aplicado las medidas de control a la clase de riesgo?",
+        "Láseres: ¿Las medidas aplicadas cumplen con lo establecido en la normativa vigente?",
+        "Radiaciones No Ionizantes: ¿En caso de existir fuentes generadoras de radiaciones no ionizantes (Ej. Soldadura), que puedan generar daños a los trabajadores, están éstos protegidos?",
+        "Radiaciones No Ionizantes: ¿Se cumple con la normativa vigente para campos magnéticos estáticos?",
+        "Radiaciones No Ionizantes: ¿Se registran las mediciones de radiofrecuencia y/o microondas en los lugares de trabajo?",
+        "Radiaciones No Ionizantes: ¿Se encuentran dentro de lo establecido en la normativa vigente?",
+        "Radiaciones No Ionizantes: ¿En caso de existir radiación infrarroja, se registran las mediciones de la misma?",
+        "Radiaciones No Ionizantes: ¿Los valores hallados, se encuentran dentro de lo establecido en la normativa vigente?",
+        "Radiaciones No Ionizantes: ¿En caso de existir radiación ultravioleta, se registran las mediciones de la misma?",
+        "Radiaciones No Ionizantes: ¿Los valores hallados, se encuentran dentro de lo establecido en la normativa vigente?",
+        "Provisión de Agua: ¿Existe provisión de agua potable para el consumo e higiene de los trabajadores?",
+        "Provisión de Agua: ¿Se registran los análisis bacteriológicos y físicos químicos del agua de consumo humano con la frecuencia requerida?",
+        "Provisión de Agua: ¿Se ha evitado el consumo humano del agua para uso industrial?",
+        "Desagües Industriales: ¿Se recogen y canalizan por conductos, impidiendo su libre escurrimiento?",
+        "Desagües Industriales: ¿Se ha evitado el contacto de líquidos que puedan reaccionar originando desprendimiento de gases tóxicos contaminantes?",
+        "Desagües Industriales: ¿Son evacuados los efluentes a plantas de tratamiento?",
+        "Desagües Industriales: ¿Se limpia periódicamente la planta de tratamiento, con las precauciones necesarias de protección para el personal que efectúe estas tareas?",
+        "Baños, Vestuarios y Comedores: ¿Existen baños aptos higiénicamente?",
+        "Baños, Vestuarios y Comedores: ¿Existen vestuarios aptos higiénicamente y poseen armarios adecuados e individuales?",
+        "Baños, Vestuarios y Comedores: ¿Existen comedores aptos higiénicamente?",
+        "Baños, Vestuarios y Comedores: ¿La cocina reúne los requisitos establecidos?",
+        "Baños, Vestuarios y Comedores: ¿Los establecimientos temporarios cumplen con las exigencias de la legislación vigente?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Se encuentra identificada la carga máxima en dichos equipos?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Poseen parada de máximo nivel de sobrecarga en el sistema de fuerza motriz?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Se halla la alimentación eléctrica del equipo en buenas condiciones?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Tienen los ganchos de izar traba de seguridad?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Los elementos auxiliares de elevación se encuentran en buen estado (cadenas, perchas, eslingas, fajas etc)?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Se registra el mantenimiento preventivo de estos equipos?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Reciben los operadores instrucción respecto a la operación y uso correcto del equipo de izar?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Los ascensores y montacargas cumplen los requisitos y condiciones máximas de seguridad en lo relativo a la construcción, instalación y mantenimiento?",
+        "Aparatos para izar, Montacargas y ascensores: ¿Los aparatos para izar, aparejos, puentes grúa, transportadores cumplen los requisitos y condiciones máximas de seguridad?",
+        "Capacitación: ¿Se capacita a los trabajadores acerca de los riesgos específicos a los que se encuentren expuestos en su puesto de trabajo?",
+        "Capacitación: ¿Existen programas de capacitación con planificación en forma anual?",
+        "Capacitación: ¿Se entrega por escrito al personal las medidas preventivas tendientes a evitar las enfermedades profesionales y accidentes de trabajo?",
+        "Primero Auxilios: ¿Existen botiquines de primeros auxilios acorde a los riesgos existentes?",
+        "Primero Auxilios: ¿Poseen el DEA y tiene el chequeo y testeo mensual correspondiente y registrado?",
+        "Vehículos: ¿Cuentan los vehículos con los elementos de seguridad y estan en buenas condiciones de funcionamiento?",
+        "Vehículos: ¿Se ha evitado la utilización de vehículos con motor a explosión en lugares con peligro de incendio o explosión, o bien aquellos cuentan con dispositivos de seguridad apropiados para evitar dichos riesgos?",
+        "Vehículos: ¿Disponen de asientos que neutralicen las vibraciones, tengan respaldo y apoya pies?",
+        "Vehículos: ¿Son adecuadas las cabinas de protección para las inclemencias del tiempo?",
+        "Vehículos: ¿Son adecuadas las cabinas para proteger del riesgo de vuelco?",
+        "Vehículos: ¿Están protegidas para los riesgos de desplazamiento de cargas?",
+        "Vehículos: ¿Poseen los operadores capacitación respecto a los riesgos inherentes al vehículo que conducen?",
+        "Vehículos: ¿Están los vehículos equipados con luces, frenos, dispositivo de aviso acústicoluminoso, espejos, cinturón de seguridad, bocina y matafuegos?",
+        "Vehículos: ¿Se cumplen las condiciones que deben reunir los ferrocarriles para el transporte interno?",
+        "Contaminación Ambiental: ¿Se registran las mediciones en los puestos y/o lugares de trabajo?",
+        "Contaminación Ambiental: ¿Se adoptaron las correcciones en los puestos y/o lugares de trabajo?",
+        "Ruido: ¿Se registran las mediciones de nivel sonoro continuo equivalente en los puestos y/o lugares de trabajo?",
+        "Ruido: ¿Se adoptaron las correcciones en los puestos y/o lugares de trabajo?",
+        "Ultrasonido o Infrarojos: ¿Se registran las mediciones en los puestos y/o lugares de trabajo?",
+        "Ultrasonido o Infrarojos: ¿Se adoptaron las correcciones en los puestos y/o lugares de trabajo?",
+        "Vibraciones: ¿Se registran las mediciones en los puestos y/o lugares de trabajo?",
+        "Vibraciones: ¿Se adoptaron las correcciones en los puestos y/o lugares de trabajo?",
+        "Utilización de gases: ¿Los recipientes con gases se almacenan adecuadamente?",
+        "Utilización de gases: ¿Los cilindros de gases son transportados en carretillas adecuadas?",
+        "Utilización de gases: ¿Los cilindros de gases almacenados cuentan con el capuchón protector y tienen la válvula cerrada?",
+        "Utilización de gases: ¿Los cilindros de oxígeno y acetileno cuentan con válvulas antiretroceso de llama?",
+        "Soldadura: ¿Existe captación localizada de humos de soldadura?",
+        "Soldadura: ¿Se utilizan pantallas para la proyección de partículas y chispas?",
+        "Soldadura: ¿Las mangueras, reguladores, manómetros, sopletes y válvulas antirretorno se encuentran en buen estado?",
+        "Escaleras: ¿Todas las escaleras cumplen con las condiciones de seguridad?",
+        "Escaleras: ¿Todas las plataformas de trabajo y rampas cumplen con las condiciones de seguridad?",
+        "Mantenimiento preventivo de Máq. Equipos e Instala. En Gral.: ¿Posee programa de mantenimiento preventivo, en base a razones de riesgos y otras situaciones similares, para máquinas e instalaciones, tales como Instalaciones eléctricas?",
+        "Mantenimiento preventivo de Máq. Equipos e Instala. En Gral.: ¿Posee programa de mantenimiento preventivo, en base a razones de riesgos y otras situaciones similares, para máquinas e instalaciones, tales como Aparatos para izar?",
+        "Mantenimiento preventivo de Máq. Equipos e Instala. En Gral.: ¿Posee programa de mantenimiento preventivo, en base a razones de riesgos y otras situaciones similares, para máquinas e instalaciones, tales como Cables de equipos para izar?",
+        "Mantenimiento preventivo de Máq. Equipos e Instala. En Gral.: ¿Posee programa de mantenimiento preventivo, en base a razones de riesgos y otras situaciones similares, para máquinas e instalaciones, tales como Ascensores y Montacargas?",
+        "Mantenimiento preventivo de Máq. Equipos e Instala. En Gral.: ¿Posee programa de mantenimiento preventivo, en base a razones de riesgos y otras situaciones similares, para máquinas e instalaciones, tales como Calderas y recipientes a presión?"
+      ],
+      "Compresores": [
+        "¿El tanque / pulmón acumulador posee chapa de identificación de prueba hidráulica vigente?",
+        "¿La válvula de seguridad contra sobrepresión se encuentra calibrada, precintada y probada?",
+        "¿El manómetro de presión funciona correctamente y tiene el rango de trabajo señalizado?",
+        "¿Las correas y poleas de transmisión poseen protección fija de enclavamiento total (guardas)?",
+        "¿El sistema de purga de condensado (manual o automático) funciona diariamente?",
+        "¿El presostato corta y arranca automáticamente según los límites de presión definidos?",
+        "¿Las conexiones de mangueras de aire comprimido poseen acoples de seguridad (chicotillos / cadenas antirramatazo)?",
+        "¿Las puestas a tierra de la carcasa eléctrica se encuentran conectadas?"
+      ],
+      "Dispositivos Anticaídas": [
+        "Arnés, ¿el tejido de las correas se encuentra en buen estado y libre de fibras cortadas o gastadas?",
+        "Arnés, ¿las costuras están intactas, sin cortes ni desgaste excesivo?",
+        "Arnés, ¿las cintas están exentas de cortes, desgarros o desgastes excesivos?",
+        "Arnés, ¿se encuentra libre de signos de corrosión por exposición a productos químicos?",
+        "Arnés, ¿se encuentra en condiciones operativas y libre de deterioros provocados por quemaduras?",
+        "Punto de Anclaje, ¿se encuentra libre de deformaciones, dobladuras o desgastes excesivos?",
+        "Punto de Anclaje, ¿se encuentra exento de picaduras, grietas o trizaduras en su estructura?",
+        "Punto de Anclaje, ¿se encuentra en buen estado general y libre de deterioros visibles?",
+        "Punto de Anclaje, ¿funciona de manera correcta y sin defectos de funcionamiento?",
+        "Punto de Anclaje, ¿se encuentra libre de signos de corrosión u oxidación?",
+        "Hebillas, ¿se encuentran libres de deformaciones, dobladuras o desgastes excesivos?",
+        "Hebillas, ¿se encuentran exentas de picaduras, grietas o trizaduras?",
+        "Hebillas, ¿se encuentran en buen estado general y libre de deterioros?",
+        "Hebillas, ¿operan correctamente y sin defectos de funcionamiento?",
+        "Hebillas, ¿se encuentran libres de signos de corrosión u oxidación?",
+        "Elementos de Amarre, ¿se encuentran libres de cortes, roturas en el tejido/correa o deshilachados?",
+        "Elementos de Amarre, ¿se encuentran exentos de desgaste, deformación o desgarros?",
+        "Elementos de Amarre, ¿se encuentran libres de estiramiento o elongación excesiva?",
+        "Elementos de Amarre, ¿se encuentran libres de corrosión en sus herrajes/componentes?",
+        "Elementos de Amarre, ¿se encuentran libres de daños o deterioros por quemaduras?",
+        "Mosquetones, ¿se encuentran libres de desgaste excesivo o deformaciones?",
+        "Mosquetones, ¿se encuentran exentos de picaduras, grietas o trizaduras?",
+        "Mosquetones, ¿tienen los resortes de cierre operando sin fallas?",
+        "Mosquetones, ¿cuentan con un ajuste y cierre correcto en los resortes/seguros?",
+        "Mosquetones, ¿se encuentran en buen estado general sin deterioros visibles?",
+        "Mosquetones, ¿se encuentran libres de signos de corrosión u oxidación?",
+        "Mosquetones, ¿mantienen la abertura de garganta adecuada respecto del diámetro real?",
+        "Casco de Trabajo en Altura, ¿presenta el domo en buen estado general, libre de fisuras o deformaciones externas e internas?",
+        "Casco de Trabajo en Altura, ¿cuenta con el canastillo interno en óptimas condiciones?",
+        "Casco de Trabajo en Altura, ¿posee el sistema de ajuste operativo y en buen estado?",
+        "Casco de Trabajo en Altura, ¿cuenta con el sistema de fijación para linterna frontal operativo?",
+        "Casco de Trabajo en Altura, ¿posee la hebilla de cierre en buen estado de conservación y funcionamiento?",
+        "Casco de Trabajo en Altura, ¿cuenta con el seguro de barbiquejo en buen estado y de uso operativo?",
+        "Ascendedor, ¿se encuentra libre de desgaste excesivo o deformaciones?",
+        "Ascendedor, ¿se encuentra exento de picaduras, grietas o trizaduras?",
+        "Ascendedor, ¿tiene sus resortes de accionamiento funcionando sin fallas?",
+        "Ascendedor, ¿se encuentra en buen estado general de conservación?",
+        "Ascendedor, ¿se encuentra libre de corrosión u oxidación?",
+        "Ascendedor, ¿cuenta con los dientes de leva/bloqueo en buen estado y sin desgaste excesivo?",
+        "Descendedor Stop, ¿se encuentra libre de desgaste excesivo, deformaciones o fallas en el muelle?",
+        "Descendedor Stop, ¿se encuentra exento de picaduras, grietas o trizaduras?",
+        "Descendedor Stop, ¿tiene sus resortes operativos y sin fallas?",
+        "Descendedor Stop, ¿se encuentra en buen estado general y apto para operar?",
+        "Descendedor Stop, ¿se encuentra libre de corrosión u oxidación?",
+        "ASAP, ¿se encuentra libre de desgaste excesivo o deformaciones en el cuerpo y bordes del orificio de conexión?",
+        "ASAP, ¿se encuentra libre de grietas, trizaduras o daños en el tope de detención de la rueda bloqueadora?",
+        "ASAP, ¿presenta la rueda bloqueadora y sus dientes en buen estado y libres de suciedad?",
+        "ASAP, ¿gira libremente la rueda bloqueadora sin estar trabada o atascada?",
+        "ASAP, ¿se encuentra libre de signos de corrosión u oxidación?",
+        "ASAP'SORBER, ¿se encuentra libre de cortes, roturas o deshilachados en el tejido/correa?",
+        "ASAP'SORBER, ¿se encuentra exento de signos de desgaste, deformación o desgarro?",
+        "ASAP'SORBER, ¿se encuentra libre de estiramiento o elongación excesiva (sin activar)?",
+        "ASAP'SORBER, ¿se encuentra libre de corrosión en sus componentes metálicos/conectores?",
+        "ASAP'SORBER, ¿se encuentra libre de deterioros o quemaduras por exposición al calor/químicos?"
+      ],
+      "Equipos de Izaje": [
+        "¿El gancho de izar posee traba / lengüeta de seguridad operativa y libre de deformaciones o apertura anormal?",
+        "¿Las eslingas (sintéticas, cadenas o cables de acero) no tienen hilos cortados, estrangulamiento o desgaste excesivo?",
+        "¿El equipo tiene la indicación visible y legible de la Capacidad Máxima de Carga (SWL / Carga Segura de Trabajo)?",
+        "¿Funciona correctamente el interruptor de fin de carrera superior e inferior de elevación?",
+        "¿El mando a distancia (botonera o control remoto) posee botón de parada de golpe / parada de emergencia?",
+        "¿El cable de acero de arrollamiento no presenta cocas, destrenzamiento o roturas de torones?",
+        "¿El pestillo, las poleas y el tambor de arrollamiento están alineados y lubricados?",
+        "¿Se lleva el libro o registro de mantenimiento preventivo y pruebas de carga periódicas del equipo?"
+      ],
+      "Extintores": [
+        "¿El extintor se encuentra en su ubicación asignada, señalizado y con acceso totalmente despejado?",
+        "¿La aguja del manómetro de presión se encuentra dentro del rango operativo verde?",
+        "¿El precinto de seguridad y el pasador de traba están intactos y sin violar?",
+        "¿La manguera de descarga y la boquilla/corneta no presentan fisuras, obstrucciones o roturas?",
+        "¿La tarjeta de control registra la recarga anual vigente y las inspecciones mensuales al día?",
+        "¿El cilindro está libre de abolladuras, corrosión o daños mecánicos visibles?",
+        "¿Posee la chapa con la fecha de la prueba hidráulica al día (vencimiento quinquenal)?",
+        "¿El soporte de fijación mural o carro de transporte está en óptimas condiciones?"
+      ],
+      "Fresadora y Torno Mecánico": [
+        "¿Posee pantalla de protección transparente (policarbonato/acrílico) sobre el plato de garras y zona de corte?",
+        "¿El interruptor / pedal / barra de parada de emergencia está operativo al alcance inmediato del operador?",
+        "¿Las guías, engranajes y poleas de transmisión poseen cubiertas de protección fijas en su totalidad?",
+        "¿Posee pantalla o biombo de protección para evitar la proyección de virutas hacia zonas de paso?",
+        "¿El sistema de refrigerante de corte no presenta pérdidas ni mal olor por descomposición?",
+        "¿Las llaves del plato de apriete son del tipo de extracción automática por resorte?",
+        "¿La iluminación localizada sobre la zona de trabajo es adecuada y de bajo voltaje?",
+        "¿El equipo posee su correspondiente puesta a tierra identificada?"
+      ],
+      "Generadores Grandes y Portátiles": [
+        "¿Se encuentra ubicado en una zona ventilada, alejado de fuentes de ignición o tomas de aire de edificios?",
+        "¿El punto de puesta a tierra de la estructura y del generador está conectado mediante jabalina/cable apto?",
+        "¿El tablero de tomas eléctricas cuenta con protección diferencial y llaves termomagnéticas?",
+        "¿No presenta fugas de combustible, aceite de motor ni líquido refrigerante?",
+        "¿El escape cuenta con arrestallamas / silenciador en buen estado de conservación?",
+        "¿Los cables de salida y conectores son de tipo industrial (IP44 o superior) sin partes bajo tensión expuestas?",
+        "¿Posee la señalización de riesgo eléctrico en la estructura externa?",
+        "¿Cuenta con un extintor de Incendios Clase ABC / CO2 a una distancia no mayor a 5 metros?"
+      ],
+      "Herramientas Eléctricas": [
+        "¿El cable de alimentación posee doble aislamiento, sin añadiduras, encintados ni conductores expuestos?",
+        "¿La ficha de conexión/enchufe está en buen estado (inyectada de fábrica) y cuenta con toma a tierra si aplica?",
+        "¿El gatillo / interruptor de accionamiento cuenta con sistema de desconexión automática al soltarlo?",
+        "¿Las carcasas plásticas o metálicas están libres de rajaduras, fisuras o partes sueltas?",
+        "¿Los discos, mechas, hojas o accesorios de corte montados son los adecuados para la revolución (RPM) del equipo?",
+        "¿Las herramientas poseen sus empuñaduras auxiliares y llaves de ajuste originales?",
+        "¿Poseen las guardas de protección para elementos cortantes o móviles?",
+        "¿Se transportan en sus cajas/valijas en lugar de ser sostenidas por el cable de alimentación?"
+      ],
+      "Herramientas Manuales": [
+        "¿Los mangos de madera o sintéticos están bien fijados, sin astillas, fisuras ni cuñas flojas?",
+        "¿Las cabezas metálicas de impacto (cinceles, cortahierros, martillos) están libres de rebabas o 'cabezas de hongo'?",
+        "¿Las bocas de las llaves fijas, ajustables o estriadas están libres de deformaciones o desgaste que cause zafamiento?",
+        "¿Las herramientas de corte (cuchillos, trinchetas) cuentan con fundas o hojas retráctiles operativas?",
+        "¿Las herramientas aisladas para electricista poseen la aislación dieléctrica (1000V) sin muescas?",
+        "¿Se almacenan en cajas de herramientas, pañol o tableros ordenados?",
+        "¿Las herramientas están limpias y libres de grasas o aceites en sus superficies de agarre?",
+        "¿Son utilizadas exclusivamente para la función que fueron diseñadas (no usar llaves como martillos)?"
+      ],
+      "Inspección de Equipos Viales": [
+        "¿Posee la tabla o placa que indique la capacidad máxima de elevación/carga?",
+        "¿Dispone de manual de operaciones dentro de la cabina y la inspección mecánica al día?",
+        "¿El asiento, los apoya cabezas y el cinturón de seguridad están en buen estado?",
+        "¿Funcionan los instrumentos del panel, las palancas de mando y la alarma de reversa sonora?",
+        "¿Vidrios, parabrisas, espejos retrovisores y calefactor/desempañador funcionan sin roturas?",
+        "¿El chofer/maquinista posee el EPP obligatorio (casco, calzado, guantes, protector auditivo y antiparras)?",
+        "¿Batería con soportes firmes, cables protegidos y nivel correcto?",
+        "¿Luces bajas, altas, stop, giros delanteros/traseros, de posición y balizas stroboscópicas operativas?",
+        "¿Sistema hidráulico libre de pérdidas de aceite en mangueras, cilindros y abrazaderas?",
+        "¿El motor, radiador y sistema de combustible están libres de pérdidas y con tanques asegurados?",
+        "¿Tubo de escape equipado con arrestallamas y protecciones sobre partes móviles operativas?",
+        "¿Los sistemas de frenos de servicio y freno de mano responden efectivamente?",
+        "¿El chasis, pasamanos, estribos y soldaduras están libres de fisuras o alteraciones no originales?",
+        "¿Estado de cubiertas / orugas, rodillos y ruedas de auxilio con dibujo adecuado sin deformaciones?",
+        "¿Los baldes, cucharas, dientes y pernos de acople están sin desgastes excesivos o roturas?",
+        "¿Cuenta con matafuegos reglamentario, botiquín de primeros auxilios y conos/balizas de señalización?"
+      ],
+      "Inspección de Frente de Obra": [
+        "¿El cerramiento perimetral de la obra se encuentra completo, señalizado y con accesos controlados?",
+        "¿Los caminos internos de circulación peatonal y vehicular están definidos, nivelados e iluminados?",
+        "¿Las excavaciones o zanjas de más de 1,20m cuentan con entibado/talud y barandal perimetral de protección?",
+        "¿Los huecos en losas, patios de aire y bordes de atrio poseen barandas rígidas o cubiertas resistentes?",
+        "¿Se dispone de cartelería de seguridad con la obligatoriedad de uso de EPP y riesgos del sector?",
+        "¿Existe orden y limpieza general, con acopio ordenado de materiales y escombros en zonas delimitadas?",
+        "¿Los servicios sanitarios, vestuarios y zona de comedor cumplen con condiciones de higiene?",
+        "¿Existen extintores de incendios distribuidos en las áreas de mayor riesgo (pañol, tableros, acopio)?"
+      ],
+      "Lijadora de Banco": [
+        "¿La máquina está fijada rígidamente al banco de trabajo o al suelo para evitar vibraciones?",
+        "¿Posee las pantallas o visores de policarbonato transparentes de protección ocular instalados?",
+        "¿Los apoyas herramientas (rest de trabajo) están ajustados a una distancia máxima de 3 mm del disco?",
+        "¿Las guardas metálicas de protección cubren como mínimo el 75% de la periferia de la lija/disco?",
+        "¿El interruptor encendido/apagado es de acceso rápido y posee protección contra arranque involuntario?",
+        "¿Posee conexión de puesta a tierra en la estructura del equipo?",
+        "¿Los rodamientos giran suavemente sin ruidos o vibraciones anómalas?",
+        "¿El espacio alrededor de la lijadora está libre de materiales inflamables o acumulaciones de polvo?"
+      ],
+      "Manipulador Telescópico": [
+        "¿El sistema indicador del momento de carga (LMI) y el bloqueo automático de sobrecarga funcionan correctamente?",
+        "¿Los estabilizadores hidráulicos extienden y retraen perfectamente sin fugas en los cilindros?",
+        "¿Las mangueras de la pluma telescópica están libres de roces, desgaste o pérdidas de fluido?",
+        "¿La cabina cuenta con estructura FOPS/ROPS y los cristales de seguridad están sanos?",
+        "¿Los accesorios de elevación (horquillas, balde, plumín) están asegurados con sus pernos y seguros originales?",
+        "¿El cinturón de seguridad, la bocina y la alarma de marcha atrás funcionan?",
+        "¿Las 4 ruedas motrices/directrices y los neumáticos están con la presión recomendada por el fabricante?",
+        "¿Cuenta con extintor de incendios cargado dentro de la cabina o chasis?"
+      ],
+      "Máquina de Soldar Eléctrica": [
+        "¿Los cables de soldadura (pinza de masa y portaelectrodo) están libres de empalmes, grietas o cobre expuesto?",
+        "¿La pinza portaelectrodo y la pinza de masa poseen el aislamiento térmico y eléctrico completo?",
+        "¿El interruptor de encendido/apagado funciona correctamente y la carcasa está cerrada y aislada?",
+        "¿El equipo posee su conexión a la red mediante enchufe industrial con puesta a tierra?",
+        "¿Los bornes o conectores de salida del equipo no presentan sobrecalentamiento ni falsos contactos?",
+        "¿Se cuenta con pantalla/máscara de soldar con filtro UV/IR en estado adecuado para el operador?",
+        "¿Se dispone de biombos o mantas ignífugas para evitar la proyección de chispas a terceros?",
+        "¿Se encuentra elevado del suelo o resguardado de la humedad en caso de trabajos a la intemperie?"
+      ],
+      "Oxicorte": [
+        "¿Los cilindros de Oxígeno y Acetileno/GLP se encuentran en posición vertical y asegurados con cadenas?",
+        "¿Los cilindros están equipados con sus capuchones protectores de tulipa cuando no están en uso?",
+        "¿Los reguladores y manómetros de alta y baja presión funcionan adecuadamente sin pérdidas?",
+        "¿Posee válvulas antirretorno de llama (arrestallamas) tanto a la salida de los reguladores como al ingreso del soplete?",
+        "¿Las mangueras bitubo (roja/azul o verde) no presentan grietas, quemaduras o abrazaderas improvisadas?",
+        "¿El soplete de oxicorte no presenta fugas en los grifos y las picos están limpios y sin deformaciones?",
+        "¿El transporte de los tubos se realiza mediante carretilla diseñada específicamente para dicho fin?",
+        "¿Se dispone de un encendedor de cazuela (chispero) evitando el uso de fósforos o llamas abiertas?"
+      ],
+      "Piedra de Amolado / Amoladora": [
+        "¿La amoladora cuenta con su guarda o carcasa de protección metálica orientada correctamente?",
+        "¿El disco montado es el adecuado para las RPM del equipo y no presenta muescas, fisuras o humedad?",
+        "¿Se utiliza la brida de ajuste y la tuerca original apretada con la llave de pivotes adecuada?",
+        "¿La empuñadura lateral de sujeción está instalada y ajustada firmemente?",
+        "¿El interruptor posee traba de seguridad contra encendido accidental o función de parada hombre muerto?",
+        "¿El cable de alimentación eléctrica no tiene raspaduras ni empalmes no reglamentarios?",
+        "¿El operario utiliza pantalla facial de alto impacto junto con antiparras de seguridad?",
+        "¿Se verifica la ausencia de materiales inflamables en la trayectoria de la chispa?"
+      ],
+      "Plataforma Elevadora de Personas": [
+        "¿Los mandos de control inferior (chasis) y superior (cesta) responden de forma precisa y calibrada?",
+        "¿El botón de parada de emergencia en el panel de la canasta y del chasis deshabilita el equipo de inmediato?",
+        "¿La plataforma cuenta con un punto de anclaje específico para el cabo de vida del arnés de seguridad?",
+        "¿El sistema de bajada de emergencia manual/auxiliar funciona correctamente en caso de corte de energía?",
+        "¿La baranda perimetral, la puerta de acceso abatible de autocierre y los zócalos están en buen estado?",
+        "¿Los sensores de inclinación/nivelación (alarma de desnivel) activan el bloqueo de elevación?",
+        "¿Los neumáticos son los adecuados, no presentan rajaduras y las ruedas no están deformadas?",
+        "¿Posee las placas de capacidad máxima de carga en la canasta (número de personas + kg) legibles?"
+      ],
+      "Tableros Eléctricos": [
+        "¿El gabinete o puerta exterior del tablero se encuentra cerrado con llave o herramienta de acceso restringido?",
+        "¿Posee en la tapa exterior la señalización de advertencia de riesgo eléctrico (Riesgo Eléctrico / Rayo)?",
+        "¿Cuenta con interruptor diferencial (disyuntor) probando su disparo mediante el botón de test?",
+        "¿Todas las salidas cuentan con llaves termomagnéticas dimensionadas según la sección del conductor?",
+        "¿Posee contrafrente o cubierta cubrebornes que impida el contacto accidental con partes bajo tensión?",
+        "¿La barra/cable de puesta a tierra (cable verde/amarillo) está conectada a la masa del tablero y al circuito general?",
+        "¿Los cables internos están peinados, identificados y sin aislamientos deteriorados o recalentados?",
+        "¿Se mantiene el frente del tablero libre de acopios, muebles u obstáculos a una distancia mínima de 1 metro?"
+      ],
+      "Tablero Eléctrico Portátil": [
+        "¿El gabinete es de material dieléctrico, estanco, resistente a impactos y con grado de protección IP adecuado?",
+        "¿Cuenta con interruptor diferencial (disyuntor) de alta sensibilidad (30mA) operativo?",
+        "¿Las tomas de corriente son de tipo industrial con tapa rebatible de autocierre?",
+        "¿El cable de alimentación de entrada es de tipo taller (Sintenax / reforzado) con prensaestopa de ajuste?",
+        "¿El tablero posee manija para transporte aislada e integra patas para evitar el contacto directo con el suelo húmedo?",
+        "¿Tiene parada de emergencia exterior tipo golpe de puño incorporada?",
+        "¿Posee puesta a tierra conectada y continuidad hacia la ficha de alimentación principal?",
+        "¿Se encuentra libre de componentes sueltos o roturas en su estructura externa?"
+      ],
+      "Vehículo Liviano (Auto/Camioneta)": [
+        "¿Las luces principales (bajas, altas), de freno, marcha atrás, giros y balizas están operativas?",
+        "¿Los neumáticos (incluyendo auxilio) tienen la profundidad de dibujo legal (>1,6 mm) y presión adecuada?",
+        "¿Los frenos de servicio y el freno de mano/estacionamiento responden eficientemente?",
+        "¿Los cinturones de seguridad e inerciales en todas las plazas funcionan correctamente?",
+        "¿Parabrisas, cristales laterales y espejos retrovisores están limpios y sin fisuras que resten visibilidad?",
+        "¿Posee extintor de incendios de 1kg ABC con carga vigente ubicado al alcance del conductor?",
+        "¿Dispone del kit de emergencia obligatorio (botiquín, dos balizas portátiles y chaleco reflectivo)?",
+        "¿Niveles de aceite, líquido de frenos, refrigerante y agua de limpiaparabrisas dentro de límites?"
+      ]
+    };
+
+    const DOCUMENTACION_DATA = {
+      "Andamios": ["¿Se verifica la habilitación municipal/regional del andamio vigente?", "¿Se cuenta con plano de montaje aprobado por el responsable de obra?", "¿El responsable de la inspección documental registra las revisiones periódicas del andamio?", "¿Se conserva el registro de capacidad de carga y certificación de elementos?"],
+      "Apilador Eléctrico": ["¿Posee el manual de operación y mantenimiento del fabricante?", "¿Se registra el plan de mantenimiento preventivo periódico del equipo?", "¿La licencia de operador del equipo está vigente y registrada?", "¿Se encuentra el informe de última inspección mecánica al día?"],
+      "Autoelevadores": ["¿Posee el certificado de habilitación del equipo expedido por el organismo competente?", "¿Se cuenta con el registro de inspección técnica periódica?", "¿El operador posee licencia habilitante vigente y registrada?", "¿Existe el plan de mantenimiento preventivo documentado y actualizado?"],
+      "Chequeo Inicial al Cliente": ["¿Se verifica la habilitación del Servicio de Higiene y Seguridad según Res. SRT?", "¿Los análisis de riesgos por puesto se encuentran actualizados y vigentes?", "¿Se cuenta con certificados de medicina del trabajo actualizados de todos los trabajadores?", "¿El registro de educación sanitaria, socorrismo y vacunación está al día?"],
+      "Compresores": ["¿Posee la última prueba hidráulica del tanque/pulmón acumulador certificada?", "¿La calibración de la válvula de seguridad está documentada y vigente?", "¿Se registra el mantenimiento diario y semanal del compresor?", "¿Posee el certificado de inspección del equipo por organismo habilitado?"],
+      "Dispositivos Anticaídas": ["¿El arnés de cuerpo completo cuenta con certificado de ensayo IRAM 3622-1 vigente y registro de entrega al trabajador conforme Res. SRT 299/11?", "¿El Punto de Anclaje presenta certificación de resistencia conforme a Dec. 911/96 (Art. 54) y Ley 19.587, sin deformaciones ni corrosión?", "¿Los mosquetones y hebillas poseen cierre y traba de doble seguro automático operativos conforme a Res. SRT 61/23 e IRAM 3622-1?", "¿El casco de trabajo en altura cumple con IRAM 3620 y Res. SRT 299/11, con domo, arnés/canastillo y barbiquejo en óptimas condiciones?"],
+      "Equipos de Izaje": ["¿Posee el certificado de capacidad de carga (SWL) vigente del equipo?", "¿Se registra el libro de mantenimiento preventivo y pruebas de carga periódicas?", "¿Las eslingas y cadenas poseen certificados de ensayo y trazabilidad?", "¿El registro de inspección técnica del gancho y poleas está actualizado?"],
+      "Extintores": ["¿La tarjeta de control registra las recargas anuales vigentes?", "¿Se encuentra el certificado de prueba hidráulica quinquenal vigente?", "¿Los extintores poseen el registro de inspección mensual firmado?", "¿Se verifica la existencia de las planillas de control de mantenimiento?"],
+      "Fresadora y Torno Mecánico": ["¿Posee el certificado de puesta a tierra medido y registrado?", "¿Se cuenta con el registro de inspección mecánica del equipo al día?", "¿El mantenimiento preventivo de guías y engranajes está documentado?", "¿Posee la ficha de seguridad del refrigerante de corte?"],
+      "Generadores Grandes y Portátiles": ["¿Posee el certificado de instalación eléctrica y puesta a tierra?", "¿El arrestallamas y silenciador cuentan con certificación de ensayo?", "¿Se registra el mantenimiento de los cables y conectores industriales?", "¿El registro de protección diferencial y llaves termomagnéticas está actualizado?"],
+      "Herramientas Eléctricas": ["¿Las herramientas poseen certificación de doble aislamiento vigente?", "¿Se registra el control de calidad y verificación de las guardas?", "¿Las inspecciones previas de los discos y accesorios se documentan?", "¿Los certificados de las empuñaduras auxiliares y llaves originales están vigentes?"],
+      "Herramientas Manuales": ["¿Las herramientas aisladas poseen certificado dieléctrico de 1000V vigente?", "¿Se registra el control de desgaste de mangos y cabezas metálicas?", "¿Las inspecciones y reemplazos de herramientas defectuosas están documentados?", "¿El registro de almacenamiento en cajas/tableros se mantiene actualizado?"],
+      "Inspección de Equipos Viales": ["¿El equipo posee el certificado de inspección mecánica vigente?", "¿Se registra el manual de operaciones dentro de la cabina?", "¿El mantenimiento de motor, radiador y sistema de combustible está documentado?", "¿El registro de neumáticos, orugas y ruedas de auxilio se encuentra actualizado?"],
+      "Inspección de Frente de Obra": ["¿Se verifica el cerramiento perimetral y accesos controlados en el registro?", "¿Los planos de circulación peatonal/vehicular y señalización están aprobados?", "¿Las inspecciones de excavaciones y zanjas (entibado/talud) se documentan?", "¿Se registra la habilitación de servicios sanitarios y vestuarios?"],
+      "Lijadora de Banco": ["¿Posee el certificado de puesta a tierra del equipo?", "¿Se registra la inspección de rodamientos y protección ocular?", "¿El mantenimiento y limpieza del espacio se documenta periódicamente?", "¿Se verifica la protección contra arranque involuntario en el registro?"],
+      "Manipulador Telescópico": ["¿El sistema LMI y bloqueo de sobrecarga cuentan con certificación vigente?", "¿El registro de mantenimiento de cilindros hidráulicos está al día?", "¿La presión de neumáticos y estado de las 4 ruedas se registra periódicamente?", "¿Se verifica el extintor y la FOPS/ROPS en el registro de inspección?"],
+      "Máquina de Soldar Eléctrica": ["¿El equipo posee el certificado de conexión a tierra vigente?", "¿Se registra el mantenimiento de bornes y conectores de salida?", "¿Las máscaras con filtro UV/IR cuentan con certificado de ensayo?", "¿El biombo ignífugo y la protección a terceros se documentan?"],
+      "Oxicorte": ["¿Los cilindros poseen el certificado de prueba hidráulica vigente?", "¿Los reguladores y manómetros cuentan con certificación de calibración?", "¿Las mangueras bitubo poseen certificado de ensayo y trazabilidad?", "¿Las válvulas antirretorno de llama se verifican y documentan periódicamente?"],
+      "Piedra de Amolado / Amoladora": ["¿El disco montado posee certificado de RPM y ensayo de resistencia?", "¿Se registra la verificación de la brida de ajuste y tuerca original?", "¿La empuñadura lateral y el interruptor de seguridad se documentan?", "¿Se verifica la ausencia de materiales inflamables y se registra el informe?"],
+      "Plataforma Elevadora de Personas": ["¿Posee el certificado de capacidad de carga (número de personas + kg)?", "¿El sistema de anclaje del arnés y bajada de emergencia se documenta?", "¿Los sensores de inclinación y alarma de desnivel cuentan con calibración?", "¿Se verifica y registra el estado de los neumáticos y baranda perimetral?"],
+      "Tableros Eléctricos": ["¿Posee el certificado de prueba del interruptor diferencial (disyuntor)?", "¿La puesta a tierra (cable verde/amarillo) tiene medición registrada?", "¿Los cables internos identificados y el contrafrente cubrebornes se documentan?", "¿El registro de distancia libre de obstáculos (1 m) se mantiene actualizado?"],
+      "Tablero Eléctrico Portátil": ["¿Posee certificado de grado de protección IP del gabinete dieléctrico?", "¿El disyuntor diferencial de 30mA cuenta con prueba de disparo documentada?", "¿El prensaestopa y la puesta a tierra se verifican y registran?", "¿La patas de aislamiento y la parada de emergencia tipo golpe de puño se documentan?"],
+      "Vehículo Liviano (Auto/Camioneta)": ["¿Posee el certificado de VTV (verificación técnica vehicular) vigente?", "¿Posee la tarjeta verde (cédula de identificación del automotor) y permiso de conducir de la empresa?", "¿Posee el Carnet de Conducir vigente y con la categoria correspondiente?", "¿Posee el Seguro Obligatorio vigente?"]
+    };
+
+    const LEGISLACION_MAESTRA = {
+      "Andamios": ["Conforme a Dec. 911/96 (Art. 216) y Dec. 351/79. Apoyo sobre soleras firmes y niveladas.", "Exigible por Dec. 911/96 (Art. 220). Estructura libre de deformaciones, corrosión o fisuras.", "Cumplimiento Dec. 911/96 (Art. 217). Acoples y grapas de seguridad en perfecto estado.", "Conforme a Dec. 911/96 (Art. 222). Plataformas cubriendo ancho total y amarradas.", "Exigencia Dec. 911/96 (Art. 218). Doble baranda (1,00m y 0,50m) y zócalo perimetral (0,15m).", "Cumplimiento Dec. 911/96 (Art. 223). Escalera interior fija y libre de obstáculos.", "Conforme a Dec. 911/96 (Art. 221). Anclaje a estructura fija resistente.", "Exigible según Res. SRT 550/11 y buenas prácticas HSE. Tarjeta de habilitación visible (Verde/Roja)."],
+      "Apilador Eléctrico": ["Exigible según Res. SRT 960/15 y Dec. 351/79. Estado general y protecciones operativas.", "Conforme a Res. SRT 960/15 (Art. 2). Frenos de servicio y estacionamiento efectivos.", "Cumplimiento Dec. 351/79 (Cap. 14). Batería, conexiones y cables aislados sin sulfatación.", "Exigencia Res. SRT 960/15. Alarma sonora de reversa y destellador luminoso operativos.", "Conforme a Res. SRT 960/15 (Art. 2). Sistema de elevación, uñas y cadenas sin fisuras."],
+      "Autoelevadores": ["Exigible según Res. SRT 960/15 (Art. 2, inc. a) y Dec. 351/79. Estructura FOPS/ROPS obligatoria.", "Conforme a Res. SRT 960/15 (Art. 2, inc. b). Cinturón de seguridad de tres puntos de uso obligatorio.", "Exigencia Res. SRT 960/15 (Art. 2, inc. c, d). Faros operativos y alarma acústico-luminosa de reversa.", "Cumplimiento Dec. 351/79 (Art. 137). Hermeticidad del circuito hidráulico y ausencia de fugas.", "Exigible según Res. SRT 960/15 (Art. 2, inc. e). Frenos de servicio y mano plenamente operativos.", "Conforme a Res. SRT 960/15 e IRAM/ISO 2330. Horquillas y cadenas sin desgaste estructural >10%.", "Exigencia Dec. 351/79 (Cap. 18) y Res. SRT 960/15. Extintor ABC IRAM 3517-2 con carga vigente.", "Cumplimiento Res. SRT 960/15 (Art. 2). Espejo retrovisor, bocina y limpiaparabrisas funcionales."],
+      "Chequeo Inicial al Cliente": ["Cumplimiento Dec. 1338/96 y Ley 19.587 (Art. 9). Asignación de horas profesional de Higiene y Seguridad.", "Exigible según Dec. 351/79 y Res. SRT 905/15. Análisis de riesgos y AST por puesto.", "Conforme a Ley 19.587 y Dec. 1338/96. Servicio de Medicina del Trabajo y exámenes periódicos.", "Cumplimiento Res. SRT 905/15. Programa de capacitación y registro de ausentismo médico.", "Exigencia Dec. 351/79 (Cap. 15). Protecciones y guardas en partes móviles de máquinas.", "Conforme a Dec. 351/79 e IRAM 2405. Botones de parada de emergencia y procedimiento LOTO.", "Exigible según Res. SRT 900/15. Protocolo de medición de puesta a tierra vigente.", "Cumplimiento Dec. 351/79 (Cap. 5). Orden, limpieza y gestión de residuos industriales.", "Exigencia Dec. 351/79 (Cap. 18) y Norma IRAM 3517-2. Estudió de carga de fuego y extintores al día.", "Conforme a Dec. 351/79 (Art. 172). Vías de evacuación señalizadas, iluminadas y despejadas.", "Cumplimiento Dec. 351/79 (Cap. 18). Ejecución anual de simulacros de evacuación.", "Exigible según Ley 19.587 y Dec. 351/79. Plan de contingencia y emergencias confeccionado.", "Conforme a Res. SRT 801/15 (SGA/GHS). Disponibilidad de FDS/MSDS de productos químicos.", "Exigencia Dec. 351/79 (Cap. 17). Duchas y lavaojos de emergencia en zona de químicos.", "Cumplimiento estricto Res. SRT 299/11. Constancia firmada de entrega de EPP homologados.", "Conforme a Dec. 351/79 (Art. 208). Botiquín de primeros auxilios completo y disponible."],
+      "Compresores": ["Exigible según Dec. 351/79 (Art. 29) y normativa provincial (ej. OPDS). Prueba hidráulica y habilitación de recipiente a presión.", "Conforme a Dec. 351/79 (Cap. 15). Válvula de seguridad y manómetro calibrados con precinto.", "Cumplimiento Dec. 351/79. Protecciones en correas, poleas y partes móviles del motor.", "Exigencia Res. SRT 900/15. Puesta a tierra de la carcasa del motor y masa eléctrica.", "Conforme a manual del fabricante y Dec. 351/79. Purga periódica de condensados y mantenimiento."],
+      "Dispositivos Anticaídas": ["Conforme a Res. SRT 299/11 (EPP), Res. SRT 61/23 e IRAM 3622-1. Arnés de cuerpo completo con arandelas dorsales/esternales homologadas. Cintas, costuras y herrajes metálicos libres de cortes, deshilachados, quemaduras o corrosión. Almacenamiento fuera de luz UV/químicos.", "Conforme a Res. SRT 299/11 e IRAM 3622-1. Costuras del arnés reforzadas, sin cortes ni desgaste excesivo que comprometan la resistencia del tejido.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Cintas del arnés exentas de cortes, desgarros o desgastes excesivos, con capacidad de carga certificada.", "Exigible por Dec. 911/96 (Art. 54) y Res. SRT 61/23. Arnés libre de signos de corrosión por exposición a productos químicos, verificado en inspección pre-uso.", "Conforme a Res. SRT 299/11 y Res. SRT 61/23. Arnés en condiciones operativas, libre de deterioros provocados por quemaduras, con registro de inspección periódica.", "Exigible por Ley 19.587, Dec. 351/79 (Cap. 17) y Dec. 911/96 (Art. 54). Punto de anclaje libre de deformaciones, dobladuras o desgastes excesivos, con certificación de resistencia verificada.", "Conforme a Dec. 911/96 (Art. 54) y Res. SRT 61/23. Punto de anclaje exento de picaduras, grietas o trizaduras en su estructura, inspeccionado periódicamente.", "Exigible por Ley 19.587 y Dec. 351/79. Punto de anclaje en buen estado general, libre de deterioros visibles, con capacidad de carga mínima de 22 kN.", "Conforme a Res. SRT 61/23 y Dec. 911/96 (Art. 54). Punto de anclaje funcionando correctamente sin defectos de funcionamiento en su mecanismo de sujeción.", "Exigencia Dec. 911/96 (Art. 54). Punto de anclaje libre de signos de corrosión u oxidación, con tratamiento anticorrosivo verificable.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Punto de anclaje con certificación vigente, inspección pre-uso documentada conforme a Res. SRT 299/11.", "Exigencia Dec. 911/96 (Art. 54) e IRAM 3622-1. Hebillas libres de deformaciones, dobladuras o desgastes excesivos, con resistencia certificada.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Hebillas exentas de picaduras, grietas o trizaduras en su estructura metálica.", "Exigible por Dec. 911/96 (Art. 54). Hebillas en buen estado general y libres de deterioros, con cierre operativo verificado.", "Conforme a Res. SRT 61/23. Hebillas operando correctamente y sin defectos de funcionamiento en el mecanismo de traba y cierre.", "Exigencia Dec. 911/96 (Art. 54) e IRAM 3622-1. Hebillas libres de signos de corrosión u oxidación, con superficie inspeccionada visualmente.", "Cumplimiento Res. SRT 299/11, Res. SRT 61/23 y Dec. 911/96. Hebillas y herrajes metálicos verificados en inspección pre-uso conforme a IRAM 3622-1.", "Conforme a Res. SRT 299/11, Res. SRT 61/23 e IRAM 3622-2. Elementos de amarre libres de cortes, roturas en el tejido/correa o deshilachados, con certificado de ensayo vigente.", "Exigible por Res. SRT 61/23 e IRAM 3622-2. Elementos de amarre exentos de desgaste, deformación o desgarros, inspeccionados antes de cada uso.", "Conforme a IRAM 3622-2 (Sistemas anticaídas). Elementos de amarre libres de estiramiento o elongación excesiva que comprometan la absorción de energía.", "Exigencia Res. SRT 299/11 y Res. SRT 61/23. Elementos de amarre libres de corrosión en sus herrajes/componentes, con verificación de integridad estructural.", "Conforme a Dec. 911/96 (Art. 54) y Res. SRT 61/23. Elementos de amarre libres de daños o deterioros por quemaduras, almacenados en condiciones adecuadas.", "Exigencia Dec. 911/96 (Art. 54) e IRAM 3622-1. Mosquetones libres de desgaste excesivo o deformaciones en el cuerpo y garganta.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Mosquetones exentos de picaduras, grietas o trizaduras, con inspección visual previa a cada uso.", "Exigible por Dec. 911/96 (Art. 54) y Res. SRT 61/23. Mosquetones con resortes de cierre operando sin fallas y con traba automática funcional.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Mosquetones con ajuste y cierre correcto en los resortes/seguros, verificados en prueba de carga.", "Exigencia Dec. 911/96 (Art. 54). Mosquetones en buen estado general sin deterioros visibles, con marcación de carga máxima legible.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Mosquetones libres de signos de corrosión u oxidación, con superficie inspeccionada periódicamente.", "Cumplimiento Res. SRT 299/11, Dec. 911/96 (Art. 54) e IRAM 3622-1. Mosquetones mantienen la abertura de garganta adecuada respecto del diámetro real del elemento de amarre.", "Conforme a Res. SRT 299/11, Dec. 351/79 (Cap. 19) e IRAM 3620. Casco con domo en buen estado general, libre de fisuras o deformaciones externas e internas.", "Exigible por Res. SRT 299/11 e IRAM 3620. Casco con canastillo interno en óptimas condiciones, sistema de suspensión operativo y ajustado.", "Conforme a Res. SRT 299/11 e IRAM 3620. Casco con sistema de ajuste operativo y en buen estado, con regulación de cintas funcional.", "Exigencia Res. SRT 299/11 e IRAM 3620. Casco con sistema de fijación para linterna frontal operativo, con puntos de anclaje verificados.", "Conforme a Dec. 351/79 (Cap. 19) e IRAM 3620. Casco con hebilla de cierre en buen estado de conservación y funcionamiento, sin deformaciones.", "Cumplimiento Res. SRT 299/11, Dec. 351/79 (Cap. 19) e IRAM 3620. Casco con seguro de barbiquejo en buen estado y de uso operativo, con correas sin desgaste.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Ascendedor libre de desgaste excesivo o deformaciones en el cuerpo y componentes.", "Exigible por Dec. 911/96 (Art. 54) y Res. SRT 61/23. Ascendedor exento de picaduras, grietas o trizaduras en su estructura.", "Conforme a Res. SRT 61/23. Ascendedor con resortes de accionamiento funcionando sin fallas, verificados en prueba operativa.", "Exigencia Dec. 911/96 (Art. 54) y Res. SRT 299/11. Ascendedor en buen estado general de conservación, inspeccionado pre-uso.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Ascendedor libre de corrosión u oxidación, con componentes metálicos protegidos.", "Cumplimiento Res. SRT 61/23, Dec. 911/96 (Art. 54) e IRAM 3622-1. Ascendedor con dientes de leva/bloqueo en buen estado y sin desgaste excesivo.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Descendedor Stop libre de desgaste excesivo, deformaciones o fallas en el muelle/dispersor de energía.", "Exigible por Dec. 911/96 (Art. 54) y Res. SRT 61/23. Descendedor Stop exento de picaduras, grietas o trizaduras en carcasa y componentes.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. Descendedor Stop con resortes operativos y sin fallas en el mecanismo de frenado.", "Exigencia Dec. 911/96 (Art. 54) y Res. SRT 61/23. Descendedor Stop en buen estado general y apto para operar, con verificación de activación.", "Conforme a Res. SRT 299/11, Res. SRT 61/23 y Dec. 911/96. Descendedor Stop libre de corrosión u oxidación, almacenado en condiciones adecuadas.", "Conforme a Res. SRT 61/23 e IRAM 3622-1. ASAP libre de desgaste excesivo o deformaciones en el cuerpo y bordes del orificio de conexión.", "Exigible por Dec. 911/96 (Art. 54) y Res. SRT 61/23. ASAP libre de grietas, trizaduras o daños en el tope de detención de la rueda bloqueadora.", "Conforme a Res. SRT 61/23. ASAP presenta la rueda bloqueadora y sus dientes en buen estado y libres de suciedad, con funcionamiento verificado.", "Exigencia Dec. 911/96 (Art. 54) y Res. SRT 61/23. ASAP gira libremente la rueda bloqueadora sin estar trabada o atascada, inspeccionado pre-uso.", "Conforme a Res. SRT 299/11, Res. SRT 61/23 e IRAM 3622-1. ASAP'SORBER libre de cortes, roturas o deshilachados en el tejido/correa de absorción.", "Exigible por Res. SRT 61/23 e IRAM 3622-1. ASAP'SORBER exento de signos de desgaste, deformación o desgarro en el elemento absorbe-energía.", "Conforme a Res. SRT 299/11 y Res. SRT 61/23. ASAP'SORBER libre de estiramiento o elongación excesiva (sin activar), con registro de estado verificado.", "Exigencia Dec. 911/96 (Art. 54), Res. SRT 299/11 y Res. SRT 61/23. ASAP'SORBER libre de corrosión en sus componentes metálicos/conectores."],
+      "Equipos de Izaje": ["Conforme a Dec. 351/79 (Art. 114) y Dec. 911/96. Gancho con traba de seguridad operativa y sin deformación.", "Exigible según norma IRAM 3920 / ASME B30. Cables de acero sin hilos rotos, cocas ni aplastamiento.", "Cumplimiento Dec. 351/79 (Cap. 15). Fin de carrera de elevación y corte de emergencia operativos.", "Exigencia Dec. 351/79 (Art. 126). Tabla de capacidad de carga máxima visible e legible.", "Conforme a Res. SRT 900/15 y Dec. 351/79. Comando a botonera/remoto aislado y con parada de emergencia."],
+      "Extintores": ["Exigible según Dec. 351/79 (Cap. 18) e IRAM 3517-2. Oblea de recarga/control vigente y tarjeta.", "Conforme a Norma IRAM 3517-2. Manómetro en zona verde (presión de trabajo adecuada).", "Cumplimiento Dec. 351/79 (Art. 175). Emplazamiento a altura reglamentaria (max 1.50m) y señalizado.", "Exigencia Dec. 351/79 (Art. 176). Acceso libre de obstáculos y manguera/boquilla en buen estado.", "Conforme a IRAM 3517-2. Precinto de seguridad y pasador de traba intactos."],
+      "Fresadora y Torno Mecánico": ["Cumplimiento Dec. 351/79 (Art. 110). Pantalla protectora contra proyección de virutas/refrigerante.", "Exigible según Dec. 351/79 (Cap. 15). Interlock de seguridad en cubiertas de engranajes/poleas.", "Conforme a Dec. 351/79 e IRAM 2405. Botón de parada de emergencia de tipo hongo accesible.", "Exigencia Ley 19.587 y Dec. 351/79. Iluminación localizada adecuada sin efecto estroboscópico.", "Cumplimiento Dec. 351/79 (Cap. 5). Recogedor de virutas y zona de trabajo libre de aceite."],
+      "Generadores Grandes y Portátiles": ["Exigible según Res. SRT 900/15. Puesta a tierra de la jabalina del generador verificada.", "Conforme a Dec. 351/79 (Cap. 14). Protección diferencial y llaves termomagnéticas integradas.", "Cumplimiento Dec. 351/79. Protecciones térmicas en escape de gases y aislamiento acústico.", "Exigencia Dec. 351/79 (Cap. 18). Bandeja de contención para derrames de combustible/aceite.", "Conforme a Res. SRT 299/11 y Dec. 351/79. Matafuegos ABC de 5kg asignado al equipo."],
+      "Herramientas Eléctricas": ["Cumplimiento Dec. 351/79 (Art. 95). Aislamiento doble (clase II) o puesta a tierra operativa.", "Exigible por Dec. 351/79 (Cap. 14). Cable de alimentación sin empalmes precarios ni cinta aisladora.", "Conforme a Dec. 351/79 (Art. 96). Ficha de conexión inyectada tipo macho IRAM intacta.", "Exigencia Dec. 351/79 (Cap. 15). Carcasa, gatillo de accionamiento y traba de seguridad en buen estado.", "Cumplimiento Res. SRT 299/11. Guarda de protección colocada conforme a la tarea."],
+      "Herramientas Manuales": ["Conforme a Dec. 351/79 (Art. 110). Mangos de madera/goma sin fisuras, astillas ni juego.", "Exigible por Dec. 351/79 (Cap. 15). Herramientas de golpe sin rebabas ni cabezas saltadas.", "Cumplimiento Dec. 351/79. Mandíbulas, bocas de llaves y filos en correcto estado de conservación.", "Exigencia Dec. 351/79 (Cap. 5). Orden y almacenamiento en cajas/portaherramientas adecuados.", "Conforme a Res. SRT 299/11. Herramientas aisladas para riesgo eléctrico cuando aplique."],
+      "Inspección de Equipos Viales": ["Exigible según Ley de Tránsito 24.449 y Dec. 351/79. VTV/RTO vigente y seguro obligatorio.", "Conforme a Dec. 351/79 (Cap. 15). Luces de trabajo, faros rotativos y balizas operativas.", "Cumplimiento Res. SRT 960/15 y Ley 24.449. Alarma de retroceso sonora y luminosa activa.", "Exigencia Dec. 351/79 (Art. 137). Sistema de frenos, dirección e hidráulico libre de fugas.", "Conforme a Dec. 351/79 (Cap. 18). Estructura ROPS/FOPS y cinturón de seguridad operativo."],
+      "Inspección de Frente de Obra": ["Cumplimiento estricto Dec. 911/96 y Res. SRT 51/97. Programa de Seguridad en obra aprobado por ART.", "Exigible según Dec. 911/96 (Art. 45). Cerramiento perimetral de obra y señalización de advertencia.", "Conforme a Dec. 911/96 (Art. 59). Tablero eléctrico de obra con disyuntor diferencial y termomagnética.", "Exigencia Res. SRT 299/11 y Dec. 911/96. Uso obligatorio de casco, calzado de seguridad y EPP.", "Cumplimiento Dec. 911/96 (Art. 42). Orden, limpieza y acopio ordenado de materiales."],
+      "Lijadora de Banco": ["Exigible según Dec. 351/79 (Art. 110). Pantalla transparente de protección ocular ajustada.", "Conforme a Dec. 351/79 (Cap. 15). Apoyo de trabajo a distancia máxima de 2 mm de la piedra/banda.", "Cumplimiento Dec. 351/79. Guardas protectoras envolventes en discos y poleas.", "Exigencia Res. SRT 900/15. Puesta a tierra eficaz y botón de parada accesible.", "Conforme a Dec. 351/79 (Cap. 9). Nivel de ruidos y captación de polvo/virutas operativo."],
+      "Manipulador Telescópico": ["Exigible según Res. SRT 960/15 e IRAM 3923. Certificado de inspección técnica anual.", "Conforme a Dec. 351/79 (Art. 126). Tabla de carga visible y sistema LMI (Indicador de Momento) activo.", "Cumplimiento Dec. 351/79. Estabilizadores hidráulicos sin fugas y con bloqueo de seguridad.", "Exigencia Res. SRT 960/15. Cabina ROPS/FOPS, cinturón de seguridad y alarma de reversa.", "Conforme a Ley 24.449. Luces, espejos, limpiaparabrisas y extintor ABC cargado."],
+      "Máquina de Soldar Eléctrica": ["Cumplimiento Dec. 351/79 (Cap. 14, Art. 115). Cables de soldadura con aislamiento intacto y sin añadiduras.", "Exigible según Dec. 351/79 (Art. 116). Pinza portaelectrodo y pinza de masa totalmente aisladas.", "Conforme a Res. SRT 900/15. Puesta a tierra del chasis de la máquina conectada.", "Exigencia Dec. 351/79 (Cap. 18). Permiso de trabajo en caliente y extintor ABC al lado del equipo.", "Cumplimiento Res. SRT 299/11. Máscara de soldar, guantes de descarne y polainas en uso."],
+      "Oxicorte": ["Conforme a Dec. 351/79 (Cap. 17, Art. 145). Válvulas antirretorno de llama en soplete y en reguladores.", "Exigible por Dec. 351/79 (Art. 150). Cilindros de Oxígeno y Acetileno/GLP asegurados verticalmente con cadena.", "Cumplimiento Dec. 351/79 (Art. 147). Mangueras en buen estado, con abrazaderas prensadas (sin alambre).", "Exigencia Dec. 351/79 (Art. 148). Manómetros con cristales sanos y legibles.", "Conforme a Dec. 351/79 (Cap. 18). Tapa de protección de válvulas colocada durante el traslado."],
+      "Piedra de Amolado / Amoladora": ["Cumplimiento Dec. 351/79 (Art. 110). Guarda de protección de cubierta angular colocada a 180°.", "Exigible según Dec. 351/79 (Cap. 15). Disco acorde a las RPM de la máquina y sin rajaduras/muescas.", "Conforme a Dec. 351/79. Empuñadura lateral colocada y ajustada firmemente.", "Exigencia Dec. 351/79 (Cap. 14). Cable de alimentación y ficha IRAM en perfecto estado.", "Cumplimiento estricto Res. SRT 299/11. Uso obligatorio de protección facial integrada y antiparras."],
+      "Plataforma Elevadora de Personas (PEMP)": ["Exigible según Norma IRAM 3923 / ANSI A92 y Dec. 351/79. Certificación anual de la PEMP vigente.", "Conforme a Dec. 911/96 y Dec. 351/79. Anclajes de arnés identificados en la cesta y probados.", "Cumplimiento Dec. 351/79 (Cap. 15). Mandos de base y de cesta con parada de emergencia operativos.", "Exigencia Dec. 351/79 (Art. 137). Sensor de inclinación/sobrecarga y bajada de emergencia manuales probados.", "Conforme a Dec. 351/79 (Cap. 18). Alarma de traslación, destellador y rodapiés perimetrales en cesta."],
+      "Tableros Eléctricos": ["Cumplimiento Res. SRT 900/15 y Dec. 351/79 (Cap. 14). Protección diferencial (disyuntor) y termomagnéticas.", "Exigible según Res. SRT 900/15. Continuidad de masa y puesta a tierra conectada a puerta y chasis.", "Conforme a Reglamentación AEA / Dec. 351/79. Frente muerto (cubierta aislante interna) sin partes con tensión expuestas.", "Exigencia Dec. 351/79 (Art. 98). Señalización de riesgo eléctrico (Rayo IP4X / Triángulo) y esquema unifilar.", "Cumplimiento Dec. 351/79 (Cap. 5). Cierre hermético de puerta y libre de polvo/humedad."],
+      "Tablero Eléctrico Portátil": ["Exigible según Res. SRT 900/15 y Dec. 351/79. Interruptor diferencial de alta sensibilidad (30mA) incorporado.", "Conforme a Dec. 351/79 (Cap. 14). Tomacorrientes e fichas tipo industrial IP44/IP67 en buen estado.", "Cumplimiento Res. SRT 900/15. Cable de alimentación tipo taller extra flexible sin daños ni añadiduras.", "Exigencia Dec. 351/79. Puesta a tierra efectiva en la ficha de alimentación.", "Conforme a Dec. 351/79. Manija de transporte aislada y envolvente resistente a impactos."],
+      "Vehículo Liviano (Auto/Camioneta)": ["Exigible según Ley Nacional de Tránsito 24.449. VTV / RTO vigente y tarjeta de seguro obligatorio.", "Conforme a Ley 24.449 (Art. 30). Cinturones de seguridad inerciales en todas las plazas.", "Cumplimiento Ley 24.449 (Art. 31). Luces bajas, altas, de freno, de giros y balizas operativas.", "Exigencia Ley 24.449 y Dec. 351/79. Neumáticos con profundidad de dibujo >1.6mm y auxilio en estado.", "Conforme a Dec. 351/79 e IRAM 3517-2. Matafuegos ABC de 1kg cargado en soporte al alcance del conductor."]
+    };
+
+    function toggleTheme() {
+      const currentTheme = document.body.getAttribute('data-theme');
+      if (currentTheme === 'dark') { document.body.removeAttribute('data-theme'); } else { document.body.setAttribute('data-theme', 'dark'); }
+    }
+
+    function loadSection(sectionName, icon, element) {
+      currentSection = sectionName;
+      document.getElementById('section-title').innerText = icon + " CHECK LIST: " + sectionName.toUpperCase();
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => item.classList.remove('active'));
+      if (element) element.classList.add('active');
+      const tbody = document.getElementById('checklist-body');
+      tbody.innerHTML = "";
+      const questions = CHECKLIST_DATA[sectionName] || [];
+      questions.forEach((q, index) => {
+        const legSugerida = (LEGISLACION_MAESTRA[sectionName] && LEGISLACION_MAESTRA[sectionName][index]) ? LEGISLACION_MAESTRA[sectionName][index] : "Conforme a Ley 19.587 / Dec. 351/79.";
+        const row = `<tr><td>${q}</td><td style="text-align: center;"><div class="radio-group"><label><input type="radio" name="p_${index}" value="SI"> SÍ</label><label><input type="radio" name="p_${index}" value="NO"> NO</label><label><input type="radio" name="p_${index}" value="NA"> N/A</label></div></td><td><textarea rows="2" placeholder="Detallar hallazgo...">${legSugerida}</textarea></td><td style="text-align: center;"><input type="file" class="file-input" accept="image/*" onchange="previewImage(event, ${index})"><div class="img-preview-container" id="img-preview-${index}"></div></td></tr>`;
+        tbody.innerHTML += row;
+      });
+      const docCheckbox = document.getElementById('doc_al_dia');
+      if (docCheckbox) { docCheckbox.checked = false; }
+    }
+
+    function toggleDocumental() {
+      const container = document.getElementById('sec-documental');
+      const checkbox = document.getElementById('doc_al_dia');
+      if (!checkbox || !checkbox.checked) { container.style.display = 'none'; container.innerHTML = ''; return; }
+      container.style.display = 'block';
+      const questions = DOCUMENTACION_DATA[currentSection] || [];
+      let html = '<h3>📄 EVALUACIÓN DOCUMENTAL REQUERIDA</h3>';
+      html += '<table><thead><tr><th style="width: 45%;">Verificación Documental</th><th style="width: 25%; text-align: center;">Evaluación</th><th style="width: 30%;">Observaciones (Legislación HSE)</th></tr></thead><tbody>';
+      questions.forEach((q, index) => {
+        const legDoc = (LEGISLACION_MAESTRA[currentSection] && LEGISLACION_MAESTRA[currentSection][index]) ? LEGISLACION_MAESTRA[currentSection][index] : "Conforme a Ley 19.587 / Dec. 351/79.";
+        html += `<tr><td style="padding: 4px 6px; font-size: 0.8rem;">${q}</td><td style="text-align: center;"><div class="radio-group"><label><input type="radio" name="doc_p_${index}" value="SI"> SÍ</label><label><input type="radio" name="doc_p_${index}" value="NO"> NO</label><label><input type="radio" name="doc_p_${index}" value="NA"> N/A</label></div></td><td><textarea rows="2" placeholder="Detallar hallazgo documental...">${legDoc}</textarea></td></tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function previewImage(event, index) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => { const container = document.getElementById('img-preview-' + index); container.innerHTML = '<img src="' + e.target.result + '" alt="Vista previa">'; };
+      reader.readAsDataURL(file);
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('pdf-container');
+      const btnSubmit = document.querySelector('.btn-submit');
+      const date = new Date().toISOString().split('T')[0];
+      if (btnSubmit) btnSubmit.style.display = 'none';
+      const secDoc = document.getElementById('sec-documental');
+      const wasHidden = secDoc && secDoc.style.display === 'none';
+      if (secDoc) secDoc.style.display = 'block';
+      const inputs = element.querySelectorAll('input[type="text"], textarea');
+      inputs.forEach(input => { input.setAttribute('value', input.value); if (input.tagName.toLowerCase() === 'textarea') { input.textContent = input.value; } });
+      const checkableInputs = element.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+      checkableInputs.forEach(input => { if (input.checked) { input.setAttribute('checked', 'checked'); } else { input.removeAttribute('checked'); } });
+      const opt = { margin: [8, 8, 8, 8], filename: 'Inspeccion_' + currentSection.replace(/\s+/g, '_') + '_' + date + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } };
+      html2pdf().set(opt).from(element).save().then(() => { if (btnSubmit) btnSubmit.style.display = 'block'; if (secDoc && wasHidden) secDoc.style.display = 'none'; }).catch(() => { if (btnSubmit) btnSubmit.style.display = 'block'; if (secDoc && wasHidden) secDoc.style.display = 'none'; });
+    }
+
+    window.onload = () => { const firstItem = document.querySelector('.nav-item'); loadSection('Andamios', '🪜', firstItem); };
+  </script>
+</body>
+</html>
