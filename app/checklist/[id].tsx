@@ -17,6 +17,13 @@ export default function ChecklistSection() {
 
 	return (
 		<ViewWithLogo>
+			<Button
+					variant="ghost"
+					iconLeft="chevron-back"
+					text="Volver"
+					style={{ alignSelf: "flex-start", paddingHorizontal: 0 }}
+					onPress={() => router.back()}
+				/>
 			<ScrollView
 				style={{ flex: 1 }}
 				contentContainerStyle={{
@@ -27,13 +34,7 @@ export default function ChecklistSection() {
 					gap: 12,
 				}}
 			>
-				<Button
-					variant="ghost"
-					iconLeft="chevron-back"
-					text="Volver"
-					style={{ alignSelf: "flex-start", paddingHorizontal: 0 }}
-					onPress={() => router.back()}
-				/>
+				
 
 				<Text style={{ color: "#fff", fontSize: 24, fontWeight: "700" }}>
 					{section

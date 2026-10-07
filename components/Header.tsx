@@ -10,6 +10,7 @@ import { useActiveUser } from "@/src/query/hooks/use-user"
 import { useSyncStatus } from "@/src/query/hooks/use-sync-status"
 import { useSession } from "@/src/session/session-context"
 import { getImageUri } from "@/src/media/image-storage"
+import { useIsOffline } from "@/src/utils/network"
 
 export default function Header() {
 	const insets = useSafeAreaInsets()
@@ -46,7 +47,10 @@ export default function Header() {
 					EnHySa
 				</Text>
 			</Pressable>
-			<SyncIndicator />
+			<View style={{ flexDirection: "row", alignItems: "center" }}>
+				<OnlineCheck />
+				<SyncIndicator />
+			</View>
 			<Avatar />
 		</View>
 	)
@@ -128,5 +132,32 @@ function Avatar() {
 				</Text>
 			)}
 		</Pressable>
+	)
+}
+
+function OnlineCheck() {
+	const offline = useIsOffline()
+
+	if (!offline) return null
+
+	return (
+		<View
+			accessibilityLabel="Offline"
+			style={{
+				paddingVertical: 6,
+			}}
+		>
+			<Text
+				style={{
+					color: theme.orange,
+					fontSize: 12,
+					fontWeight: "700",
+					letterSpacing: 1.2,
+					opacity: 0.5,
+				}}
+			>
+				OFFLINE
+			</Text>
+		</View>
 	)
 }

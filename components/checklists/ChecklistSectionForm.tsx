@@ -185,6 +185,13 @@ export default function ChecklistSectionForm({
 
 	return (
 		<ViewWithLogo>
+			<Button
+				variant="ghost"
+				iconLeft="chevron-back"
+				text="Volver"
+				style={{ alignSelf: "flex-start", paddingHorizontal: 16 }}
+				onPress={() => router.back()}
+			/>
 			<ScrollView
 				style={{ flex: 1 }}
 				contentContainerStyle={{
@@ -195,13 +202,6 @@ export default function ChecklistSectionForm({
 					gap: 42,
 				}}
 			>
-				<Button
-					variant="ghost"
-					iconLeft="chevron-back"
-					text="Volver"
-					style={{ alignSelf: "flex-start", paddingHorizontal: 0 }}
-					onPress={() => router.back()}
-				/>
 
 				<Text style={styles.title}>
 					{section.icon} CHECK LIST: {section.title.toUpperCase()}

@@ -9,6 +9,13 @@ import { Pressable, ScrollView, Text, View } from "react-native"
 export default function ChecklistIndex() {
 	return (
 		<ViewWithLogo>
+			<Button
+				variant="ghost"
+				iconLeft="chevron-back"
+				text="Volver"
+				style={{ alignSelf: "flex-start", paddingHorizontal: 16 }}
+				onPress={() => router.back()}
+			/>
 			<ScrollView
 				style={{ flex: 1 }}
 				contentContainerStyle={{
@@ -19,13 +26,6 @@ export default function ChecklistIndex() {
 					gap: 16,
 				}}
 			>
-				<Button
-					variant="ghost"
-					iconLeft="chevron-back"
-					text="Volver"
-					style={{ alignSelf: "flex-start", paddingHorizontal: 0 }}
-					onPress={() => router.back()}
-				/>
 
 				<Text
 					style={{
