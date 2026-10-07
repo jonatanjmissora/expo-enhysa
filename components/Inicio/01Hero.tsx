@@ -17,7 +17,12 @@ type ItemProps = {
 
 const items: ItemProps[] = [
 	{ id: "1", title: "Iluminación", icon: "bulb-outline", link: "/iluminacion" },
-	{ id: "2", title: "Sonido", icon: "musical-notes-outline", link: "/sonido" },
+	{
+		id: "2",
+		title: "Checklists",
+		icon: "checkmark-done-outline",
+		link: "/checklist",
+	},
 	{ id: "3", title: "Teoria", icon: "book-outline", link: "/herramientas" },
 ]
 

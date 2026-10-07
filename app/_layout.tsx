@@ -44,6 +44,7 @@ export default function RootLayout() {
 							name="herramientas"
 							options={{ headerShown: false }}
 						/>
+						<Stack.Screen name="checklist" options={{ headerShown: false }} />
 						<Stack.Screen name="debug/db" options={{ title: "SQLite Debug" }} />
 						<Stack.Screen
 							name="debug/db-informes"

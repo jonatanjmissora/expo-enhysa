@@ -109,6 +109,21 @@ export const baseStyles = `
 		color: ${pdfColors.green};
 		margin-top: 4px;
 	}
+	/* Encabezado repetido en cada página (thead) y bloques que no se parten. */
+	table.pdf-root { width: 100%; border-collapse: collapse; }
+	table.pdf-root > thead { display: table-header-group; }
+	table.pdf-root > tbody { display: table-row-group; }
+	table.pdf-root > thead > tr > th,
+	table.pdf-root > tbody > tr > td {
+		border: none;
+		padding: 0;
+		background: transparent;
+		text-align: left;
+		font-weight: normal;
+		vertical-align: top;
+	}
+	.pdf-block { break-inside: auto; page-break-inside: auto; }
+	.keep-together { break-inside: avoid; page-break-inside: avoid; }
 `
 
 export function wrapDocument(content: string): string {

@@ -100,6 +100,88 @@ export const VALORES_REQUERIDOS_ERROR = `No es una opción válida, elija una de
 
 export const FECHA_1970 = new Date("1970-01-01")
 
+export type ChecklistSection = {
+	id: string
+	title: string
+	icon: string
+}
+
+export const CHECKLIST_SECTIONS = [
+	{ id: "andamios", title: "Andamios", icon: "🪜" },
+	{ id: "apilador-electrico", title: "Apilador Eléctrico", icon: "🚜" },
+	{ id: "autoelevadores", title: "Autoelevadores", icon: "🚜" },
+	{
+		id: "chequeo-inicial-al-cliente",
+		title: "Chequeo Inicial al Cliente",
+		icon: "📋",
+	},
+	{ id: "compresores", title: "Compresores", icon: "💨" },
+	{
+		id: "dispositivos-anticaidas",
+		title: "Dispositivos Anticaídas",
+		icon: "🪢",
+	},
+	{ id: "equipos-de-izaje", title: "Equipos de Izaje", icon: "🏗️" },
+	{ id: "extintores", title: "Extintores", icon: "🧯" },
+	{
+		id: "fresadora-y-torno-mecanico",
+		title: "Fresadora y Torno Mecánico",
+		icon: "⚙️",
+	},
+	{
+		id: "generadores-grandes-y-portatiles",
+		title: "Generadores Grandes y Portátiles",
+		icon: "⚡",
+	},
+	{
+		id: "herramientas-electricas",
+		title: "Herramientas Eléctricas",
+		icon: "🔧",
+	},
+	{
+		id: "herramientas-manuales",
+		title: "Herramientas Manuales",
+		icon: "🛠️",
+	},
+	{
+		id: "inspeccion-de-equipos-viales",
+		title: "Inspección de Equipos Viales",
+		icon: "🚜",
+	},
+	{
+		id: "inspeccion-de-frente-de-obra",
+		title: "Inspección de Frente de Obra",
+		icon: "🏗️",
+	},
+	{ id: "lijadora-de-banco", title: "Lijadora de Banco", icon: "🪨" },
+	{
+		id: "manipulador-telescopico",
+		title: "Manipulador Telescópico",
+		icon: "🚜",
+	},
+	{
+		id: "maquina-de-soldar-electrica",
+		title: "Máquina de Soldar Eléctrica",
+		icon: "⚡",
+	},
+	{ id: "oxicorte", title: "Oxicorte", icon: "🔥" },
+	{ id: "piedra-de-amolado", title: "Piedra de Amolado", icon: "🪨" },
+	{
+		id: "plataforma-elevadora-de-personas",
+		title: "Plataforma Elevadora (PEMP)",
+		icon: "🏗️",
+	},
+	{ id: "tableros-electricos", title: "Tableros Eléctricos", icon: "⚡" },
+	{
+		id: "tablero-electrico-portatil",
+		title: "Tablero Eléctrico Portátil",
+		icon: "🔌",
+	},
+	{ id: "vehiculo-liviano", title: "Vehículo Liviano", icon: "🚗" },
+] as const satisfies readonly ChecklistSection[]
+
+export type ChecklistSectionId = (typeof CHECKLIST_SECTIONS)[number]["id"]
+
 export const PROTOCOLOS = [
 	{
 		id: "iluminacion",
