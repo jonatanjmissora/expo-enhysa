@@ -20,6 +20,11 @@ export default function Index() {
 
 - alquiler (fotos)
 
-opcionales:
+- recuperacion de contrasena
 - dni para recordar si cambias credenciales.
+
+- resenia
+
+opcionales:
 - pdf para el navegador?
+- registrar: verificar mail

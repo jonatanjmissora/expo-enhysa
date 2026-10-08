@@ -287,7 +287,14 @@ function PdfPreview({
 					/>
 				</View>
 			) : (credits ?? 0) >= 1 ? (
-				<View style={{ gap: 10, alignItems: "center" }}>
+				<View style={{ gap: 4, alignItems: "center" }}>
+					{!offline && (
+						<Text
+							style={{ color: theme.orange, textAlign: "center", fontSize: 10 }}
+						>
+							Creditos disponibles: {credits}
+						</Text>
+					)}
 					<Button
 						text={
 							unlocking ? "Desbloqueando..." : "Desbloquear PDF (1 crédito)"
@@ -298,7 +305,9 @@ function PdfPreview({
 						style={{ width: 280 }}
 					/>
 					{offline && (
-						<Text style={{ color: theme.orange, textAlign: "center" }}>
+						<Text
+							style={{ color: theme.orange, textAlign: "center", fontSize: 12 }}
+						>
 							No tenés conexión a internet. No se puede desbloquear el PDF
 							estando offline.
 						</Text>
@@ -306,7 +315,7 @@ function PdfPreview({
 				</View>
 			) : (
 				<View style={{ gap: 10, alignItems: "center" }}>
-					<Text style={{ color: "#ccc", textAlign: "center" }}>
+					<Text style={{ color: "#ccc", textAlign: "center", fontSize: 12 }}>
 						Aun no posees creditos para desbloquear este pdf..
 					</Text>
 					<Button

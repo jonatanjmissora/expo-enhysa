@@ -40,7 +40,7 @@ export default function Header() {
 				<Text
 					style={{
 						color: "white",
-						fontSize: 30,
+						fontSize: 26,
 						letterSpacing: 2,
 					}}
 				>
@@ -108,7 +108,7 @@ function Avatar() {
 				borderRadius: 100,
 				overflow: "hidden",
 				...(user?.userImage
-					? { width: 40, height: 40 }
+					? { width: 36, height: 36 }
 					: { maxWidth: 180, paddingHorizontal: 12, paddingVertical: 8 }),
 			})}
 		>
@@ -123,8 +123,8 @@ function Avatar() {
 					numberOfLines={1}
 					style={{
 						color: "#fff",
-						fontSize: 12,
-						fontWeight: "600",
+						fontSize: 11,
+						fontWeight: "400",
 						letterSpacing: 0.75,
 					}}
 				>
