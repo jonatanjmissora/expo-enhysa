@@ -122,6 +122,19 @@ export const userRepository = {
 		return (row?.cnt ?? 0) > 0
 	},
 
+	/** Actualiza el hash local (login offline) tras un reset de contraseña. */
+	async updatePasswordHash(email: string, passwordHash: string): Promise<void> {
+		await initializeUsersTable()
+
+		const db = await getDatabase()
+		await db.runAsync(
+			`UPDATE users SET passwordHash = ?, updatedAt = ? WHERE email = ?`,
+			passwordHash,
+			new Date().toISOString(),
+			email
+		)
+	},
+
 	async update(id: string, input: UpdateUserInput): Promise<UserType> {
 		await initializeUsersTable()
 

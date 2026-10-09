@@ -1,4 +1,12 @@
 export const EMPTY_TIMESTAMP = new Date("1970-01-01").toISOString()
+
+/**
+ * Feature flag: recuperación de contraseña ("Olvidé mi contraseña").
+ * Requiere un dominio verificado + Resend en el backend. Mientras esté en
+ * `false`, el botón no se muestra en el login.
+ */
+export const PASSWORD_RESET_ENABLED = false
+
 export const ESTADO = [
 	"despejado",
 	"seminublado",

@@ -1,6 +1,7 @@
 import Button from "@/components/Button"
 import ViewWithLogo from "@/components/ViewWithLogo"
 import VolverBtn from "@/components/VolverBtn"
+import { PASSWORD_RESET_ENABLED } from "@/constants"
 import { theme } from "@/constants/theme"
 import { type AuthResult, login } from "@/src/auth/auth.service"
 import { defaultLogin, loginFormValidator } from "@/src/db/schema/users"
@@ -146,6 +147,17 @@ export default function Login() {
 						<Text style={{ color: "#fc4444", textAlign: "center" }}>
 							{error}
 						</Text>
+					)}
+
+					{PASSWORD_RESET_ENABLED && (
+						<Button
+							variant="ghost"
+							text="Olvidé mi contraseña"
+							onPress={() => router.push("/auth/forgot-password")}
+							textStyle={{
+								textDecorationLine: "underline",
+							}}
+						/>
 					)}
 
 					<Button

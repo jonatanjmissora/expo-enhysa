@@ -16,6 +16,8 @@ export default function Index() {
 
 - datos de prueba para generar pdf? en user-1 o video explicativo
 
+- agregar items a la cotizadora
+
 - iconos hero
 
 - alquiler (fotos)

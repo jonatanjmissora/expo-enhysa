@@ -49,6 +49,33 @@ export const defaultRegister = {
 	confirmPassword: "",
 }
 
+export const forgotPasswordFormValidator = z.object({
+	email: emailValidator,
+})
+
+export type ForgotPasswordFormType = z.infer<typeof forgotPasswordFormValidator>
+
+export const defaultForgotPassword = {
+	email: "",
+}
+
+export const resetPasswordFormValidator = z
+	.object({
+		password: z.string().min(6, "Mínimo 6 caracteres"),
+		confirmPassword: z.string(),
+	})
+	.refine(value => value.password === value.confirmPassword, {
+		message: "Las contraseñas no coinciden",
+		path: ["confirmPassword"],
+	})
+
+export type ResetPasswordFormType = z.infer<typeof resetPasswordFormValidator>
+
+export const defaultResetPassword = {
+	password: "",
+	confirmPassword: "",
+}
+
 export const userFormValidator = z.object({
 	name: z.string(),
 })

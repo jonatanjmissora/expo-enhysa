@@ -132,6 +132,23 @@ export function apiMe(): Promise<{ user: CloudUser }> {
 	return apiFetch<{ user: CloudUser }>("/me")
 }
 
+export function apiForgotPassword(email: string): Promise<{ ok: boolean }> {
+	return apiFetch<{ ok: boolean }>("/password/forgot", {
+		method: "POST",
+		body: JSON.stringify({ email }),
+	})
+}
+
+export function apiResetPassword(
+	token: string,
+	newPassword: string
+): Promise<{ email: string }> {
+	return apiFetch<{ email: string }>("/password/reset", {
+		method: "POST",
+		body: JSON.stringify({ token, newPassword }),
+	})
+}
+
 export function apiUpdateMe(input: {
 	name: string | null
 	userImage: string | null
