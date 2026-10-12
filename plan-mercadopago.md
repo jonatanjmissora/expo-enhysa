@@ -45,9 +45,11 @@ Esto es un **cambio fundacional**: la app pasa de **100% local** a **híbrida
 - **Server-authoritative**: **compras y consumo online**. La **nube es la fuente
   de verdad** del saldo. El consumo requiere conexión (evita el doble gasto entre
   dispositivos). La app refleja (espeja) el saldo de la nube.
-- Tablas nuevas: `user_credits`, `credit_history`, `pending_payments`.
-- **Sin marca de agua por ahora** (el foco de esta etapa es compra de créditos +
-  sync).
+- Tablas nuevas: `user_credits`, `credit_history`, `pending_payments` (**en la nube**;
+  local solo espeja `user_credits` para mostrar el saldo. Ver §4.1).
+- **Marca de agua**: implementada (ver §9, decisiones). El PDF sale con marca si
+  `!creditConsumed` y se quita al desbloquear con 1 crédito.
+- Se respetan las prácticas del skill `mercadopago` (ver §8-bis).
 
 ---
 
@@ -77,7 +79,8 @@ secretos**). El Access Token y el Webhook Secret viven **solo** en el backend.
 |---|---|---|
 | `DATABASE_URL` | Conexión a Neon | Neon Console → *Connection string* |
 | `MERCADO_PAGO_ACCESS_TOKEN` | Crear preferencias y consultar pagos | Panel MP → *Tus integraciones → Credenciales* |
-| `MERCADO_PAGO_WEBHOOK_SECRET` | Validar `x-signature` del webhook | Panel MP → *Tus integraciones → Webhooks* |
+| `MERCADO_PAGO_PUBLIC_KEY` | Public Key (público). **No** se usa con Checkout Pro por redirect; quedó cargada por si se migra a Bricks/SDK JS | Panel MP → *Credenciales* |
+| `MERCADO_PAGO_WEBHOOK_SECRET` | Validar `x-signature` del webhook (**≠** Access Token) | Panel MP → *Tus integraciones → Webhooks* |
 | `BACKEND_BASE_URL` | Construir `notification_url` y `back_urls` | URL pública del backend (HTTPS, **no** localhost) |
 | `APP_DEEP_LINK` | Retorno a la app tras el pago | `expoenhysa://pago` (scheme definido en `app.json`) |
 | `API_TOKEN` | Verificar el token que manda la app | El mismo valor que `EXPO_PUBLIC_API_TOKEN` |
@@ -157,7 +160,11 @@ App (Expo)                    Backend (Neon)              Mercado Pago
 
 ## 4. Modelo de datos
 
-### 4.1. Tablas (en local y en Neon)
+### 4.1. Tablas (en Neon; el local solo espeja `user_credits`)
+
+> En la app quedó **solo** la tabla local `user_credits` (`src/db/schema/user-credits.ts`)
+> como espejo de solo lectura del saldo. `credit_history` y `pending_payments` viven
+> **solo en la nube** (las versiones locales se dropearon en `SCHEMA_VERSION` v3).
 
 ```sql
 user_credits (
@@ -199,7 +206,7 @@ La **nube es la fuente de verdad**. El ledger vive en la nube; la app lo
 **espeja** (baja) para mostrar el saldo y el historial.
 
 - **Compra**: webhook → nube (ledger) → la app baja.
-- **Consumo**: la app pide `POST /unlock` → la nube valida, descuenta atómico e
+- **Consumo**: la app pide `POST /consume` → la nube valida, descuenta atómico e
   inserta el consumo (idempotente por `reportId`) → la app baja el nuevo saldo y
   marca `creditConsumed`.
 - **Sin cola offline**: el consumo requiere conexión (server-authoritative).
@@ -232,7 +239,7 @@ La **nube es la fuente de verdad**. El ledger vive en la nube; la app lo
 - El informe ya tiene `creditConsumed` / `creditConsumedAt`
   (`src/db/schema/informes-iluminacion.ts`).
 - El PDF se genera **con marca de agua** si `!creditConsumed`.
-- **"Desbloquear (1 crédito)"** → `POST /unlock` (online) → la nube descuenta
+- **"Desbloquear (1 crédito)"** → `POST /consume` (online) → la nube descuenta
   atómico e idempotente (por `reportId`) → la app marca `creditConsumed = true` y
   baja el saldo → el PDF se regenera sin marca de agua.
 - **Requiere conexión** (server-authoritative).
@@ -304,6 +311,30 @@ La **nube es la fuente de verdad**. El ledger vive en la nube; la app lo
 
 ---
 
+## 8-bis. Alineación con el skill `mercadopago`
+
+Fuente: `~/.opencode/skills/mercadopago/SKILL.md`. El plan sigue esas prácticas. Puntos a respetar:
+
+- **Webhooks (no IPN)**: IPN está **deprecado**; se usa **Webhooks** con `x-signature`.
+- **Validación de firma (HMAC-SHA256)**: manifest canónico
+  `id:{data.id};request-id:{x-request-id};ts:{ts};` con `MERCADO_PAGO_WEBHOOK_SECRET`
+  (**≠** Access Token) y comparación constant-time (`timingSafeEqual`). El `data.id`
+  va en minúsculas si es alfanumérico.
+- **Idempotencia**: dedup por `data.id` + `type` (en la práctica, `paymentId`).
+- **Responder 200 rápido** (< 22 s) y procesar después (async). MP reintenta con
+  backoff (15 min, 15 min, 6 h, 6 h, 48 h, 96 h) — responder 200 corta los reintentos.
+- **Verificar el pago en la API** (`GET /v1/payments/{id}`) antes de acreditar; nunca
+  confiar solo en el body del webhook.
+- **No pagarse a sí mismo**: seller ≠ buyer (crear 2 usuarios de prueba).
+- **Credenciales**: `TEST-` (sandbox) vs `APP_USR-`. `APP_USR-` **no** garantiza
+  producción: verificar la cuenta productiva en el panel.
+- **Pagos de prueba NO disparan webhooks** → simular (panel *Webhooks → Simular* o MCP
+  `simulate_webhook`).
+- **Orders API v2** (`POST /v1/orders`) es el camino nuevo; `Payments`
+  (`/v1/payments`) es legacy (hoy lo usamos solo para **consultar** el pago).
+- **MCP Server** (`https://mcp.mercadopago.com/mcp`): útil para simular webhooks,
+  crear usuarios de prueba y diagnosticar notificaciones.
+
 ## 9. Decisiones
 
 1. **Backend**: **repo separado `expo-enhysa-backend`** (GitHub) + **Vercel** +
@@ -320,15 +351,76 @@ La **nube es la fuente de verdad**. El ledger vive en la nube; la app lo
 
 ## 10. Criterios de aceptación
 
-- [ ] `GET /health` responde y la app lo alcanza con `EXPO_PUBLIC_API_URL`.
-- [ ] Se abre el checkout de MP desde `/suscripcion`.
-- [ ] Al aprobarse el pago, el webhook acredita en la nube (idempotente).
-- [ ] Un pago rechazado/pendiente no acredita.
-- [ ] Doble webhook no duplica créditos.
-- [ ] La app refleja el saldo actualizado (sync del ledger).
-- [ ] Un informe sin crédito consumido muestra marca de agua.
-- [ ] Desbloquear consume 1 crédito (una sola vez) y quita la marca de agua.
-- [ ] El consumo es **online** (server-authoritative): sin doble gasto entre
+- [x] `GET /health` responde y la app lo alcanza con `EXPO_PUBLIC_API_URL`.
+- [x] Se abre el checkout de MP desde `/suscripcion`.
+- [x] Al aprobarse el pago, el webhook acredita en la nube (idempotente).
+- [x] Un pago rechazado/pendiente no acredita.
+- [x] Doble webhook no duplica créditos.
+- [x] La app refleja el saldo actualizado (sync del ledger).
+- [x] Un informe sin crédito consumido muestra marca de agua.
+- [x] Desbloquear consume 1 crédito (una sola vez) y quita la marca de agua.
+- [x] El consumo es **online** (server-authoritative): sin doble gasto entre
       dispositivos.
-- [ ] Desbloquear el mismo informe dos veces no vuelve a consumir crédito
+- [x] Desbloquear el mismo informe dos veces no vuelve a consumir crédito
       (idempotente por `reportId`).
+
+---
+
+## 11. Backend (implementación real — `expo-enhysa-backend`)
+
+Repo separado, deploy en **Vercel** + **Neon**. Todos los endpoints exigen
+`Authorization: Bearer <API_TOKEN>`; los de usuario, además, `x-session-token`.
+
+### 11.1. Endpoints
+
+- **`POST /preference`** (sesión) — body `{ planId }`.
+  - Busca el plan en `lib/plans.ts`; crea la preferencia con:
+    `external_reference = user.id`,
+    `notification_url = ${BACKEND_BASE_URL}/webhook`,
+    `back_urls = ${APP_DEEP_LINK}?result=success|failure|pending`,
+    `auto_return: "approved"`,
+    `metadata: { plan_id, checkout_id }`.
+  - Inserta `expo_pending_payments` (`checkout_id` único) y devuelve
+    `{ init_point, preferenceId }`. El `init_point` es `sandbox_init_point` o
+    `init_point` según `MP_ENV`.
+- **`POST /webhook`** — valida `x-signature` con el **`WebhookSignatureValidator`**
+  del SDK (`mercadopago`), que aplica HMAC-SHA256 sobre el manifest
+  `id:{data.id};request-id:{x-request-id};ts:{ts};` con `MERCADO_PAGO_WEBHOOK_SECRET`.
+  Si `type === "payment"`: consulta el pago (`GET /v1/payments/{id}` vía `lib/mp.ts`).
+  - `approved` → inserta `expo_credit_history` (`id = purchase-{paymentId}`,
+    idempotente) y suma los créditos del plan en `expo_user_credits`; marca
+    `expo_pending_payments` (`status='approved'`, por `checkout_id`).
+  - otro estado → sólo marca el estado (`pending`/`rejected`/…).
+  - Responde `200`.
+- **`GET /credits`** (sesión) — `{ credits }` (saldo del usuario).
+- **`POST /consume`** (sesión) — body `{ reportId }`.
+  - Idempotente por `consume-{reportId}`; valida saldo ≥ 1, inserta el consumo
+    (`-1`) y descuenta 1. Devuelve `{ credits, alreadyConsumed }`.
+  - Si no hay saldo → `400 sin créditos suficientes`.
+- **`GET /credit-history?userId=`** — sólo `API_TOKEN` (no sesión). Devuelve el
+  ledger del usuario.
+
+### 11.2. Tablas (Neon)
+
+- `expo_user_credits` (`user_id PK`, `credits`, `updated_at`): caché del saldo.
+- `expo_credit_history` (ledger append-only; `id` PK; compra `purchase-{paymentId}`,
+  consumo `consume-{reportId}` → idempotencia).
+- `expo_pending_payments` (`preference_id PK`, `checkout_id` UNIQUE, `mp_payment_id`,
+  `status`, fechas).
+
+### 11.3. Utilidades
+
+- `lib/mp.ts`: `MercadoPagoConfig`, `Preference`, `Payment`; `isSandbox()` según `MP_ENV`.
+- `lib/plans.ts`: planes comprables (`por-informe`, `mensual`, `anual`).
+- `lib/auth.ts`: `isAuthorized` (API_TOKEN) + sesión por token opaco (`x-session-token`).
+
+### 11.4. Divergencias a resolver
+
+- **Precios (placeholders)**: los montos de `lib/plans.ts` (backend) y `constants/index.ts`
+  (app) son **reemplazables por proyecto**. Lo importante es mantenerlos **iguales** entre
+  app y backend (`unit_price = plan.price`); hoy difieren (18/55/560 vs 18000/55000/560000).
+- El **webhook procesa de forma síncrona** antes de responder (el skill sugiere
+  responder 200 y procesar async). Con una operación de DB rápida está OK, pero si
+  crece conviene responder primero.
+- `GET /credit-history` toma `userId` por query (sin sesión), a diferencia del resto
+  que es server-authoritative por sesión.

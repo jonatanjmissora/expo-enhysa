@@ -68,8 +68,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sync_queue_key
   `upsert` se coalesce en uno. Un `upsert` seguido de `delete` queda como `delete`.
 - Se registra en `db/client.ts` y se agrega a `runOneTimeResets` (no requiere drop).
 - Repositorio `src/repositories/sync-queue.repository.ts`:
-  `enqueue(userId, entity, recordId, operation)`, `getAllByUserId(userId)`,
-  `getCountByUserId(userId)`, `remove(id)`, `clearByUserAndEntity(...)`.
+  `enqueue(userId, entity, recordId, operation)` (coalescing por el índice único),
+  `getAllByUserId(userId)`, `getCountByUserId(userId)`,
+  `getCountsByEntity(userId)` (para las secciones de la barra de progreso),
+  `remove(id)`, `removeMany(ids)`.
 
 ---
 
@@ -101,14 +103,10 @@ CREATE INDEX IF NOT EXISTS idx_expo_tecnicos_user ON expo_tecnicos (user_id);
 - `updated_at` del server para ordenar.
 
 > **Imágenes**: `matricula_img`, `firma_img`, `empresa_logo` son `imageId` locales.
-> El archivo real vive en el **filesystem del dispositivo**; en la nube solo se guarda
-> el `imageId` (string), por lo que **no son portables** entre dispositivos hasta que
-> exista el upload a la nube (uploadthing). Fase futura.
->
-> **Al restaurar** (local vacío en otro dispositivo), los `imageId` llegan pero **no los
-> archivos**. Antes de asignar cada imagen hay que **verificar que el archivo exista**
-> localmente: si no existe, usar un **placeholder / imagen genérica** (o null) en vez de
-> un `imageId` roto. Esto aplica a `matricula_img`, `firma_img` y `empresa_logo`.
+> El **archivo** se sube a **UploadThing** (subida directa) y en la nube (`expo_images`)
+> se guarda la metadata + `remote_key`/`remote_url`. **Implementado** — ver
+> `plan-sync-imagenes.md`. En restore, si el archivo no existe local, se **baja** el
+> binario (con URL firmada de fallback); ver §5.6.
 
 ---
 
@@ -117,12 +115,15 @@ CREATE INDEX IF NOT EXISTS idx_expo_tecnicos_user ON expo_tecnicos (user_id);
 En `tecnicoRepository.create/update/delete`:
 
 1. Escribe en SQLite (como hoy).
-2. Llama `enqueue(userId, 'tecnicos', id, 'upsert' | 'delete')`.
-3. Dispara `void syncTecnicos(userId)` (fire-and-forget: intenta el flush).
+2. Llama `enqueue(userId, '<entidad>', id, 'upsert' | 'delete')`.
+3. La capa **Query** dispara el flush fire-and-forget
+   (`useAfterEntityChange` → `flushEntity`/`flushAll`; ver §4). El repo **no**
+   sincroniza por sí mismo.
 
 > **Snapshot de informes**: el snapshot de técnico/empresa/instrumento vive dentro
-> de `informes_iluminacion` (columnas JSON) y **no** se sincroniza todavía. El sync
-> cubre solo los registros vivos.
+> de `informes_iluminacion` (columnas JSON) y **sí se sincroniza** (la fila del
+> informe entra al sync como cualquier entidad; las imágenes copiadas del snapshot
+> van por el sync de `images`).
 
 El flush:
 - Lee `sync_queue` del usuario.
@@ -140,19 +141,16 @@ Así:
 
 `src/sync/sync-manager.ts` (genérico por entidad):
 - `flushEntity(entityKey, userId, { notify }): Promise<FlushResult>`: drena la cola de
-  UNA entidad.
+  UNA entidad (lock por `userId:entity`, sin flush concurrente).
 - `flushAll(userId, { notify })`: drena todas las entidades.
+- Ambos chequean `isOffline()`: si no hay conexión, **no borran nada** (queda pendiente)
+  y muestran el toast offline (§7).
 - Se llama:
-  - Después de cada operación de repo (fire-and-forget, vía
-    `useAfterEntityChange`).
-  - Al arrancar la app / recuperar conexión (`SyncBootstrap` → `flushAll`).
-  - Cuando el usuario confirma el popup de pendientes.
+  - Después de cada operación de repo (fire-and-forget, vía `useAfterEntityChange`).
+  - Al arrancar / recuperar conexión (`SyncBootstrap` → `flushAll`, con `notify`).
 
-**Cuándo se dispara el popup**: cuando hay `pendingCount > 0` **y** hay conexión
-(`useIsOffline()` → false). Se muestra un `Alert`:
-> "Operaciones pendientes — Tenés N operaciones sin sincronizar. ¿Sincronizar ahora?"
-
-Al confirmar → `flushAll`.
+**No hay "popup de pendientes"**: el flush es automático (eventos + reconexión); online
+es **silencioso** y al reconectar se muestra la **barra de progreso** (§7).
 
 ---
 
@@ -235,47 +233,69 @@ de "restore evaluado" ya está seteado, no se pregunta, y solo sincroniza normal
 
 ### 5.6 Imágenes en el restore
 
-El archivo de imagen vive en el **filesystem del dispositivo** y solo el `imageId` viaja
-por la nube. Al restaurar en un dispositivo nuevo, los `imageId` llegan pero **no los
-archivos**. Por cada campo de imagen (`imageFields` → `null`/vacío; `imageArrayFields` →
-se filtran del JSON los ids sin archivo):
+El archivo vive en el **filesystem** y solo el `imageId` viaja dentro de las entidades.
+Al restaurar en un dispositivo nuevo, los `imageId` llegan pero **no los archivos**.
 
-1. Verificar que el archivo exista localmente para ese `imageId`.
-2. Si **no existe** → dejar el campo vacío / **placeholder** (nunca un `imageId` roto).
-3. Si existe → conservar el `imageId`.
+- Se **conserva** el `imageId` en las entidades (no se reemplaza por placeholder).
+- Después del restore/merge, `src/sync/restore-images.ts` baja de **UploadThing** las
+  imágenes que están en `images` pero **no tienen archivo local** (usa `remoteUrl`; si
+  falla y hay `remoteKey`, pide URL firmada `GET /sync/images?sign=<key>`).
+- Idempotente (las que ya existen se omiten) y con barra de progreso (sección
+  "imágenes").
 
 ---
 
 ## 6. Backend
 
-**Función genérica** `api/sync/[entity].ts` (1 sola Serverless Function para todas las
-entidades, por el límite de 12 del plan Hobby). Deriva `userId` del token de sesión y
-usa el registro `lib/sync-entities.ts` (`entity → tabla + columnas`) para armar el SQL.
+**Función genérica** `api/sync/[entity].ts`: **1 sola Serverless Function** para todas
+las entidades (así no se supera el límite de Functions del plan Hobby). Deriva `userId`
+del token de sesión y usa el registro `lib/sync-entities.ts`
+(`entity → tabla + columnas` + `remoteKeyColumn?`) para armar el SQL. Todo dentro de una
+transacción por request.
 
 - `GET /sync/:entity` → `{ items: T[], deletedIds: string[] }` (vivos + tombstones).
+- `GET /sync/:entity?sign=<fileKey>` → `{ url }` (URL firmada de un archivo privado de
+  UploadThing, vía `utapi.generateSignedURL`; lo usa la descarga de imágenes).
 - `POST /sync/:entity` → body `{ upserts: T[], deletes: string[] }`.
-  - Upsert idempotente por `id` (con `ON CONFLICT (id) DO UPDATE`).
+  - Upsert idempotente por `id` (`ON CONFLICT (id) DO UPDATE ... WHERE user_id = $2`).
   - Delete = `UPDATE ... SET deleted_at = now() WHERE id = ? AND user_id = ?`.
+  - Si la entidad tiene `remoteKeyColumn` (p. ej. `images`), borra además el binario en
+    UploadThing (`utapi.deleteFiles`) — best-effort, no bloquea la respuesta.
   - Devuelve `{ ok: true, synced: number }`.
 - `DELETE /sync/:entity` → borra **todos** los datos del usuario (para "empezar de cero",
   §5.4). Con confirmación en la UI antes de llamarlo.
-- **Cron** (`GET /api/sync/tecnicos` con `Authorization: Bearer <CRON_SECRET>`) → purga
-  tombstones de todas las entidades con más de 30 días. Configurado en `vercel.json`
-  (`crons`, `0 3 * * 1`).
+- **`DELETE /sync/:entity?purge=1`** *(opcional)* → purga los tombstones del usuario.
+  Pensado para un botón de debug; **opcional si el repo lo requiere**.
+- **Cron de retención** *(opcional)* → `GET /api/sync/:entity` con
+  `Authorization: Bearer <CRON_SECRET>` purga tombstones de > 30 días de todas las
+  entidades (`vercel.json` → `crons`, `0 3 * * 1`). **Opcional**: solo si querés evitar
+  que se acumulen filas con `deleted_at`; sin cron, la funcionalidad no se rompe.
 
-Todo dentro de una transacción por request.
+### 6.1 UploadThing (imágenes)
+
+- `api/uploadthing.ts` (adaptador Vercel→Web `Request` + CORS) monta el FileRouter de
+  `lib/uploadthing.ts` (`imageUploader`, auth por sesión). El binario se sube **directo**
+  app→UploadThing (no pasa por Vercel). Ver `plan-sync-imagenes.md`.
 
 > Para agregar una entidad: crear su tabla `expo_*` en Neon con `id TEXT PK`,
 > `user_id UUID`, `deleted_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ` y registrar sus
-> columnas en `SYNC_ENTITIES`. No se agregan Functions.
+> columnas en `SYNC_ENTITIES` (+ `remoteKeyColumn` si tiene binario en UploadThing).
+> No se agregan Functions.
 
 ---
 
 ## 7. UI
 
-- **Indicador de pendientes**: contador (`useSyncStatus()`) para mostrar "N pendientes".
-- **Popup de pendientes** (online): `Alert` con "Sincronizar ahora".
-- **Popup de restore** (login + nube con datos + local vacío).
+- **Indicador persistente de pendientes**: `components/Header.tsx` → `SyncIndicator`
+  (badge con el conteo vía `useSyncStatus()`), solo si hay pendientes.
+- **Toast offline**: `src/ui/toast.ts` + `ToastHost`; al operar sin conexión muestra
+  (naranja) "Sin conexión. Se sincronizará cuando vuelvas online."
+- **Barra de progreso**: `src/ui/SyncProgressBar.tsx` (arriba) al arrancar/reconectar,
+  alimentada por `src/sync/sync-activity.ts`. Una sola barra y el texto va cambiando por
+  entidad ("Sincronizando técnicos…" → "empresas…" → "instrumentos…" → "imágenes…").
+- **Popup global de restore/merge**: un único `Alert` con `Trabajar con la nube` |
+  `Empezar de cero` | `Combinar ambos` (+ confirmación destructiva, §5).
+- **Online normal**: silencioso (sin toast ni barra).
 
 ---
 
@@ -344,8 +364,9 @@ Todo dentro de una transacción por request.
    ¿alcanza, o querés tombstone local también?
 3. **Frecuencia del flush**: ¿solo en eventos (repo/confirmar/arranque) o también un
    intervalo/timer? Recomiendo eventos para la fase 1.
-4. **Imágenes**: en la fase 1 se sincronizan como string (no portables). Al restaurar
-   hay que **verificar la existencia del archivo** y caer a placeholder si falta (§5.6).
+4. **Imágenes**: resuelto con **UploadThing**. En las entidades viaja el `imageId`; el
+   archivo se sube a UploadThing (`expo_images` guarda `remote_key`/`remote_url`) y en el
+   restore se **bajan** los binarios faltantes (§5.6). Ver `plan-sync-imagenes.md`.
 
 ## 10. Decisiones tomadas
 
@@ -358,6 +379,45 @@ Todo dentro de una transacción por request.
 3. **Conflicto local+nube = merge por `id` con LWW** por `updatedAt` (§5.3), con
    opciones `Combinar` | `Solo nube` | `Solo local`.
 4. **Soft delete = tombstone**: el borrado por registro marca `deleted_at` en la nube
-   para que otro dispositivo/restore no lo resucite en el merge. Como acumula filas,
-   se agrega **retención**: purgar `deleted_at` más viejo que N días (30–90) vía cron
-   (Vercel Cron). Pendiente de implementar.
+   para que otro dispositivo/restore no lo resucite en el merge. Como acumula filas, la
+   **retención** (purgar `deleted_at` viejo, 30–90 días) se implementó como **cron +
+   botón de purga por usuario** (`?purge=1`), pero es **opcional**: un repo puede
+   omitirla sin romper la funcionalidad (§6).
+
+---
+
+## 11. Componentes implementados (mapa de archivos)
+
+**App:**
+- `src/db/schema/sync-queue.ts` — tabla `sync_queue`.
+- `src/repositories/sync-queue.repository.ts` — cola (`enqueue`, `getAllByUserId`,
+  `getCountByUserId`, `getCountsByEntity`, `remove`, `removeMany`).
+- `src/db/local-entities.ts` — registro `LOCAL_ENTITIES` (tabla + columnas +
+  `numberFields` + `imageFields`/`imageArrayFields` + `label`) para el motor genérico.
+- `src/repositories/sync-local.repository.ts` — acceso genérico local (`getAll`,
+  `getById`, `applyCloud`, `removeByIds`).
+- `src/sync/sync-manager.ts` — `flushEntity` / `flushAll`.
+- `src/sync/restore.ts` — detección de estados + popup global + merge.
+- `src/sync/restore-images.ts` — baja los binarios faltantes de UploadThing.
+- `src/sync/restore-flag.ts` — flag "restore evaluado" (archivo, se borra al reinstalar).
+- `src/sync/sync-activity.ts` — estado del progreso (secciones por entidad).
+- `src/sync/SyncBootstrap.tsx` — restore (una vez) + `flushAll` al arrancar/reconectar.
+- `src/sync/use-after-entity-change.ts` — dispara el flush tras cada mutación.
+- `src/query/keys/sync.keys.ts` + `src/query/hooks/use-sync-status.ts` — conteo.
+- `src/ui/toast.ts` + `src/ui/ToastHost.tsx` — toast offline.
+- `src/ui/SyncProgressBar.tsx` — barra de progreso.
+- `src/api/client.ts` — `apiSyncList` / `apiSyncPush` / `apiSyncClear` / `apiSignUrl` /
+  `apiPurgeTombstones`, `getApiSessionToken` / `getApiToken`.
+- `components/Header.tsx` — `SyncIndicator`.
+- `app/debug/db.tsx` — botón "Purgar tombstones" *(opcional)*.
+- Repos con `enqueue`: `tecnico`, `empresa`, `instrumento`, `informes-iluminacion`,
+  `area-iluminacion`, `localizada-iluminacion` e `image-service`.
+- `src/utils/network.ts` — `isOffline()` / `useIsOffline()`.
+
+**Backend (`expo-enhysa-backend`):**
+- `api/sync/[entity].ts` — función genérica (GET/POST/DELETE + `?sign=` / `?purge=` / cron).
+- `lib/sync-entities.ts` — registro (tabla + columnas + `remoteKeyColumn` + `coerceValue`).
+- `api/uploadthing.ts` + `lib/uploadthing.ts` — FileRouter de UploadThing.
+- `schema.sql` — `expo_tecnicos`, `expo_empresas`, `expo_instrumentos`,
+  `expo_informes_iluminacion`, `expo_areas_iluminacion`, `expo_localizadas_iluminacion`,
+  `expo_images`.
