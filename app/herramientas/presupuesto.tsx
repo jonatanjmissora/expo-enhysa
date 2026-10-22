@@ -15,7 +15,7 @@ import {
 	formatPrice,
 	getImporte,
 	getTotal,
-	honorariosDb,
+	serviciosDb,
 } from "@/src/pdf/documents/presupuesto"
 import {
 	generateAndSharePdf,
@@ -71,10 +71,12 @@ export default function Presupuesto() {
 
 	const servicios = useMemo(
 		() =>
-			honorariosDb[perfil].map((s, i) => ({
-				id: String(i),
-				label: s.nombre,
-			})),
+			serviciosDb[perfil]
+				.map((s, i) => ({
+					id: String(i),
+					label: s.nombre,
+				}))
+				.sort((a, b) => a.label.localeCompare(b.label, "es")),
 		[perfil]
 	)
 

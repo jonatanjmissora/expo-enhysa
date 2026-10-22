@@ -10,12 +10,12 @@ import { wrapDocument } from "@/src/pdf/styles"
 
 export type Perfil = "licenciado" | "tecnico"
 
-export interface HonorarioServicio {
+export interface ServiciosType {
 	nombre: string
 	importe: number
 }
 
-export type HonorariosDb = Record<Perfil, HonorarioServicio[]>
+export type ServiciosDb = Record<Perfil, ServiciosType[]>
 
 export interface TareaRow {
 	id: string
@@ -47,7 +47,7 @@ export interface PresupuestoData {
 	}
 }
 
-export const honorariosDb: HonorariosDb = {
+export const serviciosDb: ServiciosDb = {
 	licenciado: [
 		{ nombre: "Capacitación (Hasta 4 hs) - Estándar", importe: 120000 },
 		{
@@ -92,6 +92,47 @@ export const honorariosDb: HonorariosDb = {
 		{ nombre: "Informe Antisiniestral - 0 a 300 m²", importe: 315000 },
 		{ nombre: "Informe Antisiniestral - 301 a 600 m²", importe: 410000 },
 		{ nombre: "Informe Antisiniestral - 601 a 1000 m²", importe: 500000 },
+		{ nombre: "Valor de la Hora", importe: 29000},
+{ nombre: "Media Jornada Profesional, 4hs Asesoramiento, Reunión, Inspección", importe: 180000},
+{ nombre: "Jornada Profesional, 8hs Asesoramiento, Reunión, Inspección", importe: 267000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de 1 a 15 Trabajadores)", importe: 111000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de 16 a 30 Trabajadores)", importe: 222000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de 31 a 60 Trabajadores)", importe: 445000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de 61 a 100 Trabajadores)", importe: 780000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de 101 a 150 Trabajadores)", importe: 1220000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de 151 a 250 Trabajadores)", importe: 1670000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de 251 a 350 Trabajadores)", importe: 2170000},
+{ nombre: "Servicio Externo de Higiene y Seguridad (de más de 351 Trabajadores)", importe: 5550000},
+{ nombre: "Dirección técnica de Extintores", importe: 640000},
+{ nombre: "Programa de Seguridad Res. 35/98 Cat. I hasta 20 operarios", importe: 610000},
+{ nombre: "Programa de Seguridad Res. 35/98 Cat. II de 20 a 50 operarios", importe: 750000},
+{ nombre: "Programa de Seguridad Res. 35/98 Cat. III mas de 50 operarios", importe: 1000000},
+{ nombre: "Programa de Seguridad Res. 51/97 Cat. I hasta 20 operarios", importe: 500000},
+{ nombre: "Programa de Seguridad Res. 51/97 Cat. II de 20 a 50 operarios", importe: 700000},
+{ nombre: "Programa de Seguridad Res. 51/97 Cat. III mas de 50 operarios", importe: 960000},
+{ nombre: "Plano de evacuación/Incendio de 0 a 300 m2", importe: 315000},
+{ nombre: "Plano de evacuación/Incendio de 300 a 600 m2", importe: 380000},
+{ nombre: "Plano de evacuación/Incendio de 600 a 1000 m2", importe: 500000},
+{ nombre: "Plano de evacuación/Incendio de 1000 a 2000 m2", importe: 640000},
+{ nombre: "Plano de evacuación/Incendio de más de 2000m2", importe: 850000},
+{ nombre: "E.I.A. Categoría I hasta 15 puntos", importe: 520000},
+{ nombre: "E.I.A. Categoría II de 15 a 20 puntos", importe: 1250000},
+{ nombre: "E.I.A. Categoría II de 21 a 25 puntos", importe: 1880000},
+{ nombre: "E.I.A. Categoría III mas de 26 puntos", importe: 2300000},
+{ nombre: "Renovación E.I.A. Categoría I hasta 15 puntos", importe: 320000},
+{ nombre: "Renovación E.I.A. Categoría II de 15 a 20 puntos", importe: 735000},
+{ nombre: "Renovación E.I.A. Categoría II de 21 a 25 puntos", importe: 1070000},
+{ nombre: "Renovación E.I.A. Categoría III mas de 26 puntos", importe: 1500000},
+{ nombre: "Informe técnico E.I.A. Comercios y Obras hasta 1000 m2", importe: 555000},
+{ nombre: "Informe técnico E.I.A. Comercios y Obras hasta 1001 a 5000 m2", importe: 1000000},
+{ nombre: "Informe técnico E.I.A. Comercios y Obras hasta más de 5000 m2", importe: 2000000},
+{ nombre: "Inscripción de Residuos Especiales para No Industriales", importe: 250000},
+{ nombre: "Inscripción de Residuos Especiales Industrias Cat. I y II", importe: 250000},
+{ nombre: "Inscripción de Residuos Especiales Industrias Cat. III", importe: 480000},
+{ nombre: "Medición de Efluentes Gaseosos 1 ducto", importe: 470000},
+{ nombre: "Medición de Efluentes Gaseosos de 2 a 5 ductos por cada uno", importe: 200000},
+{ nombre: "Medición de Efluentes Gaseosos de 6 a 15 ductos por cada uno", importe: 100000},
+{ nombre: "Medición de Efluentes Gaseosos más de 16 ductos por cada uno", importe: 50500}
 	],
 	tecnico: [
 		{ nombre: "Capacitación (Hasta 4 hs) - Estándar", importe: 118000 },
@@ -137,6 +178,9 @@ export const honorariosDb: HonorariosDb = {
 		{ nombre: "Informe Antisiniestral - 0 a 300 m²", importe: 315000 },
 		{ nombre: "Informe Antisiniestral - 301 a 600 m²", importe: 410000 },
 		{ nombre: "Informe Antisiniestral - 601 a 1000 m²", importe: 500000 },
+		{ nombre: "Valor de la Hora del Técnico HSE", importe: 11500},
+{ nombre: "Visita Profesional ART", importe: 37600},
+{ nombre: "Calidad de aire interior (co, co2, vocs) Toma, envío a lab e Informe", importe: 188000},
 	],
 }
 
@@ -149,7 +193,7 @@ export function formatPrice(n: number): string {
 
 export function getImporte(perfil: Perfil, tarea: TareaRow): number {
 	if (tarea.importeCustom !== undefined) return tarea.importeCustom
-	const servicio = honorariosDb[perfil]?.[tarea.servicioIndex]
+	const servicio = serviciosDb[perfil]?.[tarea.servicioIndex]
 	return servicio?.importe ?? 0
 }
 
@@ -209,7 +253,7 @@ export function buildPresupuestoHtml(data: PresupuestoData): string {
 						const subtotal = importe * (1 + data.actividad) * t.cantidad
 						const nombre =
 							t.servicioIndex >= 0
-								? (honorariosDb[data.perfil][t.servicioIndex]?.nombre ?? "-")
+								? (serviciosDb[data.perfil][t.servicioIndex]?.nombre ?? "-")
 								: "-"
 						return [
 							escapeHtml(t.cantidad),

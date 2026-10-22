@@ -1,6 +1,13 @@
 import { theme } from "@/constants/theme"
 import { useState } from "react"
-import { Modal, Pressable, Text, View } from "react-native"
+import {
+	Modal,
+	Pressable,
+	ScrollView,
+	Text,
+	useWindowDimensions,
+	View,
+} from "react-native"
 
 type SelectItem = string | { id: string }
 
@@ -26,6 +33,7 @@ export default function Select<T extends SelectItem>({
 	renderItem?: (item: T) => string
 }) {
 	const [visible, setVisible] = useState(false)
+	const { height } = useWindowDimensions()
 
 	const getId = (item: SelectItem) =>
 		typeof item === "string" ? item : item.id
@@ -97,37 +105,43 @@ export default function Select<T extends SelectItem>({
 						>
 							{placeholder || "Seleccionar"}
 						</Text>
-						{data.map((item, _i) => {
-							const id = getId(item)
-							return (
-								<Pressable
-									key={id}
-									onPress={() => {
-										onChange(id as SelectedId<T>)
-										setVisible(false)
-									}}
-									style={{
-										paddingVertical: 12,
-										paddingHorizontal: 8,
-										borderBottomWidth: 1,
-										borderBottomColor: theme.inputBorder,
-										backgroundColor:
-											id === value ? theme.inputBorder : "transparent",
-										borderRadius: 4,
-									}}
-								>
-									<Text
+						<ScrollView
+							style={{ maxHeight: height * 0.6 }}
+							keyboardShouldPersistTaps="handled"
+							showsVerticalScrollIndicator
+						>
+							{data.map((item, _i) => {
+								const id = getId(item)
+								return (
+									<Pressable
+										key={id}
+										onPress={() => {
+											onChange(id as SelectedId<T>)
+											setVisible(false)
+										}}
 										style={{
-											color: "#e2e8f0",
-											fontSize: 14,
-											fontWeight: id === value ? "700" : "400",
+											paddingVertical: 12,
+											paddingHorizontal: 8,
+											borderBottomWidth: 1,
+											borderBottomColor: theme.inputBorder,
+											backgroundColor:
+												id === value ? theme.inputBorder : "transparent",
+											borderRadius: 4,
 										}}
 									>
-										{getLabel(item)}
-									</Text>
-								</Pressable>
-							)
-						})}
+										<Text
+											style={{
+												color: "#e2e8f0",
+												fontSize: 14,
+												fontWeight: id === value ? "700" : "400",
+											}}
+										>
+											{getLabel(item)}
+										</Text>
+									</Pressable>
+								)
+							})}
+						</ScrollView>
 					</View>
 				</Pressable>
 			</Modal>

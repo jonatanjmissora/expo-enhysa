@@ -1,20 +1,5 @@
-- scrollTop ?
-import { useScrollToTop } from "expo-router"
-import { useRef } from "react"
-import { ScrollView } from "react-native"
 
-export default function Index() {
-  const scrollRef = useRef<ScrollView>(null)
-  useScrollToTop(scrollRef)
-
-  return (
-    <ScrollView ref={scrollRef}>
-      {/* contenido */}
-    </ScrollView>
-  )
-}
-
-- datos de prueba para generar pdf? en user-1 o video explicativo
+- ver un informe terminado, como muestra
 
 - agregar items a la cotizadora
 
