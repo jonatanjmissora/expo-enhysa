@@ -47,7 +47,7 @@ export default function EquipoAlquilerCard({
 			>
 				{equipo.imagen ? (
 					<ImageViewer
-						imgSource={{ uri: equipo.imagen }}
+						imgSource={equipo.imagen}
 						contentFit="cover"
 						style={{ width: "100%", height: "100%" }}
 					/>

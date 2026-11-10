@@ -50,23 +50,24 @@ export default function AlquilerItem() {
 
 	return (
 		<ViewWithLogo>
-			<Button
-				variant="ghost"
-				iconLeft="chevron-back"
-				text="Volver"
-				style={{ alignSelf: "flex-start", paddingHorizontal: 16 }}
-				onPress={() => router.back()}
-			/>
 			<ScrollView
 				style={{ flex: 1 }}
 				contentContainerStyle={{
-					width: "92%",
-					alignSelf: "center",
+					paddingHorizontal: 16,
 					paddingTop: 10,
-					paddingBottom: 120,
+					paddingBottom: 140,
 					gap: 22,
 				}}
+				showsVerticalScrollIndicator={false}
 			>
+				<Button
+					variant="ghost"
+					iconLeft="chevron-back"
+					text="Volver"
+					style={{ alignSelf: "flex-start", paddingHorizontal: 0 }}
+					onPress={() => router.back()}
+				/>
+
 				<View
 					style={{
 						alignItems: "center",
@@ -82,8 +83,7 @@ export default function AlquilerItem() {
 					<View
 						style={{
 							width: "100%",
-							height: "auto",
-							minHeight: 200,
+							height: 240,
 							borderRadius: 6,
 							overflow: "hidden",
 							backgroundColor: theme.inputBG,
@@ -95,7 +95,7 @@ export default function AlquilerItem() {
 					>
 						{actualEquipo.imagen ? (
 							<ImageViewer
-								imgSource={{ uri: actualEquipo.imagen }}
+								imgSource={actualEquipo.imagen}
 								contentFit="cover"
 								style={{ width: "100%", height: "100%" }}
 							/>

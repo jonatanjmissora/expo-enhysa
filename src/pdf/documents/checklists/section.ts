@@ -6,7 +6,23 @@ import {
 	sectionTitle,
 } from "@/src/pdf/primitives"
 import { wrapDocument } from "@/src/pdf/styles"
+import { renderWatermark, watermarkStyles } from "@/src/pdf/watermark"
 import type { ChecklistSectionPdfData } from "./types"
+
+const checklistWatermarkStyles = `
+	${watermarkStyles}
+	html, body { background: #ffffff; }
+	.watermark {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		width: 200vmax;
+		height: 200vmax;
+		margin: -100vmax 0 0 -100vmax;
+		border: none;
+		transform-origin: center;
+	}
+`
 
 const EVAL: Record<string, { bg: string; color: string; label: string }> = {
 	SI: { bg: "#dcfce7", color: "#166534", label: "SÍ" },
@@ -34,8 +50,10 @@ function evidenceCell(imagen: string | null): string {
 }
 
 export function buildChecklistSectionHtml(
-	data: ChecklistSectionPdfData
+	data: ChecklistSectionPdfData,
+	options: { showWatermark?: boolean } = {}
 ): string {
+	const { showWatermark = false } = options
 	const headerHtml = header({
 		companyName: data.empresa || "EnHySa",
 		subtitle: `CHECK LIST: ${data.sectionTitle.toUpperCase()}`,
@@ -111,7 +129,9 @@ export function buildChecklistSectionHtml(
 		`<div style="margin-top:36px;border-top:1px solid #999999;width:260px;text-align:center;padding-top:4px;font-size:8px;color:#666666;">Firma del Inspector</div>`,
 	].join("")
 
-	return wrapDocument(`
+	return wrapDocument(
+		`
+		${showWatermark ? renderWatermark() : ""}
 		<table class="pdf-root">
 			<thead>
 				<tr><th>${headerHtml}</th></tr>
@@ -127,5 +147,7 @@ export function buildChecklistSectionHtml(
 				<tr class="pdf-block keep-together"><td>${dictamenHtml}</td></tr>
 			</tbody>
 		</table>
-	`)
+	`,
+		showWatermark ? checklistWatermarkStyles : ""
+	)
 }

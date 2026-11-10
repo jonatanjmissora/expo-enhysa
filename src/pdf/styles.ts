@@ -126,12 +126,12 @@ export const baseStyles = `
 	.keep-together { break-inside: avoid; page-break-inside: avoid; }
 `
 
-export function wrapDocument(content: string): string {
+export function wrapDocument(content: string, extraStyles = ""): string {
 	return `<!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="utf-8" />
-	<style>${baseStyles}</style>
+	<style>${baseStyles}${extraStyles}</style>
 </head>
 <body>
 ${content}

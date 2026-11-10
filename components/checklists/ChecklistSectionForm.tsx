@@ -9,13 +9,23 @@ import EvalSelector, {
 import type { ChecklistSection } from "@/constants"
 import type { ChecklistSpec } from "@/constants/checklists"
 import { theme } from "@/constants/theme"
+import { apiConsumeCredit } from "@/src/api/client"
 import { uriToDataUri } from "@/src/pdf/assets"
 import { buildChecklistSectionHtml } from "@/src/pdf/documents/checklists/section"
 import type { ChecklistPdfItem } from "@/src/pdf/documents/checklists/types"
-import { generateAndSharePdf } from "@/src/pdf/generate"
+import {
+	generateAndSharePdf,
+	generatePdf,
+	savePdfToDevice,
+} from "@/src/pdf/generate"
+import { useCredits } from "@/src/query/hooks/use-credits"
+import { creditKeys } from "@/src/query/keys/credit.keys"
+import { useIsOffline } from "@/src/utils/network"
 import { Ionicons } from "@expo/vector-icons"
-import { router } from "expo-router"
-import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { randomUUID } from "expo-crypto"
+import { router, usePathname } from "expo-router"
+import { useRef, useState } from "react"
 import {
 	Alert,
 	Pressable,
@@ -24,6 +34,8 @@ import {
 	Text,
 	View,
 } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { WebView } from "react-native-webview"
 
 type Item = {
 	question: string
@@ -86,26 +98,36 @@ export default function ChecklistSectionForm({
 	const [dictamen, setDictamen] = useState<Dictamen | null>(null)
 	const [inspector, setInspector] = useState({ nombre: "", cargo: "" })
 	const [exporting, setExporting] = useState(false)
+	const [previewing, setPreviewing] = useState(false)
+	const [previewHtml, setPreviewHtml] = useState<string | null>(null)
+	const [unlocked, setUnlocked] = useState(false)
+	const [unlocking, setUnlocking] = useState(false)
 
-	const handleExport = async () => {
-		setExporting(true)
-		try {
-			const resolveItems = (items: Item[]): Promise<ChecklistPdfItem[]> =>
-				Promise.all(
-					items.map(async item => ({
-						question: item.question,
-						evaluacion: item.evaluacion,
-						observacion: item.observacion,
-						imagen: item.imagen ? await uriToDataUri(item.imagen) : null,
-					}))
-				)
+	const pathname = usePathname()
+	const qc = useQueryClient()
+	const { data: credits } = useCredits()
+	const offline = useIsOffline()
+	const insets = useSafeAreaInsets()
+	const checklistId = useRef(randomUUID()).current
 
-			const [checklistResolved, documentalResolved] = await Promise.all([
-				resolveItems(checklist),
-				resolveItems(documental),
-			])
+	const buildHtml = async (showWatermark: boolean) => {
+		const resolveItems = (items: Item[]): Promise<ChecklistPdfItem[]> =>
+			Promise.all(
+				items.map(async item => ({
+					question: item.question,
+					evaluacion: item.evaluacion,
+					observacion: item.observacion,
+					imagen: item.imagen ? await uriToDataUri(item.imagen) : null,
+				}))
+			)
 
-			const html = buildChecklistSectionHtml({
+		const [checklistResolved, documentalResolved] = await Promise.all([
+			resolveItems(checklist),
+			resolveItems(documental),
+		])
+
+		return buildChecklistSectionHtml(
+			{
 				sectionTitle: section.title,
 				empresa: cabecera.empresa,
 				direccion: cabecera.direccion,
@@ -119,15 +141,74 @@ export default function ChecklistSectionForm({
 				checklist: checklistResolved,
 				dictamen,
 				inspector,
-			})
+			},
+			{ showWatermark }
+		)
+	}
 
-			const date = new Date().toISOString().split("T")[0]
-			const filename = `Inspeccion_${section.title.replace(/\s+/g, "_")}_${date}.pdf`
-			await generateAndSharePdf(html, filename)
+	const filename = () => {
+		const date = new Date().toISOString().split("T")[0]
+		return `Inspeccion_${section.title.replace(/\s+/g, "_")}_${date}.pdf`
+	}
+
+	const handlePreview = async () => {
+		setPreviewing(true)
+		try {
+			const html = await buildHtml(!unlocked)
+			setPreviewHtml(html)
 		} catch (error) {
 			Alert.alert(
 				"Error",
 				error instanceof Error ? error.message : "No se pudo generar el PDF"
+			)
+		} finally {
+			setPreviewing(false)
+		}
+	}
+
+	const handleUnlock = async () => {
+		setUnlocking(true)
+		try {
+			await apiConsumeCredit(checklistId, { cost: 0.5, kind: "checklist" })
+			qc.invalidateQueries({ queryKey: creditKeys.all })
+			setUnlocked(true)
+			const html = await buildHtml(false)
+			setPreviewHtml(html)
+		} catch (error) {
+			Alert.alert(
+				"Error",
+				error instanceof Error ? error.message : "No se pudo desbloquear el PDF"
+			)
+		} finally {
+			setUnlocking(false)
+		}
+	}
+
+	const handleShare = async () => {
+		if (!previewHtml) return
+		try {
+			setExporting(true)
+			await generateAndSharePdf(previewHtml, filename())
+		} catch (error) {
+			Alert.alert(
+				"Error",
+				error instanceof Error ? error.message : "No se pudo generar el PDF"
+			)
+		} finally {
+			setExporting(false)
+		}
+	}
+
+	const handleSave = async () => {
+		if (!previewHtml) return
+		try {
+			setExporting(true)
+			const uri = await generatePdf(previewHtml, filename())
+			await savePdfToDevice(uri, filename())
+		} catch (error) {
+			Alert.alert(
+				"Error",
+				error instanceof Error ? error.message : "No se pudo guardar el PDF"
 			)
 		} finally {
 			setExporting(false)
@@ -183,6 +264,141 @@ export default function ChecklistSectionForm({
 			</View>
 		))
 
+	if (previewHtml) {
+		return (
+			<ViewWithLogo>
+				<View
+					style={{
+						flex: 1,
+						paddingHorizontal: 12,
+						paddingTop: 12,
+						paddingBottom: insets.bottom + 12,
+						gap: 12,
+					}}
+				>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "space-between",
+							gap: 8,
+						}}
+					>
+						<Button
+							variant="ghost"
+							iconLeft="chevron-back"
+							text="Editar"
+							style={{ paddingHorizontal: 0, opacity: 0.85 }}
+							onPress={() => setPreviewHtml(null)}
+						/>
+						<Text
+							style={{
+								color: "#fff",
+								fontSize: 16,
+								fontWeight: "700",
+								flexShrink: 1,
+								textAlign: "right",
+							}}
+						>
+							{section.title.toUpperCase()}
+						</Text>
+					</View>
+
+					<View
+						style={{
+							flex: 1,
+							minHeight: 0,
+							overflow: "hidden",
+							borderRadius: 8,
+						}}
+					>
+						<WebView
+							source={{ html: previewHtml }}
+							originWhitelist={["*"]}
+							style={{ flex: 1, backgroundColor: "#525659" }}
+						/>
+					</View>
+
+					{unlocked ? (
+						<View style={{ flexDirection: "row", gap: 12 }}>
+							<Button
+								size="small"
+								text={exporting ? "Generando..." : "Compartir"}
+								disabled={exporting}
+								onPress={handleShare}
+								style={{ flex: 1 }}
+							/>
+							<Button
+								size="small"
+								variant="secondary"
+								text="Guardar"
+								disabled={exporting}
+								onPress={handleSave}
+								style={{ flex: 1 }}
+							/>
+						</View>
+					) : (credits ?? 0) >= 0.5 ? (
+						<View style={{ gap: 4, alignItems: "center" }}>
+							{!offline && (
+								<Text
+									style={{
+										color: theme.orange,
+										textAlign: "center",
+										fontSize: 10,
+									}}
+								>
+									Créditos disponibles: {credits}
+								</Text>
+							)}
+							<Button
+								size="small"
+								text={
+									unlocking
+										? "Desbloqueando..."
+										: "Desbloquear PDF (0,5 crédito)"
+								}
+								disabled={unlocking || offline}
+								onPress={handleUnlock}
+								style={{ width: 280 }}
+							/>
+							{offline && (
+								<Text
+									style={{
+										color: theme.orange,
+										textAlign: "center",
+										fontSize: 12,
+									}}
+								>
+									No tenés conexión a internet. No se puede desbloquear el PDF
+									estando offline.
+								</Text>
+							)}
+						</View>
+					) : (
+						<View style={{ gap: 10, alignItems: "center" }}>
+							<Text
+								style={{ color: "#ccc", textAlign: "center", fontSize: 12 }}
+							>
+								Necesitás 0,5 créditos para desbloquear este PDF.
+							</Text>
+							<Button
+								size="small"
+								text="Adquirir Crédito"
+								onPress={() =>
+									router.push({
+										pathname: "/suscripcion",
+										params: { from: pathname },
+									})
+								}
+								style={{ width: 250 }}
+							/>
+						</View>
+					)}
+				</View>
+			</ViewWithLogo>
+		)
+	}
+
 	return (
 		<ViewWithLogo>
 			<Button
@@ -202,7 +418,6 @@ export default function ChecklistSectionForm({
 					gap: 42,
 				}}
 			>
-
 				<Text style={styles.title}>
 					{section.icon} CHECK LIST: {section.title.toUpperCase()}
 				</Text>
@@ -318,16 +533,16 @@ export default function ChecklistSectionForm({
 						<Button
 							variant="secondary"
 							text="VOLVER"
-							disabled={exporting}
+							disabled={previewing}
 							onPress={() => router.back()}
 							style={{ marginTop: 8 }}
 						/>
 						<Button
 							variant="primary"
 							iconLeft="document-text-outline"
-							text={exporting ? "GENERANDO..." : "COMPARTIR PDF"}
-							disabled={exporting}
-							onPress={handleExport}
+							text={previewing ? "PREPARANDO..." : "PREVISUALIZAR PDF"}
+							disabled={previewing}
+							onPress={handlePreview}
 							style={{ marginTop: 8 }}
 						/>
 					</View>

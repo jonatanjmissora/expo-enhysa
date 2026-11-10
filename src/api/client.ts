@@ -191,11 +191,12 @@ export type ConsumeCreditResponse = {
 }
 
 export function apiConsumeCredit(
-	reportId: string
+	reportId: string,
+	options?: { cost?: number; kind?: "report" | "checklist" }
 ): Promise<ConsumeCreditResponse> {
 	return apiFetch<ConsumeCreditResponse>("/consume", {
 		method: "POST",
-		body: JSON.stringify({ reportId }),
+		body: JSON.stringify({ reportId, ...options }),
 	})
 }
 

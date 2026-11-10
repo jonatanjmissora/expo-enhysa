@@ -1,3 +1,14 @@
+import anometroDigital from "../assets/images/anometro-digital.jpeg"
+import decibelimetro from "../assets/images/decibelimetro.jpeg"
+import detectorGas from "../assets/images/detector-gas.jpeg"
+import dosimetroTes from "../assets/images/dosimetro-tes.jpeg"
+import luxometroCompuesto from "../assets/images/luxometro-compuesto.jpeg"
+import luxometroSimple from "../assets/images/luxometro-simple.jpeg"
+import medidorEspesor from "../assets/images/medidor-espesor.jpeg"
+import sonometroOctavas from "../assets/images/sonometro-octavas.jpeg"
+import telurimetroTes from "../assets/images/telurimetro-tes.jpeg"
+import vibrometro from "../assets/images/vibrometro.jpeg"
+
 export const EMPTY_TIMESTAMP = new Date("1970-01-01").toISOString()
 
 /**
@@ -352,7 +363,7 @@ export type EquipoAlquiler = {
 	nombre: string
 	precio: string
 	detalle?: string
-	imagen?: string | null
+	imagen?: number | null
 }
 
 export const EQUIPOS: EquipoAlquiler[] = [
@@ -361,59 +372,69 @@ export const EQUIPOS: EquipoAlquiler[] = [
 		nombre: "Telurímetro TES 1605",
 		precio: "$ 49.450",
 		detalle: "x día",
+		imagen: telurimetroTes,
 	},
 	{
 		id: "luxometro-simple",
 		nombre: "Luxómetro simple",
 		precio: "$ 39.200",
 		detalle: "+ IVA",
+		imagen: luxometroSimple,
 	},
 	{
 		id: "luxometro-compuesto",
 		nombre: "Luxómetro compuesto",
 		precio: "$ 42.900",
 		detalle: "+ IVA",
+		imagen: luxometroCompuesto,
 	},
 	{
 		id: "decibelimetro",
 		nombre: "Decibelímetro",
 		precio: "$ 38.500",
 		detalle: "+ IVA",
+		imagen: decibelimetro,
 	},
 	{
 		id: "dosimetro-ruido",
 		nombre: "Dosímetro de Ruido",
 		precio: "$ 46.400",
 		detalle: "+ IVA",
+		imagen: dosimetroTes,
 	},
 	{
 		id: "sonometro-bandas-octavas",
 		nombre: "Sonómetro con bandas de octavas",
 		precio: "$ 52.700",
 		detalle: "+ IVA",
+		imagen: sonometroOctavas,
 	},
 	{
 		id: "vibrometro-cuerpo-entero",
 		nombre: "Vibrómetro mano cuerpo entero",
 		precio: "$ 51.900",
 		detalle: "+ IVA por día",
+		imagen: vibrometro,
 	},
 	{
 		id: "detector-multigases-lel",
 		nombre: "Equipos de detección multigases con límite de explosividad LEL",
 		precio: "$ 47.900",
 		detalle: "+ IVA",
+		imagen: detectorGas,
 	},
 	{
 		id: "anemometro-digital",
 		nombre: "Anemómetro digital",
 		precio: "$ 42.900",
 		detalle: "+ IVA",
+		imagen: anometroDigital,
 	},
 	{
 		id: "medidor-espesores",
 		nombre: "Medidor de espesores",
 		precio: "$ 49.900",
 		detalle: "+ IVA",
+		imagen: medidorEspesor,
 	},
 ]
