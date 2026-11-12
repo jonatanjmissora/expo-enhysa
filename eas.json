@@ -5,27 +5,24 @@
 	"build": {
 		"development": {
 			"developmentClient": true,
-			"distribution": "internal"
+			"distribution": "internal",
+			"environment": "development"
 		},
 		"preview": {
 			"distribution": "internal",
+			"autoIncrement": true,
+			"environment": "preview",
 			"node": "22.19.0",
 			"pnpm": "12.8.1",
-			"env": {
-				"EXPO_PUBLIC_API_URL": "https://expo-enhysa-backend.vercel.app",
-				"EXPO_PUBLIC_API_TOKEN": "c2bbe4d58da66a824b4e73f1e0564281960d0ee5c6376aa1c18297721be05562"
-			},
 			"android": {
 				"buildType": "apk"
 			}
 		},
 		"production": {
+			"autoIncrement": true,
+			"environment": "production",
 			"node": "22.19.0",
-			"pnpm": "12.8.1",
-			"env": {
-				"EXPO_PUBLIC_API_URL": "https://expo-enhysa-backend.vercel.app",
-				"EXPO_PUBLIC_API_TOKEN": "c2bbe4d58da66a824b4e73f1e0564281960d0ee5c6376aa1c18297721be05562"
-			}
+			"pnpm": "12.8.1"
 		}
 	}
 }

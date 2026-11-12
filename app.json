@@ -1,8 +1,8 @@
 {
 	"expo": {
-		"name": "expo-enhysa",
+		"name": "EnHySa",
 		"slug": "expo-enhysa",
-		"version": "1.0.3",
+		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/logo512.png",
 		"scheme": "expoenhysa",
@@ -12,7 +12,7 @@
 		},
 		"android": {
 			"predictiveBackGestureEnabled": false,
-			"package": "com.anonymous.expoenhysa"
+			"package": "com.katodev.enhysa"
 		},
 		"web": {
 			"output": "static",
