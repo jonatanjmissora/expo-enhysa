@@ -1,11 +1,14 @@
+import { Ionicons } from "@expo/vector-icons"
+import { File } from "expo-file-system"
 import { Image, ImageContentFit, ImageProps, ImageStyle } from "expo-image"
-import { useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
 	Animated,
 	LayoutChangeEvent,
 	PanResponder,
 	StyleProp,
 	StyleSheet,
+	Text,
 	View,
 	ViewStyle,
 } from "react-native"
@@ -19,6 +22,33 @@ type Props = {
 	style?: ImageStyle
 	contentFit?: ImageContentFit
 	zoomable?: boolean
+	onLoadError?: () => void
+}
+
+function getSourceUri(source: ImageProps["source"]): string | null {
+	if (!source) return null
+	if (typeof source === "string") return source || null
+	if (typeof source === "number") return null
+	if (Array.isArray(source)) {
+		return source.length > 0 ? getSourceUri(source[0]) : null
+	}
+	const uri = (source as { uri?: string }).uri
+	return typeof uri === "string" && uri ? uri : null
+}
+
+function isAssetSource(source: ImageProps["source"]): boolean {
+	if (typeof source === "number") return true
+	return Array.isArray(source) && source.every(item => typeof item === "number")
+}
+
+function localFileMissing(uri: string): boolean {
+	if (!uri.startsWith("file://")) return false
+	try {
+		const file = new File(uri)
+		return !file.exists || file.size === 0
+	} catch {
+		return true
+	}
 }
 
 export default function ImageViewer({
@@ -27,15 +57,48 @@ export default function ImageViewer({
 	contentFit = "contain",
 	zoomable = false,
 }: Props) {
+	const uri = getSourceUri(imgSource)
+	const asset = isAssetSource(imgSource)
+	const [failed, setFailed] = useState(false)
+
+	useEffect(() => {
+		setFailed(false)
+	}, [uri])
+
+	const missing = useMemo(() => (uri ? localFileMissing(uri) : false), [uri])
+
+	if (!asset && !uri) return null
+
+	if (uri && (missing || failed)) {
+		return <BrokenImage style={style} />
+	}
+
 	if (!zoomable) {
-		return <Image source={imgSource} contentFit={contentFit} style={style} />
+		return (
+			<Image
+				source={imgSource}
+				contentFit={contentFit}
+				style={style}
+				onError={() => setFailed(true)}
+			/>
+		)
 	}
 	return (
 		<ZoomableImage
 			imgSource={imgSource}
 			style={style}
 			contentFit={contentFit}
+			onLoadError={() => setFailed(true)}
 		/>
+	)
+}
+
+function BrokenImage({ style }: { style?: ImageStyle }) {
+	return (
+		<View style={[style as StyleProp<ViewStyle>, styles.broken]}>
+			<Ionicons name="image-outline" size={28} color="#9ca3af" />
+			<Text style={styles.brokenText}>Archivo no disponible</Text>
+		</View>
 	)
 }
 
@@ -43,6 +106,7 @@ function ZoomableImage({
 	imgSource,
 	style,
 	contentFit,
+	onLoadError,
 }: Omit<Props, "zoomable">) {
 	const scale = useRef(new Animated.Value(1)).current
 	const translateX = useRef(new Animated.Value(0)).current
@@ -229,6 +293,7 @@ function ZoomableImage({
 					source={imgSource}
 					contentFit={contentFit}
 					style={StyleSheet.absoluteFill}
+					onError={onLoadError}
 				/>
 			</Animated.View>
 		</View>
@@ -238,5 +303,18 @@ function ZoomableImage({
 const styles = StyleSheet.create({
 	container: {
 		overflow: "hidden",
+	},
+	broken: {
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "#e5e7eb",
+		padding: 8,
+		overflow: "hidden",
+	},
+	brokenText: {
+		color: "#6b7280",
+		fontSize: 11,
+		fontWeight: "600",
+		textAlign: "center",
 	},
 })

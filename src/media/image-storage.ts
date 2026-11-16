@@ -27,6 +27,7 @@ function getImageFile(imageId: string): File {
  * URI de borrador (imagen elegida en un form, todavía no importada).
  */
 export function getImageUri(value: string): string {
+	if (!value) return ""
 	if (isImageUri(value)) return value
 	return getImageFile(value).uri
 }

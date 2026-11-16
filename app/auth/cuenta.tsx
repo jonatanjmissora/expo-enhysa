@@ -292,9 +292,10 @@ function ImageEdit({ user }: { user: UserType }) {
 		setError(null)
 		setSaving(true)
 		try {
-			const newImage = await imageService.commitImage(
+			// No borrar la imagen anterior: si el PATCH a la nube falla, el
+			// `user_image` de la nube sigue apuntando a una imagen válida.
+			const newImage = await imageService.persistImage(
 				draftImage,
-				userImage,
 				activeUserId
 			)
 			await updateUser.mutateAsync({
